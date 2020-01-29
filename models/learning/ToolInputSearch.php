@@ -1,0 +1,70 @@
+<?php
+
+namespace app\models\learning;
+
+use yii\base\Model;
+use yii\data\ActiveDataProvider;
+use app\models\learning\ToolInput;
+
+/**
+ * ToolInputSearch represents the model behind the search form of `app\models\learning\ToolInput`.
+ */
+class ToolInputSearch extends ToolInput
+{
+    /**
+     * {@inheritdoc}
+     */
+    public function rules()
+    {
+        return [
+            [['id', 'tool_id'], 'integer'],
+            [['input_name', 'input_type'], 'safe'],
+        ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function scenarios()
+    {
+        // bypass scenarios() implementation in the parent class
+        return Model::scenarios();
+    }
+
+    /**
+     * Creates data provider instance with search query applied
+     *
+     * @param array $params
+     *
+     * @return ActiveDataProvider
+     */
+    public function search($params)
+    {
+        $query = ToolInput::find();
+
+        // add conditions that should always apply here
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+        ]);
+
+        $this->load($params);
+
+        if (!$this->validate()) {
+            // uncomment the following line if you do not want to return any records when validation fails
+            // $query->where('0=1');
+            return $dataProvider;
+        }
+
+        // grid filtering conditions
+        $query->andFilterWhere([
+            'id' => $this->id,
+            'tool_id' => $this->tool_id,
+        ]);
+
+        $query->andFilterWhere(['like', 'input_name', $this->input_name])
+            ->andFilterWhere(['like', 'input_type', $this->input_type]);
+
+        return $dataProvider;
+    }
+}
