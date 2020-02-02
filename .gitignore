@@ -33,7 +33,3 @@ tests/_support/_generated
 /.vagrant
 
 /assets/checklists
-
-/config/db.php
-/config/reportingdb.php
-/config/wdlearningdb.php
