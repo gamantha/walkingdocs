@@ -4,7 +4,7 @@ return [
     'class' => 'yii\db\Connection',
     'dsn' => 'mysql:host=localhost;dbname=walkingdocs_learning',
     'username' => 'root',
-    'password' => '#root123',
+    'password' => '',
     'charset' => 'utf8',
 
     // Schema cache options (for production environment)
