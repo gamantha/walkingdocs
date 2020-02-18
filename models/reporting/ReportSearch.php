@@ -17,8 +17,8 @@ class ReportSearch extends Report
     public function rules()
     {
         return [
-            [['id', 'report_template_id', 'facility_id', 'author_id'], 'integer'],
-            [['report_name', 'report_period', 'report_date', 'author_name', 'created_at', 'updated_at'], 'safe'],
+            [['id', 'report_template_id', 'facility_id'], 'integer'],
+            [['report_name', 'author_name', 'report_date', 'report_period', 'meta', 'created_at', 'modified_at'], 'safe'],
         ];
     }
 
@@ -60,16 +60,16 @@ class ReportSearch extends Report
         $query->andFilterWhere([
             'id' => $this->id,
             'report_template_id' => $this->report_template_id,
-            'report_date' => $this->report_date,
             'facility_id' => $this->facility_id,
-            'author_id' => $this->author_id,
+            'report_date' => $this->report_date,
             'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            'modified_at' => $this->modified_at,
         ]);
 
         $query->andFilterWhere(['like', 'report_name', $this->report_name])
+            ->andFilterWhere(['like', 'author_name', $this->author_name])
             ->andFilterWhere(['like', 'report_period', $this->report_period])
-            ->andFilterWhere(['like', 'author_name', $this->author_name]);
+            ->andFilterWhere(['like', 'meta', $this->meta]);
 
         return $dataProvider;
     }

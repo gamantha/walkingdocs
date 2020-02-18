@@ -24,19 +24,19 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'report_name') ?>
 
-    <?= $form->field($model, 'report_period') ?>
+    <?= $form->field($model, 'facility_id') ?>
 
-    <?= $form->field($model, 'report_date') ?>
+    <?= $form->field($model, 'author_name') ?>
 
-    <?php // echo $form->field($model, 'facility_id') ?>
+    <?php // echo $form->field($model, 'report_date') ?>
 
-    <?php // echo $form->field($model, 'author_id') ?>
+    <?php // echo $form->field($model, 'report_period') ?>
 
-    <?php // echo $form->field($model, 'author_name') ?>
+    <?php // echo $form->field($model, 'meta') ?>
 
     <?php // echo $form->field($model, 'created_at') ?>
 
-    <?php // echo $form->field($model, 'updated_at') ?>
+    <?php // echo $form->field($model, 'modified_at') ?>
 
     <div class="form-group">
         <?= Html::submitButton(Yii::t('app', 'Search'), ['class' => 'btn btn-primary']) ?>

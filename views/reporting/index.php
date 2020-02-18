@@ -1,5 +1,6 @@
 <?php
 
+use yii\helpers\Url;
 use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\widgets\Pjax;
@@ -40,15 +41,27 @@ $this->params['breadcrumbs'][] = $this->title;
 
 //            ['class' => 'yii\grid\ActionColumn'],
             ['class' => 'yii\grid\ActionColumn',
+                    'urlCreator' => function ($action, $model, $key, $index) {
+        return Url::to([$action . $model->reportTemplate->template_code, 'id' => $model->id]);
+    },
                 'header' => 'Action',
-                'template' => '{fill} {view} {delete}',
+                'template' => '{view} {delete}',
                 'buttons' => [
 
                     'fill' => function ($url, $model) {
 
-                        return Html::a('<span class="glyphicon glyphicon-pencil"></span>', $url, [
+                        return Html::a('<span class="glyphicon glyphicon-pencil"></span>', $url . 'lb1', [
 
                             'title' => Yii::t('app', 'Fill'),
+
+                        ]);
+
+                    },
+                    'view' => function ($url, $model) {
+
+                        return Html::a('<span class="glyphicon glyphicon-eye-open"></span>', $url, [
+
+                            'title' => Yii::t('app', 'View'),
 
                         ]);
 

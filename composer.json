@@ -29,7 +29,13 @@
         "andig/php-shunting-yard": "^1.0",
       "ext-json": "*",
         "yiisoft/yii2-bootstrap4": "^2.0",
-        "kartik-v/yii2-grid": "^3.3"
+        "kartik-v/yii2-grid": "^3.3",
+        "kartik-v/yii2-editable": "^1.7",
+        "kartik-v/yii2-datecontrol": "^1.9",
+        "aws/aws-sdk-php": "^3.133",
+        "pmill/aws-cognito": "^0.2.11",
+        "kartik-v/yii2-mpdf": "^1.0",
+      "ext-http": "*"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.1.0",

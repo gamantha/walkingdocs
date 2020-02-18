@@ -1,45 +1,53 @@
 <?php
 
+//use yii\grid\GridView;
+use kartik\grid\GridView;
 use yii\helpers\Html;
 use yii\widgets\DetailView;
+use yii\widgets\Pjax;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\reporting\Report */
 
-$this->title = $model->id;
+$this->title = $model->report_name;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Reports'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
+
+
+
+
+
+
 ?>
 <div class="report-view">
 
-    <h1><?= Html::encode($this->title) ?></h1>
-disini tabel lb1
-    <p>
-        <?= Html::a(Yii::t('app', 'Update'), ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a(Yii::t('app', 'Delete'), ['delete', 'id' => $model->id], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => Yii::t('app', 'Are you sure you want to delete this item?'),
-                'method' => 'post',
-            ],
-        ]) ?>
-    </p>
+
+
+
 
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
-            'id',
-            'report_template_id',
             'report_name',
-            'report_period',
             'report_date',
-            'facility_id',
-            'author_id',
+            'report_period',
             'author_name',
-            'created_at',
-            'updated_at',
         ],
+    ]) ?>
+    <?php
+
+
+
+    ?>
+    <?= Html::a(Yii::t('app', 'Update'), ['update', 'id' => $model->id], ['class' => 'btn btn-warning']) ?>
+    <?= Html::a(Yii::t('app', 'Additional Info'), ['extrainfo', 'id' => $model->id], ['class' => 'btn btn-warning']) ?>
+    <br/><hr/>
+
+
+    <?= $this->render('_' . $model->reportTemplate->template_code, [
+        'model' => $model,
+        'dataProvider' => $dataProvider,
     ]) ?>
 
 </div>
