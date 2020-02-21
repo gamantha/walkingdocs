@@ -294,6 +294,12 @@ class ReportingController extends Controller
         ]);
     }
 
+    public function actionTest() {
+        $data = Lb1Data::find()->andWhere(['id' => '42'])->asArray()->One();
+        $data1 = array_keys($data);
+        echo '<pre>';
+        print_r($data1);
+    }
     public function actionTabletest() {
 
         if ($_POST) {

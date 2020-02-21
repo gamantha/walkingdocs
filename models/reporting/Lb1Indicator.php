@@ -12,6 +12,7 @@ use Yii;
  * @property string|null $display_text
  * @property string|null $display_text_alt
  * @property string|null $code
+ * @property string|null $icd10
  *
  * @property Lb1Datum[] $lb1Data
  */
@@ -39,7 +40,7 @@ class Lb1Indicator extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['indicator_name', 'display_text', 'display_text_alt', 'code'], 'string', 'max' => 255],
+            [['indicator_name', 'display_text', 'display_text_alt', 'code', 'icd10'], 'string', 'max' => 255],
         ];
     }
 
@@ -54,6 +55,7 @@ class Lb1Indicator extends \yii\db\ActiveRecord
             'display_text' => Yii::t('app', 'Display Text'),
             'display_text_alt' => Yii::t('app', 'Display Text Alt'),
             'code' => Yii::t('app', 'Code'),
+            'icd10' => Yii::t('app', 'Icd10'),
         ];
     }
 
