@@ -35,7 +35,7 @@
         "aws/aws-sdk-php": "^3.133",
         "pmill/aws-cognito": "^0.2.11",
         "kartik-v/yii2-mpdf": "^1.0",
-      "ext-http": "*"
+        "monolog/monolog": "^2.0"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.1.0",

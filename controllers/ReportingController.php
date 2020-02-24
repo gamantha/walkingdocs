@@ -20,7 +20,9 @@ use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use app\models\reporting\Bpjstemplate;
 use yii\grid\GridView;
-
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
+use Monolog\Formatter\JsonFormatter;
 use Aws\CognitoIdentity\CognitoIdentityClient;
 
 use Aws\Exception\AwsException;
@@ -90,7 +92,7 @@ class ReportingController extends Controller
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
             'pagination' => [
-                'pageSize' => 1000,
+                'pageSize' => 100,
             ],
             'sort' => [
                 'defaultOrder' => [
@@ -100,6 +102,20 @@ class ReportingController extends Controller
 
         $model = $this->findModel($id);
 
+
+// create a log channel
+        $log = new Logger('walkingdocs_channel');
+
+// create a Json formatter
+        $formatter = new JsonFormatter();
+
+// create a handler
+        $stream = new StreamHandler('../runtime/logs/application-json.log', Logger::DEBUG);
+        $stream->setFormatter($formatter);
+
+// bind
+        $log->pushHandler($stream);
+        $log->info('Rendering Viewlb1', array('username' => Yii::$app->user->id));
         return $this->render('view', [
             'model' => $this->findModel($id),
             'dataProvider' => $dataProvider,
