@@ -15,6 +15,8 @@ use yii\widgets\Pjax;
 /* @var $model app\models\reporting\Report */
 /* @var $form yii\widgets\ActiveForm */
 
+
+$this->registerCss(".container { width: 100%; }");
 $gridColumns = [
     [
         'class' => 'kartik\grid\SerialColumn',
@@ -44,6 +46,7 @@ $gridColumns = [
     ],
     [
         'label' => 'Indikator',
+        'header' => false,
         'value' => function($model) {
             return $model->indicator->indicator_name;
         }
@@ -51,6 +54,7 @@ $gridColumns = [
     ],
     [
          'label' => 'ICD10',
+        'header' => false,
         'value' => function($model) {
             return $model->indicator->icd10;
         }
@@ -876,7 +880,8 @@ $gridColumns = [
         'beforeHeader'=>[
             [
                 'columns'=>[
-                    ['content'=>'', 'options'=>['colspan'=>2, 'rowspan' => 2, 'class'=>'text-center warning']],
+                  //  ['content'=>'Indikator', 'options'=>['colspan'=>2, 'rowspan' => 3, 'class'=>'text-center warning']],
+                    ['content'=>'', 'options'=>['colspan'=>3, 'rowspan' => 2, 'class'=>'text-center warning']],
                     ['content'=>'0-7 hari', 'options'=>['colspan'=>4, 'class'=>'text-center warning']],
                     ['content'=>'8-28 hari', 'options'=>['colspan'=>4, 'class'=>'text-center warning']],
                     ['content'=>'1-11 bln', 'options'=>['colspan'=>4, 'class'=>'text-center warning']],
