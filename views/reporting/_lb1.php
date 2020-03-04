@@ -3,6 +3,7 @@
 use yii\data\ArrayDataProvider;
 use yii\db\Query;
 use yii\helpers\Html;
+use yii\web\View;
 use yii\widgets\ActiveForm;
 use yii\data\ActiveDataProvider;
 use kartik\grid\GridView;
@@ -11,9 +12,11 @@ use app\models\reporting\Lb1;
 use kartik\editable\Editable;
 use yii\widgets\Pjax;
 
+
 /* @var $this yii\web\View */
 /* @var $model app\models\reporting\Report */
 /* @var $form yii\widgets\ActiveForm */
+
 
 
 $this->registerCss(".container { width: 100%; }");
@@ -62,6 +65,7 @@ $gridColumns = [
     ],
     [
         'class' => 'kartik\grid\EditableColumn',
+       // 'refreshGrid' => true,
         'attribute' => 'n_m_0d7d',
         'header' => 'L',
         'editableOptions' => [
@@ -803,6 +807,22 @@ $gridColumns = [
         'pageSummary' => true
     ],
     [
+        'class' => 'kartik\grid\FormulaColumn',
+        'header' => 'Buy + Sell<br>(BS)',
+        'vAlign' => 'middle',
+        'value' => function ($model, $key, $index, $widget) {
+            $p = compact('model', 'key', 'index');
+            return $widget->col(7, $p) + $widget->col(9, $p);
+        },
+        'headerOptions' => ['class' => 'kartik-sheet-style'],
+        'hAlign' => 'right',
+        'width' => '7%',
+       // 'format' => ['decimal', 2],
+        'mergeHeader' => true,
+        'pageSummary' => true,
+        'footer' => true
+    ],
+    [
         'header' => 'KB L',
         'value' => function($data) {
     $array = \app\models\reporting\Lb1Data::find()->andWhere(['id' => $data->id])->asArray()->One();
@@ -866,10 +886,7 @@ $gridColumns = [
 ?>
 
 <div class="report-form">
-
-
-
-    <?php Pjax::begin(); ?>
+    <?php Pjax::begin(['id' => 'lb1-grid']); ?>
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
@@ -933,8 +950,15 @@ $gridColumns = [
         'export' => [
             'fontAwesome' => true
         ],
+
         'condensed' =>true,
         'columns' => $gridColumns,
+            'pjax'=>true,
+    'pjaxSettings'=>[
+        'neverTimeout'=>true,
+        'beforeGrid'=>'My fancy content before.',
+        'afterGrid'=>'My fancy content after.',
+    ],
         'exportConfig' => [
             GridView::EXCEL => [
             ],
@@ -945,8 +969,19 @@ $gridColumns = [
             'heading' => "<i class=\"fas fa-book\"></i>  Laporan Bulanan 1",
         ],
     ]); ?>
+
     <?php Pjax::end(); ?>
 
+    <?php
 
+
+    $js=<<<js
+$.pjax.reload({container: '#lb1-grid', async: false});
+js;
+    $this->registerJs($js);
+
+
+
+    ?>
 
 </div>
