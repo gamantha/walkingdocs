@@ -37,6 +37,7 @@ $config = [
                 ],
             ],
         'request' => [
+            'enableCsrfValidation' => false,
             'parsers' => [
                 'application/json' => 'yii\web\JsonParser',
             ],
