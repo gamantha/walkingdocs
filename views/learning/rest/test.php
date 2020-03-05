@@ -28,7 +28,8 @@ $script2 = '
 
 var simple_chart_config = {
 	chart: {
-		container: "#OrganiseChart-simple"
+		container: "#OrganiseChart-simple",
+		rootOrientation: "WEST",
 	},
 	nodeStructure: {
 			text: { name: "ALL" },

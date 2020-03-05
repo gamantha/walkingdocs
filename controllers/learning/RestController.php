@@ -92,7 +92,28 @@ class RestController extends \yii\web\Controller
 
 
 
-
+    public function actionEncode() {
+        $string = '{
+            "type": "equation_and",
+            "items": [{
+                "type": "equation_any",
+                "codes": ["Asthma symptom"]
+            }, {
+                "type": "equation_or",
+                "items": [{
+                    "type": "equation_any",
+                    "codes": ["Asthma history"]
+                }, {
+                    "type": "equation_any",
+                    "codes": ["Asthma trigger"]
+                }]
+            }, {
+                "type": "equation_any",
+                "codes": ["Prolonged expiration", "Wheeze", "Decreased breath sounds"]
+            }]}';
+        $obj = json_decode($string);
+        echo(urlencode($string));
+    }
 
     public function actionTree() {
         $request = Yii::$app->request;
