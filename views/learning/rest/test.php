@@ -81,11 +81,12 @@ var simple_chart_config = {
 	}
 };
 var c= \'{"text":{"name":"equation_xor"},"children":[{"text":{"name":"equation_and"},"children":[{"text":{"name":"equation_xor"},"children":[{"text":{"name":"equation_all"},"children":[{"text":{"name":"Beta-agonist 1"}}]},{"text":{"name":"equation_all"},"children":[{"text":{"name":"Beta-agonist 2"}}]},{"text":{"name":"equation_all"},"children":[{"text":{"name":"Beta-agonist 3"}}]},{"text":{"name":"equation_all"},"children":[{"text":{"name":"Beta-agonist 4"}}]},{"text":{"name":"equation_all"},"children":[{"text":{"name":"Beta-agonist 5"}}]},{"text":{"name":"equation_all"},"children":[{"text":{"name":"Beta-agonist 6"}}]}]},{"text":{"name":"equation_xor"},"children":[{"text":{"name":"equation_all"},"children":[{"text":{"name":"Corticosteroid 1"}}]},{"text":{"name":"equation_all"},"children":[{"text":{"name":"Corticosteroid 2"}}]},{"text":{"name":"equation_all"},"children":[{"text":{"name":"Corticosteroid 3"}}]}]},{"item":{"type":"equation_any","codes":["Adjunct asthma medicine"]},"text":{"name":"equation_not"}}]},{"text":{"name":"equation_and"},"children":[{"text":{"name":"equation_any"},"children":[{"text":{"name":"Severe disease sign"}}]},{"text":{"name":"equation_xor"},"children":[{"text":{"name":"equation_all"},"children":[{"text":{"name":"Beta-agonist 1"}}]},{"text":{"name":"equation_all"},"children":[{"text":{"name":"Beta-agonist 2"}}]},{"text":{"name":"equation_all"},"children":[{"text":{"name":"Beta-agonist 3"}}]},{"text":{"name":"equation_all"},"children":[{"text":{"name":"Beta-agonist 4"}}]},{"text":{"name":"equation_all"},"children":[{"text":{"name":"Beta-agonist 5"}}]},{"text":{"name":"equation_all"},"children":[{"text":{"name":"Beta-agonist 6"}}]}]},{"text":{"name":"equation_xor"},"children":[{"text":{"name":"equation_all"},"children":[{"text":{"name":"Corticosteroid 1"}}]},{"text":{"name":"equation_all"},"children":[{"text":{"name":"Corticosteroid 2"}}]},{"text":{"name":"equation_all"},"children":[{"text":{"name":"Corticosteroid 3"}}]}]},{"text":{"name":"equation_or"},"children":[{"text":{"name":"equation_any"},"children":[{"text":{"name":"Terbutaline"}}]},{"text":{"name":"equation_any"},"children":[{"text":{"name":"Magnesium"}}]}]}]}]}\';
-simple_chart_config.nodeStructure = JSON.parse(c); 
+var d = \''.json_encode($json_object).'\';
+simple_chart_config.nodeStructure = JSON.parse(d); 
 new Treant( simple_chart_config );
 ';
 
-$script3 = "alert('makan');";
+
 $this->registerJs(
     $script2,
     View::POS_READY
