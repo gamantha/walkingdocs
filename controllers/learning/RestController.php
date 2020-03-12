@@ -1,11 +1,28 @@
 <?php
 
 namespace app\controllers\learning;
+use app\models\learning\Feedback;
 use Yii;
+use yii\filters\VerbFilter;
+use yii\web\Response;
 use Nahid\JsonQ\Jsonq;
 
 class RestController extends \yii\web\Controller
 {
+    public function behaviors()
+    {
+        return [
+            [
+                'class' => 'yii\filters\ContentNegotiator',
+                'only' => ['stats'],
+                'formats' => [
+                    'application/json' => Response::FORMAT_JSON
+                ],
+
+            ],
+        ];
+    }
+
     public function actionIndex()
     {
         return $this->render('index');
@@ -30,6 +47,30 @@ class RestController extends \yii\web\Controller
         //return $files[0];
         return \Yii::$app->response->sendFile(  $appPath . '/assets/checklists/' . $files[0]);
     }
+
+    public function actionPostfeedback()
+    {
+        $appPath = Yii::getAlias('@app');
+if ($_POST) {
+$feedback = new Feedback();
+$feedback->message = $_POST['message'];
+$feedback->email = $_POST['email'];
+$feedback->phone = $_POST['phone'];
+$feedback->status = 'new';
+if ($feedback->save()) {
+    echo 'success';
+} else {
+    echo 'feedback failed to save';
+}
+} else {
+    return 'not allowed';
+}
+//        $files = scandir($appPath . '/assets/checklists', 1);
+//        //return $files[0];
+//        return \Yii::$app->response->sendFile(  $appPath . '/assets/checklists/' . $files[0]);
+    }
+
+
 
     public function deEquation($string) {
         $ret = str_replace('equation_', '', $string);

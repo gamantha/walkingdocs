@@ -83,6 +83,11 @@ $config = [
                     'GET pendaftaran' => 'pendaftaran/regisdadsatration',
                 ],
                     ],
+                ['class' => 'yii\rest\UrlRule', 'controller' => 'rest',
+                    'extraPatterns' => [
+                        'POST postfeedback' => 'postfeedback',
+                    ],
+                ],
             ],
         ],
 
