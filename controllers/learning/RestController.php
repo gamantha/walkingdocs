@@ -85,112 +85,12 @@ if ($feedback->save()) {
         return $ret;
     }
 
-    public function actionTest() {
-        $test = '{
-            "type": "equation_xor",
-            "items": [{
-                "type": "equation_and",
-                "items": [{
-                    "type": "equation_xor",
-                    "items": [{
-                        "type": "equation_all",
-                        "codes": ["Beta-agonist 1"]
-                    }, {
-                        "type": "equation_all",
-                        "codes": ["Beta-agonist 2"]
-                    }, {
-                        "type": "equation_all",
-                        "codes": ["Beta-agonist 3"]
-                    }, {
-                        "type": "equation_all",
-                        "codes": ["Beta-agonist 4"]
-                    }, {
-                        "type": "equation_all",
-                        "codes": ["Beta-agonist 5"]
-                    }, {
-                        "type": "equation_all",
-                        "codes": ["Beta-agonist 6"]
-                    }]
-                }, {
-                    "type": "equation_xor",
-                    "items": [{
-                        "type": "equation_all",
-                        "codes": ["Corticosteroid 1"]
-                    }, {
-                        "type": "equation_all",
-                        "codes": ["Corticosteroid 2"]
-                    }, {
-                        "type": "equation_all",
-                        "codes": ["Corticosteroid 3"]
-                    }]
-                }, {
-                    "type": "equation_not",
-                    "item": {
-                        "type": "equation_any",
-                        "codes": ["Adjunct asthma medicine"]
-                    }
-                }]
-            }, {
-                "type": "equation_and",
-                "items": [{
-                    "type": "equation_any",
-                    "codes": ["Severe disease sign"]
-                }, {
-                    "type": "equation_xor",
-                    "items": [{
-                        "type": "equation_all",
-                        "codes": ["Beta-agonist 1"]
-                    }, {
-                        "type": "equation_all",
-                        "codes": ["Beta-agonist 2"]
-                    }, {
-                        "type": "equation_all",
-                        "codes": ["Beta-agonist 3"]
-                    }, {
-                        "type": "equation_all",
-                        "codes": ["Beta-agonist 4"]
-                    }, {
-                        "type": "equation_all",
-                        "codes": ["Beta-agonist 5"]
-                    }, {
-                        "type": "equation_all",
-                        "codes": ["Beta-agonist 6"]
-                    }]
-                }, {
-                    "type": "equation_xor",
-                    "items": [{
-                        "type": "equation_all",
-                        "codes": ["Corticosteroid 1"]
-                    }, {
-                        "type": "equation_all",
-                        "codes": ["Corticosteroid 2"]
-                    }, {
-                        "type": "equation_all",
-                        "codes": ["Corticosteroid 3"]
-                    }]
-                }, {
-                    "type": "equation_or",
-                    "items": [{
-                        "type": "equation_any",
-                        "codes": ["Terbutaline"]
-                    }, {
-                        "type": "equation_any",
-                        "codes": ["Magnesium"]
-                    }]
-                }]
-            }]
-        }';
-
-        $json_object = json_decode($test);
-        print_r(json_encode($json_object));
-    }
 
     public function collapseNodes(&$equation) {
-
+/** collapse NOT and collapse Single     */
         if (is_array($equation)) {
             foreach ($equation as $eq) {
                 if (key_exists('children', $eq)) {
-
                     if (sizeof($eq->children) == 1) {
 /** find sub children */
                         if (key_exists('children', $eq->children[0])) {
@@ -198,45 +98,35 @@ if ($feedback->save()) {
                             if ($eq->text['name'] == 'not') {
                                 $eq->text['name'] = 'not ' . $eq->children[0]->text['name'];
                             } else {
-
                                 /** collapseSingle = true, // this collapses nodes that only have one child into a single node: THING -> CHILD turns into CHILD */
                                 $eq->text['name'] = $eq->children[0]->text['name'];
                             }
-//                            echo $eq->text['name'];
-//                            echo '<br/>';
                             $eq->children = $eq->children[0]->children;
-                            $collapsesinglenodes = true;
+                            $collapsesinglenodes = false;
                             if ($collapsesinglenodes) {
-                                $eq->text['name'] = $eq->text['name'] . ' '.$eq->children[0]['text']['name'];
-                                unset($eq->children);
+//                                echo $eq->text['name'] . '<br/>';
+//                                $eq->text['name'] = $eq->text['name'] . ' '.$eq->children[0]['text']['name'];
+//                                $eq->text['name'] = $eq->text['name'] . ' ' . $eq->children[0]->text['name']; // buattest
+                                $this->collapseNodes($eq->children);
+//                                unset($eq->children);
                             } else {
                                 $this->collapseNodes($eq->children);
                             }
-
-
                         } else {
             /** no more subchildren */
 //                            echo sizeof($eq->children[0]);
                             $eq->text['name'] = $eq->children[0]['text']['name'];
 //                            unset($eq->children[0]->children);
-
                             unset($eq->children);
-
                         }
-
-
                     } else {
 //                        echo 're ' . sizeof($eq->children);
 //                        print_r($eq->text);
                         $this->collapseNodes($eq->children);
                     }
-
-
-                } else {
-
                 }
             }
-        } else {
+        } else { //IF equation is not array
             if (key_exists('children', $equation)) {
 
                 if (sizeof($equation->children) == 1) {
@@ -263,11 +153,41 @@ if ($feedback->save()) {
 
         return $name;
     }
+
+    public function itemsToChildren($equation) {
+        if (is_array($equation)) {
+            foreach ($equation as $eq) {
+
+                if (key_exists('items', $eq)) {
+                    $eq->children = $eq->items;
+                unset($eq->items);
+                    $this->itemsToChildren($eq->children);
+                }  else if (key_exists('item', $eq)) {
+                $eq->children = [];
+                array_push( $eq->children, $eq->item);
+                unset($eq->item);
+                    $this->itemsToChildren($eq->children);
+                }
+            }
+        } else { //IF equation is not array
+
+            if (key_exists('items', $equation)) {
+            $equation->children = $equation->items;
+            unset($equation->items);
+                $this->itemsToChildren($equation->children);
+
+            } else {
+                return;
+            }
+        }
+
+
+    }
     public function traverseItems(&$equation) {
 
-
     if (is_array($equation)) {
-
+        $comparator = null;
+        $flag = 0;
 
         foreach ($equation as $eq) {
             if (key_exists('type', $eq)) {
@@ -277,46 +197,36 @@ if ($feedback->save()) {
             }
             if (key_exists('items', $eq)) {
 
-                if(sizeof($eq->items) == 1) {
-
-                } else {
-
-                }
-                    $eq->children = $eq->items;
-
-
-                unset($eq->items);
-                $this->traverseItems($eq->children);
+//                    $eq->children = $eq->items;
+//                unset($eq->items);
+                $this->traverseItems($eq->items);
             } else if (key_exists('codes', $eq)) {
                 $eq->children = [];
                 foreach ($eq->codes as $code) {
                     $temp['text']['name'] = $this->removeTrailingNumber($code);
                     array_push($eq->children, $temp);
                 }
-
-
                 unset($eq->codes);
 
             } else if (key_exists('item', $eq)) {
-                $eq->children = [];
-                array_push( $eq->children, $eq->item);
-                unset($eq->item);
-                $this->traverseItems($eq->children);
+//                $eq->children = [];
+//                array_push( $eq->children, $eq->item);
+//                unset($eq->item);
+                $this->traverseItems($eq->item);
             } else {
                // return;
             }
         }
-    } else {
+    } else { //IF equation is not array
         if (key_exists('type', $equation)) {
-
             $equation->text['name'] = $this->deEquation($equation->type);
             unset($equation->type);
         }
         //if $equation is not yet array
         if (key_exists('items', $equation)) {
-            $equation->children = $equation->items;
-            unset($equation->items);
-            $this->traverseItems($equation->children);
+//            $equation->children = $equation->items;
+//            unset($equation->items);
+            $this->traverseItems($equation->items);
 
         }
         else if (key_exists('codes', $equation)) {
@@ -328,8 +238,7 @@ if ($feedback->save()) {
 
             unset($equation->codes);
 
-        }
-        else {
+        } else {
             return;
         }
     }
@@ -348,13 +257,23 @@ if ($feedback->save()) {
         // json_de
         $json_object = json_decode($json_string);
         $this->traverseItems($json_object);
-        $this->collapseNodes($json_object);
+
+        $this->itemsToChildren($json_object);
+
+                $this->collapseNodes($json_object);
         $this->collapseCommonPrefix($json_object);
+
         return $this->renderAjax('test',[
             'json_object' => $json_object
         ]);
+
+        ob_end_clean();
+        ob_start();
         echo '<pre>';
         print_r($json_object);
+        echo '</pre>';
+
+       // return;
 
     }
 
@@ -404,36 +323,23 @@ if ($feedback->save()) {
             $comparator = null;
             $flag = 0;
             foreach ($json_object as $eq) {
-               // echo $eq->text['name'];
             if (key_exists('children', $eq)) {
-//                echo sizeof($eq->children);
-//                echo $eq->
                 if ($name = $this->collapseCommonPrefix($eq->children))
                 {
-//                    echo 'sasa<br/>';
                     $eq->text['name'] = $eq->text['name'] . ' ' . $name;
-                } else {
-//                    echo '00000<br/>';
                 }
 
                 } else {
                 // no more sub-children
                         if(is_array($eq)) {
-//                            echo 'array :' . $eq['text']['name'];
                         } else {
-                           // echo $eq->text['name'];
                             if (is_null($comparator)) {
                                 $comparator = $eq->text['name'];
                             } else if ($comparator != $eq->text['name']) {
-                                //echo 'difference';
                             } else {
                                 $flag = 1;
                             }
-
-
                         }
-//                echo $eq->text['name'];
-//                                echo '<br/>';
             }
 
             }
@@ -445,11 +351,7 @@ if ($feedback->save()) {
                 return $json_object->text['name'];
             }
         } else {
-//            echo 'not array';
             if (key_exists('children', $json_object)) {
-                //echo "andrea<br/>";
-              //  $equation->children = $equation->items;
-                //unset($equation->items);
                 $this->collapseCommonPrefix($json_object->children);
 
             }
