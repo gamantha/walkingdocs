@@ -1,13 +1,6 @@
 name: PHP Composer
 
-services:
-  mysql:
-    image: mysql:5.7
-    env:
-      MYSQL_ALLOW_EMPTY_PASSWORD: yes
-      MYSQL_DATABASE: yii2_basic_tests
-    ports:
-      - 3306
+
 on:
   push:
     branches: [ master ]
@@ -15,6 +8,23 @@ on:
     branches: [ master ]
 
 jobs:
+  yii:
+    name: Yii2 (PHP ${{ matrix.php-versions }})
+    env:
+      DB_USERNAME: root
+      DB_PASSWORD:
+      TEST_DB_USERNAME: root
+      TEST_DB_PASSWORD:
+      DB_CHARSET: utf8
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: yes
+          MYSQL_DATABASE: yii2_basic_tests
+          MYSQL_ROOT_PASSWORD: root
+        ports:
+          - 3306/tcp
   build:
 
     runs-on: ubuntu-latest
