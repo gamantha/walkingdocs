@@ -1,6 +1,6 @@
 <?php
 
-class LoginFormCest
+class RestCest
 {
     public function _before(\FunctionalTester $I)
     {
@@ -11,14 +11,6 @@ class LoginFormCest
     {
         $I->see('Login', 'h1');
 
-    }
-
-    // demonstrates `amLoggedInAs` method
-    public function internalLoginById(\FunctionalTester $I)
-    {
-        $I->amLoggedInAs(1);
-        $I->amOnPage('/');
-        $I->see('Logout (admin)');
     }
 
     // demonstrates `amLoggedInAs` method
@@ -55,5 +47,10 @@ class LoginFormCest
         ]);
         $I->see('Logout (admin)');
         $I->dontSeeElement('form#login-form');              
+    }
+
+    public function openTree(\FunctionalTester $I)
+    {
+
     }
 }
