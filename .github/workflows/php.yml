@@ -22,7 +22,7 @@ jobs:
         env:
           MYSQL_ALLOW_EMPTY_PASSWORD: yes
           MYSQL_DATABASE: yii2_basic_tests
-          MYSQL_ROOT_PASSWORD: root
+          MYSQL_ROOT_PASSWORD:
         ports:
           - 3306/tcp
     runs-on: ubuntu-latest
