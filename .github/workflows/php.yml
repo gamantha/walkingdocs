@@ -24,4 +24,4 @@ jobs:
     # Docs: https://getcomposer.org/doc/articles/scripts.md
 
      - name: Run test suite
-       run: vendor\bin\codecept run functional
+       run: php vendor\bin\codecept run functional
