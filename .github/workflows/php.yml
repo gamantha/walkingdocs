@@ -50,4 +50,4 @@ jobs:
     - name: Run test suite
       run: |
         vendor/bin/codecept build
-        vendor/bin/codecept run functional
+        vendor/bin/codecept run unit
