@@ -24,7 +24,8 @@ jobs:
           MYSQL_DATABASE: yii2_basic_tests
           MYSQL_ROOT_PASSWORD: root
         ports:
-          - 3306/tcp
+          - 32574:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
     runs-on: ubuntu-latest
 
     steps:
@@ -38,6 +39,11 @@ jobs:
 
     - name: Install dependencies
       run: composer install --prefer-dist --no-progress --no-suggest
+
+    - name: Verify MySQL connection from host
+      run: |
+        sudo apt-get install -y mysql-client
+        mysql --host 127.0.0.1 --port 32574 -uroot -proot -e "SHOW DATABASES"
 
     # Add a test script to composer.json, for instance: "test": "vendor/bin/phpunit"
     # Docs: https://getcomposer.org/doc/articles/scripts.md
