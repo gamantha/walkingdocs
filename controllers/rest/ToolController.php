@@ -97,7 +97,12 @@ class ToolController extends ActiveController
         $ctx->def('abs'); // wrapper for PHP "abs" function
         $ctx->def('sqrt');
         $ctx->def('pow');
-
+        $ctx->def('fmod');
+        $ctx->def('max');
+        $ctx->def('min');
+        $ctx->def('round');
+        $ctx->def('floor');
+        $ctx->def('ceil');
         foreach ($outputs as $output)
         {
             $output_type = $output->output_type;
