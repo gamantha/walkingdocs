@@ -4,8 +4,11 @@ namespace app\controllers\learning;
 use app\models\learning\Feedback;
 use Yii;
 use yii\filters\VerbFilter;
+use yii\helpers\Json;
 use yii\web\Response;
 use Nahid\JsonQ\Jsonq;
+
+USE Flow\JSONPath\JSONPath;
 
 class RestController extends \yii\web\Controller
 {
@@ -45,34 +48,34 @@ class RestController extends \yii\web\Controller
 
         $files = scandir($appPath . '/assets/checklists', 1);
         //return $files[0];
-        return \Yii::$app->response->sendFile(  $appPath . '/assets/checklists/' . $files[0]);
+        return \Yii::$app->response->sendFile($appPath . '/assets/checklists/' . $files[0]);
     }
 
     public function actionPostfeedback()
     {
         $appPath = Yii::getAlias('@app');
-if ($_POST) {
-$feedback = new Feedback();
-$feedback->message = $_POST['message'];
-$feedback->email = $_POST['email'];
-$feedback->phone = $_POST['phone'];
-$feedback->status = 'new';
-if ($feedback->save()) {
-    echo 'success';
-} else {
-    echo 'feedback failed to save';
-}
-} else {
-    return 'not allowed';
-}
+        if ($_POST) {
+            $feedback = new Feedback();
+            $feedback->message = $_POST['message'];
+            $feedback->email = $_POST['email'];
+            $feedback->phone = $_POST['phone'];
+            $feedback->status = 'new';
+            if ($feedback->save()) {
+                echo 'success';
+            } else {
+                echo 'feedback failed to save';
+            }
+        } else {
+            return 'not allowed';
+        }
 //        $files = scandir($appPath . '/assets/checklists', 1);
 //        //return $files[0];
 //        return \Yii::$app->response->sendFile(  $appPath . '/assets/checklists/' . $files[0]);
     }
 
 
-
-    public function deEquation($string) {
+    public function deEquation($string)
+    {
         $ret = str_replace('equation_', '', $string);
 
         if ($ret == 'xor') {
@@ -86,13 +89,14 @@ if ($feedback->save()) {
     }
 
 
-    public function collapseNodes(&$equation) {
-/** collapse NOT and collapse Single     */
+    public function collapseNodes(&$equation)
+    {
+        /** collapse NOT and collapse Single     */
         if (is_array($equation)) {
             foreach ($equation as $eq) {
                 if (key_exists('children', $eq)) {
                     if (sizeof($eq->children) == 1) {
-/** find sub children */
+                        /** find sub children */
                         if (key_exists('children', $eq->children[0])) {
                             /** collapseNot : this collapses nodes that are NOT -> THING into one node that is called NOT THING */
                             if ($eq->text['name'] == 'not') {
@@ -113,7 +117,7 @@ if ($feedback->save()) {
                                 $this->collapseNodes($eq->children);
                             }
                         } else {
-            /** no more subchildren */
+                            /** no more subchildren */
 //                            echo sizeof($eq->children[0]);
                             $eq->text['name'] = $eq->children[0]['text']['name'];
 //                            unset($eq->children[0]->children);
@@ -133,7 +137,7 @@ if ($feedback->save()) {
                     //echo 'nina';
                 } else {
                     //echo sizeof($equation->children);
-                   // print_r($equation->children);
+                    // print_r($equation->children);
                 }
 
                 $this->collapseNodes($equation->children);
@@ -142,7 +146,8 @@ if ($feedback->save()) {
 
     }
 
-    public function removeTrailingNumber($name) {
+    public function removeTrailingNumber($name)
+    {
         $arr = explode(" ", $name);
         if (sizeof($arr) > 0) {
             if (is_numeric($arr[sizeof($arr) - 1])) {
@@ -154,26 +159,27 @@ if ($feedback->save()) {
         return $name;
     }
 
-    public function itemsToChildren($equation) {
+    public function itemsToChildren($equation)
+    {
         if (is_array($equation)) {
             foreach ($equation as $eq) {
 
                 if (key_exists('items', $eq)) {
                     $eq->children = $eq->items;
-                unset($eq->items);
+                    unset($eq->items);
                     $this->itemsToChildren($eq->children);
-                }  else if (key_exists('item', $eq)) {
-                $eq->children = [];
-                array_push( $eq->children, $eq->item);
-                unset($eq->item);
+                } else if (key_exists('item', $eq)) {
+                    $eq->children = [];
+                    array_push($eq->children, $eq->item);
+                    unset($eq->item);
                     $this->itemsToChildren($eq->children);
                 }
             }
         } else { //IF equation is not array
 
             if (key_exists('items', $equation)) {
-            $equation->children = $equation->items;
-            unset($equation->items);
+                $equation->children = $equation->items;
+                unset($equation->items);
                 $this->itemsToChildren($equation->children);
 
             } else {
@@ -183,70 +189,72 @@ if ($feedback->save()) {
 
 
     }
-    public function traverseItems(&$equation) {
 
-    if (is_array($equation)) {
-        $comparator = null;
-        $flag = 0;
+    public function traverseItems(&$equation)
+    {
 
-        foreach ($equation as $eq) {
-            if (key_exists('type', $eq)) {
-                //$eq->text = "{ name : " . $eq->type. "}";
-                $eq->text['name'] = $this->deEquation($eq->type);
-                unset($eq->type);
-            }
-            if (key_exists('items', $eq)) {
+        if (is_array($equation)) {
+            $comparator = null;
+            $flag = 0;
+
+            foreach ($equation as $eq) {
+                if (key_exists('type', $eq)) {
+                    //$eq->text = "{ name : " . $eq->type. "}";
+                    $eq->text['name'] = $this->deEquation($eq->type);
+                    unset($eq->type);
+                }
+                if (key_exists('items', $eq)) {
 
 //                    $eq->children = $eq->items;
 //                unset($eq->items);
-                $this->traverseItems($eq->items);
-            } else if (key_exists('codes', $eq)) {
-                $eq->children = [];
-                foreach ($eq->codes as $code) {
-                    $temp['text']['name'] = $this->removeTrailingNumber($code);
-                    array_push($eq->children, $temp);
-                }
-                unset($eq->codes);
+                    $this->traverseItems($eq->items);
+                } else if (key_exists('codes', $eq)) {
+                    $eq->children = [];
+                    foreach ($eq->codes as $code) {
+                        $temp['text']['name'] = $this->removeTrailingNumber($code);
+                        array_push($eq->children, $temp);
+                    }
+                    unset($eq->codes);
 
-            } else if (key_exists('item', $eq)) {
+                } else if (key_exists('item', $eq)) {
 //                $eq->children = [];
 //                array_push( $eq->children, $eq->item);
 //                unset($eq->item);
-                $this->traverseItems($eq->item);
-            } else {
-               // return;
+                    $this->traverseItems($eq->item);
+                } else {
+                    // return;
+                }
             }
-        }
-    } else { //IF equation is not array
-        if (key_exists('type', $equation)) {
-            $equation->text['name'] = $this->deEquation($equation->type);
-            unset($equation->type);
-        }
-        //if $equation is not yet array
-        if (key_exists('items', $equation)) {
+        } else { //IF equation is not array
+            if (key_exists('type', $equation)) {
+                $equation->text['name'] = $this->deEquation($equation->type);
+                unset($equation->type);
+            }
+            //if $equation is not yet array
+            if (key_exists('items', $equation)) {
 //            $equation->children = $equation->items;
 //            unset($equation->items);
-            $this->traverseItems($equation->items);
+                $this->traverseItems($equation->items);
 
-        }
-        else if (key_exists('codes', $equation)) {
-            $equation->children = [];
-            foreach ($equation->codes as $code) {
-                $temp['text']['name'] = $this->removeTrailingNumber($code);
-                array_push($equation->children, $temp);
+            } else if (key_exists('codes', $equation)) {
+                $equation->children = [];
+                foreach ($equation->codes as $code) {
+                    $temp['text']['name'] = $this->removeTrailingNumber($code);
+                    array_push($equation->children, $temp);
+                }
+
+                unset($equation->codes);
+
+            } else {
+                return;
             }
-
-            unset($equation->codes);
-
-        } else {
-            return;
         }
-    }
 
     }
 
 
-    public function actionGettree($equation) {
+    public function actionGettree($equation)
+    {
         $request = Yii::$app->request;
 
 
@@ -260,10 +268,10 @@ if ($feedback->save()) {
 
         $this->itemsToChildren($json_object);
 
-                $this->collapseNodes($json_object);
+        $this->collapseNodes($json_object);
         $this->collapseCommonPrefix($json_object);
 
-        return $this->renderAjax('test',[
+        return $this->renderAjax('test', [
             'json_object' => $json_object
         ]);
 
@@ -273,19 +281,18 @@ if ($feedback->save()) {
         print_r($json_object);
         echo '</pre>';
 
-       // return;
+        // return;
 
     }
 
 
-
-    public function actionDiagram($search,$type)
+    public function actionDiagram($search, $type)
     {
         $appPath = Yii::getAlias('@app');
 
         $files = scandir($appPath . '/assets/checklists', 1);
         $newFilePath = $appPath . '/assets/checklists/' . $files[0];
-        $rawcontent=file_get_contents($newFilePath);
+        $rawcontent = file_get_contents($newFilePath);
         $contents = json_decode($rawcontent);
 
 
@@ -295,7 +302,7 @@ if ($feedback->save()) {
                 if (property_exists($content, 'quality_checks')) {
                     foreach ($content->quality_checks as $content1) {
                         if (strpos(strtolower($content1->name), strtolower($type)) !== false) {
-                                $this->traverseItems($content1->equation);
+                            $this->traverseItems($content1->equation);
                             echo '<pre>';
                             print_r($content1->equation);
 //                           print_r(json_encode($content1->equation));
@@ -313,7 +320,41 @@ if ($feedback->save()) {
         }
 
 
-       // return $this->render('diagram');
+        // return $this->render('diagram');
+    }
+
+
+    public function actionGetquiz()
+    {
+        $appPath = Yii::getAlias('@app');
+
+        $files = scandir($appPath . '/assets/checklists', 1);
+
+        $json_content = file_get_contents($appPath . '/assets/checklists/' . $files[0]);
+
+
+        function is_json($string,$return_data = false) {
+            $data = json_decode($string);
+            return (json_last_error() == JSON_ERROR_NONE) ? ($return_data ? $data : TRUE) : FALSE;
+        }
+
+        $json_object = json_decode($json_content);
+
+//        $result = (new JSONPath($json_object))->find('$..reference'); // returns new JSONPath
+        $diff_results = (new JSONPath($json_object))->find('$..[?(@.differential_diagnosis)]'); // returns new JSONPath
+
+        foreach($diff_results as $diff_result) {
+            foreach($diff_result->differential_diagnosis as $diff_diag) {
+                echo json_encode($diff_diag->name->text) . ' ---------> ' .  $diff_result->name->text;
+    echo '<br/>';
+}
+            echo '<hr/>';
+        }
+//        echo '<pre>';
+//        print_r($diff_results);
+        //return $files[0];
+      //  return \Yii::$app->response->sendFile($appPath . '/assets/checklists/' . $files[0]);
+
     }
 
     private function collapseCommonPrefix(&$json_object)

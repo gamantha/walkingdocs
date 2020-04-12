@@ -37,7 +37,8 @@
         "kartik-v/yii2-mpdf": "^1.0",
         "monolog/monolog": "^2.0",
         "nahid/jsonq": "^5.2",
-        "lodash-php/lodash-php": "^0.0.6"
+        "lodash-php/lodash-php": "^0.0.6",
+        "flow/jsonpath": "^0.5.0"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.1.0",
