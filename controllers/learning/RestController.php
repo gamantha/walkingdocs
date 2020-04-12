@@ -344,9 +344,10 @@ class RestController extends \yii\web\Controller
         $diff_results = (new JSONPath($json_object))->find('$..[?(@.differential_diagnosis)]'); // returns new JSONPath
 
         foreach($diff_results as $diff_result) {
+            echo "what is the differential diagnosis for " . $diff_result->name->text . '<br/>';
             foreach($diff_result->differential_diagnosis as $diff_diag) {
-                echo json_encode($diff_diag->name->text) . ' ---------> ' .  $diff_result->name->text;
-    echo '<br/>';
+                echo json_encode($diff_diag->name->text);
+    echo ',';
 }
             echo '<hr/>';
         }
