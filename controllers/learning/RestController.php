@@ -332,7 +332,7 @@ class RestController extends \yii\web\Controller
 
         $json_content = file_get_contents($appPath . '/assets/checklists/' . $files[0]);
 
-
+        $ret = [];
         function is_json($string,$return_data = false) {
             $data = json_decode($string);
             return (json_last_error() == JSON_ERROR_NONE) ? ($return_data ? $data : TRUE) : FALSE;
@@ -342,19 +342,55 @@ class RestController extends \yii\web\Controller
 
 //        $result = (new JSONPath($json_object))->find('$..reference'); // returns new JSONPath
         $diff_results = (new JSONPath($json_object))->find('$..[?(@.differential_diagnosis)]'); // returns new JSONPath
-
+        $bg_results = (new JSONPath($json_object))->find('$..[?(@.background)]'); // returns new JSONPath
         foreach($diff_results as $diff_result) {
-            echo "what is the differential diagnosis for " . $diff_result->name->text . '<br/>';
-            foreach($diff_result->differential_diagnosis as $diff_diag) {
-                echo json_encode($diff_diag->name->text);
-    echo ',';
-}
-            echo '<hr/>';
+            $temparray = [];
+//            echo "what is the differential diagnosis for " . $diff_result->name->text . '<br/>';
+            if (sizeof($diff_result->differential_diagnosis) > 0) {
+                $tempstring = '';
+                foreach($diff_result->differential_diagnosis as $diff_diag) {
+                    $tempstring = $tempstring . json_encode($diff_diag->name->text) . ', ';
+                }
+                $temparray['preface'] = 'What is the ';
+                $temparray['type'] = 'differential_diagnosis';
+                $temparray['question'] = $tempstring;
+                $temparray['answer'] = substr($diff_result->name->text, 0, strpos($diff_result->name->text, '(')) ;
+//                echo '<hr/>';
+                array_push($ret, $temparray);
+            }
         }
+
+        foreach($bg_results as $bg_result) {
+            $temparray = [];
+//            echo "what is the differential diagnosis for " . $diff_result->name->text . '<br/>';
+            if ($bg_result->background !== null) {
+                $tempstring = '';
+
+                    $tempstring = $tempstring . json_encode($bg_result->text);
+
+                $temparray['preface'] = 'What is the ';
+                $temparray['type'] = 'background';
+                $temparray['question'] = $tempstring;
+                $temparray['answer'] = substr($bg_result->name->text, 0, strpos($bg_result->name->text, '(')) ;
+//                echo '<hr/>';
+                array_push($ret, $temparray);
+            }
+        }
+
+
+        $randoms = array_rand($ret,10);
+        $ret_random = [];
+        foreach($randoms as $random) {
+            array_push($ret_random, $ret[$random]);
+        }
+        shuffle($ret_random);
 //        echo '<pre>';
 //        print_r($diff_results);
         //return $files[0];
       //  return \Yii::$app->response->sendFile($appPath . '/assets/checklists/' . $files[0]);
+
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        return $ret_random;
 
     }
 
