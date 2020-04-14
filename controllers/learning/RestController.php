@@ -354,8 +354,13 @@ class RestController extends \yii\web\Controller
                 $temparray['preface'] = 'What is the ';
                 $temparray['type'] = 'differential_diagnosis';
                 $temparray['question'] = $tempstring;
-                $temparray['answer'] = substr($diff_result->name->text, 0, strpos($diff_result->name->text, '(')) ;
-//                echo '<hr/>';
+                if (strpos($diff_result->name->text, '(')) {
+                    $temparray['answer'] = substr($diff_result->name->text, 0, strpos($diff_result->name->text, '(')) ;
+                } else {
+                    $temparray['answer'] = $diff_result->name->text;
+                }
+
+
                 array_push($ret, $temparray);
             }
         }
@@ -363,15 +368,28 @@ class RestController extends \yii\web\Controller
         foreach($bg_results as $bg_result) {
             $temparray = [];
 //            echo "what is the differential diagnosis for " . $diff_result->name->text . '<br/>';
-            if ($bg_result->background !== null) {
-                $tempstring = '';
+            if (($bg_result->background->text == null)
+                || ($bg_result->name->text == null)
+                || ($bg_result->name->text == "")
+                || ($bg_result->background->text == "")
+            ){
 
-                    $tempstring = $tempstring . json_encode($bg_result->text);
+            } else {
 
-                $temparray['preface'] = 'What is the ';
+
+                $tempstring = $bg_result->background->text;
+
+                $temparray['preface'] = 'Describe ';
                 $temparray['type'] = 'background';
-                $temparray['question'] = $tempstring;
-                $temparray['answer'] = substr($bg_result->name->text, 0, strpos($bg_result->name->text, '(')) ;
+                if(strpos($bg_result->name->text, '(')) {
+                    $temparray['question'] = substr($bg_result->name->text, 0, strpos($bg_result->name->text, '(')) ;
+                } else {
+                    $temparray['question'] = $bg_result->name->text;
+                }
+
+
+                $temparray['answer'] = $tempstring;
+
 //                echo '<hr/>';
                 array_push($ret, $temparray);
             }
