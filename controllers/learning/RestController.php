@@ -436,6 +436,11 @@ $ret2 = [];
 
     }
 
+    public function actionGetquizver() {
+        $ret['version'] = '0.1';
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        return $ret;
+    }
     public function actionGetquiz()
     {
         $appPath = Yii::getAlias('@app');
