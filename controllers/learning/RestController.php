@@ -342,6 +342,7 @@ class RestController extends \yii\web\Controller
 //        $result = (new JSONPath($json_object))->find('$..reference'); // returns new JSONPath
         $diff_results = (new JSONPath($json_object))->find('$..[?(@.differential_diagnosis)]'); // returns new JSONPath
         $bg_results = (new JSONPath($json_object))->find('$..[?(@.background)]'); // returns new JSONPath
+        $img_results = (new JSONPath($json_object))->find('$..[?(@.image)]'); // returns new JSONPath
         foreach($diff_results as $diff_result) {
             $temparray = [];
 //            echo "what is the differential diagnosis for " . $diff_result->name->text . '<br/>';
@@ -350,7 +351,7 @@ class RestController extends \yii\web\Controller
                 foreach($diff_result->differential_diagnosis as $diff_diag) {
                     $tempstring = $tempstring . json_encode($diff_diag->name->text) . ', ';
                 }
-                $temparray['preface'] = 'What is the ';
+                $temparray['preface'] = 'What is the differential diagnosis for ';
                 $temparray['type'] = 'differential_diagnosis';
                 $temparray['question'] = $tempstring;
                 if (strpos($diff_result->name->text, '(')) {
@@ -394,6 +395,34 @@ class RestController extends \yii\web\Controller
             }
         }
 
+$ret2 = [];
+//        echo '<pre>';
+        foreach($img_results as $img_result) {
+            $temparray = [];
+//    echo json_encode($img_result->image);
+            if (($img_result->name == null)
+//                || ($img_result->name == "")
+            ){
+
+            } else {
+                $tempstring = $img_result->name->text;
+
+                $temparray['preface'] = 'What is this?  ';
+                $temparray['type'] = 'image';
+
+                $temparray['question'] = $img_result->image;
+
+                $temparray['answer'] = $tempstring;
+
+//                echo '<hr/>';
+                array_push($ret, $temparray);
+            }
+
+
+
+        }
+
+
 
 //        $randoms = array_rand($ret,10);
         $randoms = $ret;
@@ -402,7 +431,8 @@ class RestController extends \yii\web\Controller
 
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
         return $randoms;
-//        sizeof($randoms);
+//        echo '<pre>';
+//print_r($ret2);
 
     }
 
