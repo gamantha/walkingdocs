@@ -395,8 +395,6 @@ class RestController extends \yii\web\Controller
             }
         }
 
-$ret2 = [];
-//        echo '<pre>';
         foreach($img_results as $img_result) {
             $temparray = [];
 //    echo json_encode($img_result->image);
@@ -418,21 +416,13 @@ $ret2 = [];
                 array_push($ret, $temparray);
             }
 
-
-
         }
-
-
 
 //        $randoms = array_rand($ret,10);
         $randoms = $ret;
 
-
-
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
         return $randoms;
-//        echo '<pre>';
-//print_r($ret2);
 
     }
 
@@ -460,6 +450,7 @@ $ret2 = [];
 //        $result = (new JSONPath($json_object))->find('$..reference'); // returns new JSONPath
         $diff_results = (new JSONPath($json_object))->find('$..[?(@.differential_diagnosis)]'); // returns new JSONPath
         $bg_results = (new JSONPath($json_object))->find('$..[?(@.background)]'); // returns new JSONPath
+        $img_results = (new JSONPath($json_object))->find('$..[?(@.image)]'); // returns new JSONPath
         foreach($diff_results as $diff_result) {
             $temparray = [];
 //            echo "what is the differential diagnosis for " . $diff_result->name->text . '<br/>';
@@ -468,7 +459,7 @@ $ret2 = [];
                 foreach($diff_result->differential_diagnosis as $diff_diag) {
                     $tempstring = $tempstring . json_encode($diff_diag->name->text) . ', ';
                 }
-                $temparray['preface'] = 'What is the ';
+                $temparray['preface'] = 'What is the differential diagnosis for ';
                 $temparray['type'] = 'differential_diagnosis';
                 $temparray['question'] = $tempstring;
                 if (strpos($diff_result->name->text, '(')) {
@@ -512,20 +503,34 @@ $ret2 = [];
             }
         }
 
+        foreach($img_results as $img_result) {
+            $temparray = [];
+//    echo json_encode($img_result->image);
+            if (($img_result->name == null)
+//                || ($img_result->name == "")
+            ){
 
-        $randoms = array_rand($ret,10);
-        $ret_random = [];
-        foreach($randoms as $random) {
-            array_push($ret_random, $ret[$random]);
+            } else {
+                $tempstring = $img_result->name->text;
+
+                $temparray['preface'] = 'What is this?  ';
+                $temparray['type'] = 'image';
+
+                $temparray['question'] = $img_result->image;
+
+                $temparray['answer'] = $tempstring;
+
+//                echo '<hr/>';
+                array_push($ret, $temparray);
+            }
+
         }
-        shuffle($ret_random);
-//        echo '<pre>';
-//        print_r($diff_results);
-        //return $files[0];
-      //  return \Yii::$app->response->sendFile($appPath . '/assets/checklists/' . $files[0]);
+
+//        $randoms = array_rand($ret,10);
+        $randoms = $ret;
 
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-        return $ret_random;
+        return $randoms;
 
     }
 
