@@ -200,7 +200,7 @@ class RestController extends \yii\web\Controller
             foreach ($equation as $eq) {
                 if (key_exists('type', $eq)) {
                     //$eq->text = "{ name : " . $eq->type. "}";
-                    $eq->text['name'] = $this->deEquation($eq->type);
+                    $eq->text['name'] = ' ' . $this->deEquation($eq->type) . ' ';
                     unset($eq->type);
                 }
                 if (key_exists('items', $eq)) {
@@ -211,7 +211,7 @@ class RestController extends \yii\web\Controller
                 } else if (key_exists('codes', $eq)) {
                     $eq->children = [];
                     foreach ($eq->codes as $code) {
-                        $temp['text']['name'] = $this->removeTrailingNumber($code);
+                        $temp['text']['name'] = ' ' . $this->removeTrailingNumber($code) . ' ';
                         array_push($eq->children, $temp);
                     }
                     unset($eq->codes);
@@ -227,7 +227,7 @@ class RestController extends \yii\web\Controller
             }
         } else { //IF equation is not array
             if (key_exists('type', $equation)) {
-                $equation->text['name'] = $this->deEquation($equation->type);
+                $equation->text['name'] = ' ' . $this->deEquation($equation->type) . ' ';
                 unset($equation->type);
             }
             //if $equation is not yet array
@@ -239,7 +239,7 @@ class RestController extends \yii\web\Controller
             } else if (key_exists('codes', $equation)) {
                 $equation->children = [];
                 foreach ($equation->codes as $code) {
-                    $temp['text']['name'] = $this->removeTrailingNumber($code);
+                    $temp['text']['name'] = ' ' . $this->removeTrailingNumber($code) . ' ';
                     array_push($equation->children, $temp);
                 }
 
@@ -323,6 +323,57 @@ class RestController extends \yii\web\Controller
         // return $this->render('diagram');
     }
 
+    public function actionSortquiz()
+    {
+        $appPath = Yii::getAlias('@app');
+
+        $files = scandir($appPath . '/assets/checklists', 1);
+
+        $json_content = file_get_contents($appPath . '/assets/checklists/' . $files[0]);
+
+        $ret = [];
+        function is_json($string, $return_data = false)
+        {
+            $data = json_decode($string);
+            return (json_last_error() == JSON_ERROR_NONE) ? ($return_data ? $data : TRUE) : FALSE;
+        }
+
+        $json_object = json_decode($json_content);
+
+        usort($json_object, function($a, $b) { //Sort the array using a user defined function
+            return $a->name->text < $b->name->text ? -1 : 1; //Compare the scores
+        });
+
+//        $result = (new JSONPath($json_object))->find('$..reference'); // returns new JSONPath
+        $diff_results = (new JSONPath($json_object))->find('$..[?(@.differential_diagnosis)]'); // returns new JSONPath
+
+
+
+
+        foreach($diff_results as $diff_result) {
+            $temparray = [];
+            echo "what is the differential diagnosis for " . $diff_result->name->text . '<br/>';
+            if (sizeof($diff_result->differential_diagnosis) > 0) {
+                $tempstring = '';
+                foreach($diff_result->differential_diagnosis as $diff_diag) {
+                    $tempstring = $tempstring . json_encode($diff_diag->name->text) . ', ';
+                }
+                $temparray['preface'] = 'What is the differential diagnosis for ';
+                $temparray['type'] = 'differential_diagnosis';
+                $temparray['question'] = $tempstring;
+                if (strpos($diff_result->name->text, '(')) {
+                    $temparray['answer'] = substr($diff_result->name->text, 0, strpos($diff_result->name->text, '(')) ;
+                } else {
+                    $temparray['answer'] = $diff_result->name->text;
+                }
+
+
+                array_push($ret, $temparray);
+            }
+        }
+
+    }
+
     public function actionGetquizall()
     {
         $appPath = Yii::getAlias('@app');
@@ -338,6 +389,11 @@ class RestController extends \yii\web\Controller
         }
 
         $json_object = json_decode($json_content);
+
+        usort($json_object, function($a, $b) { //Sort the array using a user defined function
+            return $a->name->text < $b->name->text ? -1 : 1; //Compare the scores
+        });
+
 
 //        $result = (new JSONPath($json_object))->find('$..reference'); // returns new JSONPath
         $diff_results = (new JSONPath($json_object))->find('$..[?(@.differential_diagnosis)]'); // returns new JSONPath
@@ -431,11 +487,236 @@ class RestController extends \yii\web\Controller
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
         return $ret;
     }
+
+    public function actionGetquizcompre()
+    {
+        $appPath = Yii::getAlias('@app');
+
+        $files = scandir($appPath . '/assets/checklists',
+            1);
+
+        $json_content = file_get_contents($appPath . '/assets/checklists/' . $files[0]);
+
+        $ret = [];
+        function is_json($string,$return_data = false) {
+            $data = json_decode($string);
+            return (json_last_error() == JSON_ERROR_NONE) ? ($return_data ? $data : TRUE) : FALSE;
+        }
+
+        $json_object = json_decode($json_content);
+        usort($json_object, function($a, $b) { //Sort the array using a user defined function
+            return $a->name->text < $b->name->text ? -1 : 1; //Compare the scores
+        });
+//        $result = (new JSONPath($json_object))->find('$..reference'); // returns new JSONPath
+        $diff_results = (new JSONPath($json_object))->find('$..[?(@.differential_diagnosis)]'); // returns new JSONPath
+
+        foreach($diff_results as $diff_result) {
+            $temparray = [];
+//            echo "what is the differential diagnosis for " . $diff_result->name->text . '<br/>';
+            if (sizeof($diff_result->differential_diagnosis) > 0) {
+                $tempstring = '';
+                foreach($diff_result->differential_diagnosis as $diff_diag) {
+                    $tempstring = $tempstring . json_encode($diff_diag->name->text) . ', ';
+                }
+                $temparray['preface'] = 'What is the differential diagnosis for ';
+                $temparray['type'] = 'differential_diagnosis';
+                $temparray['question'] = $tempstring;
+                if (strpos($diff_result->name->text, '(')) {
+                    $temparray['answer'] = substr($diff_result->name->text, 0, strpos($diff_result->name->text, '(')) ;
+                } else {
+                    $temparray['answer'] = $diff_result->name->text;
+                }
+
+
+                array_push($ret, $temparray);
+            }
+        }
+
+//        $randoms = array_rand($ret,10);
+        $randoms = $ret;
+
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        return $randoms;
+
+    }
+
+
+    public function actionGetquizdiff()
+    {
+        $appPath = Yii::getAlias('@app');
+
+        $files = scandir($appPath . '/assets/checklists',
+            1);
+
+        $json_content = file_get_contents($appPath . '/assets/checklists/' . $files[0]);
+
+        $ret = [];
+        function is_json($string,$return_data = false) {
+            $data = json_decode($string);
+            return (json_last_error() == JSON_ERROR_NONE) ? ($return_data ? $data : TRUE) : FALSE;
+        }
+
+        $json_object = json_decode($json_content);
+        usort($json_object, function($a, $b) { //Sort the array using a user defined function
+            return $a->name->text < $b->name->text ? -1 : 1; //Compare the scores
+        });
+//        $result = (new JSONPath($json_object))->find('$..reference'); // returns new JSONPath
+        $diff_results = (new JSONPath($json_object))->find('$..[?(@.differential_diagnosis)]'); // returns new JSONPath
+
+        foreach($diff_results as $diff_result) {
+            $temparray = [];
+//            echo "what is the differential diagnosis for " . $diff_result->name->text . '<br/>';
+            if (sizeof($diff_result->differential_diagnosis) > 0) {
+                $tempstring = '';
+                foreach($diff_result->differential_diagnosis as $diff_diag) {
+                    $tempstring = $tempstring . json_encode($diff_diag->name->text) . ', ';
+                }
+                $temparray['preface'] = 'What is the differential diagnosis for ';
+                $temparray['type'] = 'differential_diagnosis';
+                $temparray['question'] = $tempstring;
+                if (strpos($diff_result->name->text, '(')) {
+                    $temparray['answer'] = substr($diff_result->name->text, 0, strpos($diff_result->name->text, '(')) ;
+                } else {
+                    $temparray['answer'] = $diff_result->name->text;
+                }
+
+
+                array_push($ret, $temparray);
+            }
+        }
+
+//        $randoms = array_rand($ret,10);
+        $randoms = $ret;
+
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        return $randoms;
+
+    }
+
+
+
+    public function actionGetquizbg()
+    {
+        $appPath = Yii::getAlias('@app');
+
+        $files = scandir($appPath . '/assets/checklists',
+            1);
+
+        $json_content = file_get_contents($appPath . '/assets/checklists/' . $files[0]);
+
+        $ret = [];
+        function is_json($string,$return_data = false) {
+            $data = json_decode($string);
+            return (json_last_error() == JSON_ERROR_NONE) ? ($return_data ? $data : TRUE) : FALSE;
+        }
+
+        $json_object = json_decode($json_content);
+        usort($json_object, function($a, $b) { //Sort the array using a user defined function
+            return $a->name->text < $b->name->text ? -1 : 1; //Compare the scores
+        });
+        $bg_results = (new JSONPath($json_object))->find('$..[?(@.background)]'); // returns new JSONPath
+        $img_results = (new JSONPath($json_object))->find('$..[?(@.image)]'); // returns new JSONPath
+
+
+        foreach($bg_results as $bg_result) {
+            $temparray = [];
+//            echo "what is the differential diagnosis for " . $diff_result->name->text . '<br/>';
+            if (($bg_result->background->text == null)
+                || ($bg_result->name->text == null)
+                || ($bg_result->name->text == "")
+                || ($bg_result->background->text == "")
+            ){
+
+            } else {
+
+
+                $tempstring = $bg_result->background->text;
+
+                $temparray['preface'] = 'Describe ';
+                $temparray['type'] = 'background';
+                if(strpos($bg_result->name->text, '(')) {
+                    $temparray['question'] = substr($bg_result->name->text, 0, strpos($bg_result->name->text, '(')) ;
+                } else {
+                    $temparray['question'] = $bg_result->name->text;
+                }
+
+
+                $temparray['answer'] = $tempstring;
+
+//                echo '<hr/>';
+                array_push($ret, $temparray);
+            }
+        }
+
+
+//        $randoms = array_rand($ret,10);
+        $randoms = $ret;
+
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        return $randoms;
+
+    }
+
+    public function actionGetquizimg()
+    {
+        $appPath = Yii::getAlias('@app');
+
+        $files = scandir($appPath . '/assets/checklists',
+            1);
+
+        $json_content = file_get_contents($appPath . '/assets/checklists/' . $files[0]);
+
+        $ret = [];
+        function is_json($string,$return_data = false) {
+            $data = json_decode($string);
+            return (json_last_error() == JSON_ERROR_NONE) ? ($return_data ? $data : TRUE) : FALSE;
+        }
+
+        $json_object = json_decode($json_content);
+
+        usort($json_object, function($a, $b) { //Sort the array using a user defined function
+            return $a->name->text < $b->name->text ? -1 : 1; //Compare the scores
+        });
+        $img_results = (new JSONPath($json_object))->find('$..[?(@.image)]'); // returns new JSONPath
+
+
+        foreach($img_results as $img_result) {
+            $temparray = [];
+//    echo json_encode($img_result->image);
+            if (($img_result->name == null)
+//                || ($img_result->name == "")
+            ){
+
+            } else {
+                $tempstring = $img_result->name->text;
+
+                $temparray['preface'] = 'What is this?  ';
+                $temparray['type'] = 'image';
+
+                $temparray['question'] = $img_result->image;
+
+                $temparray['answer'] = $tempstring;
+
+//                echo '<hr/>';
+                array_push($ret, $temparray);
+            }
+
+        }
+
+//        $randoms = array_rand($ret,10);
+        $randoms = $ret;
+
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        return $randoms;
+
+    }
+
     public function actionGetquiz()
     {
         $appPath = Yii::getAlias('@app');
 
-        $files = scandir($appPath . '/assets/checklists', 1);
+        $files = scandir($appPath . '/assets/checklists',
+            1);
 
         $json_content = file_get_contents($appPath . '/assets/checklists/' . $files[0]);
 
