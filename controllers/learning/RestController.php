@@ -563,28 +563,7 @@ class RestController extends \yii\web\Controller
 //        $result = (new JSONPath($json_object))->find('$..reference'); // returns new JSONPath
         $diff_results = (new JSONPath($json_object))->find('$..[?(@.differential_diagnosis)]'); // returns new JSONPath
 
-        foreach($diff_results as $diff_result) {
-            $temparray = [];
-//            echo "what is the differential diagnosis for " . $diff_result->name->text . '<br/>';
-            if (sizeof($diff_result->differential_diagnosis) > 0) {
-                $tempstring = '';
-                foreach($diff_result->differential_diagnosis as $diff_diag) {
-                    $tempstring = $tempstring . json_encode($diff_diag->name->text) . ', ';
-                }
-                $temparray['preface'] = 'What is the differential diagnosis for ';
-                $temparray['type'] = 'differential_diagnosis';
-                $temparray['question'] = $tempstring;
-                if (strpos($diff_result->name->text, '(')) {
-                    $temparray['answer'] = substr($diff_result->name->text, 0, strpos($diff_result->name->text, '(')) ;
-                } else {
-                    $temparray['answer'] = $diff_result->name->text;
-                }
-
-
-                array_push($ret, $temparray);
-            }
-        }
-
+        $this->getDiff($ret,$diff_results);
 //        $randoms = array_rand($ret,10);
         $randoms = $ret;
 
@@ -711,6 +690,30 @@ class RestController extends \yii\web\Controller
 
     }
 
+    public function getDiff(&$ret, $diff_results){
+
+        foreach($diff_results as $diff_result) {
+            $temparray = [];
+//            echo "what is the differential diagnosis for " . $diff_result->name->text . '<br/>';
+            if (sizeof($diff_result->differential_diagnosis) > 0) {
+                $tempstring = '';
+                foreach($diff_result->differential_diagnosis as $diff_diag) {
+                    $tempstring = $tempstring . json_encode($diff_diag->name->text) . ', ';
+                }
+                $temparray['preface'] = 'What is the differential diagnosis for ';
+                $temparray['type'] = 'differential_diagnosis';
+                $temparray['answer'] = $tempstring;
+                if (strpos($diff_result->name->text, '(')) {
+                    $temparray['question'] = substr($diff_result->name->text, 0, strpos($diff_result->name->text, '(')) ;
+                } else {
+                    $temparray['question'] = $diff_result->name->text;
+                }
+
+
+                array_push($ret, $temparray);
+            }
+        }
+    }
     public function actionGetquiz()
     {
         $appPath = Yii::getAlias('@app');
@@ -732,28 +735,8 @@ class RestController extends \yii\web\Controller
         $diff_results = (new JSONPath($json_object))->find('$..[?(@.differential_diagnosis)]'); // returns new JSONPath
         $bg_results = (new JSONPath($json_object))->find('$..[?(@.background)]'); // returns new JSONPath
         $img_results = (new JSONPath($json_object))->find('$..[?(@.image)]'); // returns new JSONPath
-        foreach($diff_results as $diff_result) {
-            $temparray = [];
-//            echo "what is the differential diagnosis for " . $diff_result->name->text . '<br/>';
-            if (sizeof($diff_result->differential_diagnosis) > 0) {
-                $tempstring = '';
-                foreach($diff_result->differential_diagnosis as $diff_diag) {
-                    $tempstring = $tempstring . json_encode($diff_diag->name->text) . ', ';
-                }
-                $temparray['preface'] = 'What is the differential diagnosis for ';
-                $temparray['type'] = 'differential_diagnosis';
-                $temparray['question'] = $tempstring;
-                if (strpos($diff_result->name->text, '(')) {
-                    $temparray['answer'] = substr($diff_result->name->text, 0, strpos($diff_result->name->text, '(')) ;
-                } else {
-                    $temparray['answer'] = $diff_result->name->text;
-                }
 
-
-                array_push($ret, $temparray);
-            }
-        }
-
+        $this->getDiff($ret,$diff_results);
         foreach($bg_results as $bg_result) {
             $temparray = [];
 //            echo "what is the differential diagnosis for " . $diff_result->name->text . '<br/>';
