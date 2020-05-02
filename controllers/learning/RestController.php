@@ -88,49 +88,58 @@ class RestController extends \yii\web\Controller
         return $ret;
     }
 
-
-    public function collapseNodes(&$equation)
-    {
+    public function collapseSingle(&$equation) {
         /** collapse NOT and collapse Single     */
         if (is_array($equation)) {
+
             foreach ($equation as $eq) {
+
                 if (key_exists('children', $eq)) {
                     if (sizeof($eq->children) == 1) {
+//                        echo 'only single children      ' . $eq->text['name'] . '<br/>';
                         /** find sub children */
+
                         if (key_exists('children', $eq->children[0])) {
+//                            echo  $eq->children[0]->text['name'] . 'nina<br/>';
+//                            echo '_____CHILDREN EXISTS!!!!<br/>';
                             /** collapseNot : this collapses nodes that are NOT -> THING into one node that is called NOT THING */
-                            if ($eq->text['name'] == 'not') {
-                                $eq->text['name'] = 'not ' . $eq->children[0]->text['name'];
+                            if(strpos($eq->text['name'], 'not') !== false){
+//                            if (trim($eq->text['name']) == 'not') {
+
+                                $eq->text['name'] = $eq->text['name']  . ' ' . $eq->children[0]->text['name'];
                             } else {
+//                                echo '________' . $eq->text['name'] . '!!!!<br/>';
                                 /** collapseSingle = true, // this collapses nodes that only have one child into a single node: THING -> CHILD turns into CHILD */
-                                $eq->text['name'] = $eq->children[0]->text['name'];
+                                $eq->text['name'] = ' ' . $eq->children[0]->text['name'];
                             }
                             $eq->children = $eq->children[0]->children;
                             $collapsesinglenodes = false;
                             if ($collapsesinglenodes) {
-//                                echo $eq->text['name'] . '<br/>';
-//                                $eq->text['name'] = $eq->text['name'] . ' '.$eq->children[0]['text']['name'];
-//                                $eq->text['name'] = $eq->text['name'] . ' ' . $eq->children[0]->text['name']; // buattest
-                                $this->collapseNodes($eq->children);
-//                                unset($eq->children);
+
+                                $this->collapseSingle($eq->children);
+
                             } else {
-                                $this->collapseNodes($eq->children);
+                                $this->collapseSingle($eq->children);
                             }
                         } else {
+//                            echo '____no more children     ' . $eq->text['name'] . '<br/>';
                             /** no more subchildren */
-//                            echo sizeof($eq->children[0]);
+
                             $eq->text['name'] = $eq->children[0]['text']['name'];
-//                            unset($eq->children[0]->children);
+
                             unset($eq->children);
                         }
                     } else {
-//                        echo 're ' . sizeof($eq->children);
-//                        print_r($eq->text);
-                        $this->collapseNodes($eq->children);
+//                        echo 'size : ' . sizeof($eq->children). ' <br/>';
+                        $this->collapseSingle($eq->children);
                     }
                 }
             }
         } else { //IF equation is not array
+//            echo  '<hr/><pre>';
+////            print_r($equation);
+//            echo 'reno';
+//            echo '</pre>';
             if (key_exists('children', $equation)) {
 
                 if (sizeof($equation->children) == 1) {
@@ -140,11 +149,83 @@ class RestController extends \yii\web\Controller
                     // print_r($equation->children);
                 }
 
-                $this->collapseNodes($equation->children);
+                $this->collapseSingle($equation->children);
             }
         }
-
     }
+
+    public function collapseNot(&$equation) {
+        /** collapse NOT and collapse Single     */
+        if (is_array($equation)) {
+
+            foreach ($equation as $eq) {
+
+                if (key_exists('children', $eq)) {
+                    if (sizeof($eq->children) == 1) {
+//                        echo 'only single children      ' . $eq->text['name'] . '<br/>';
+                        /** find sub children */
+
+                        if (key_exists('children', $eq->children[0])) {
+//                            echo  $eq->children[0]->text['name'] . 'nina<br/>';
+                            echo '_____CHILDREN EXISTS!!!!<br/>';
+                            /** collapseNot : this collapses nodes that are NOT -> THING into one node that is called NOT THING */
+                            if(strpos($eq->text['name'], 'not') !== false){
+//                            if (trim($eq->text['name']) == 'not') {
+                                ECHO " ================================ " . $eq->text['name'] ."<br/>";
+                                $eq->text['name'] = $eq->text['name']  . ' ' . $eq->children[0]->text['name'];
+                            } else {
+                                echo '_____&___' . $eq->text['name'] . '!!!!<br/>';
+                                /** collapseSingle = true, // this collapses nodes that only have one child into a single node: THING -> CHILD turns into CHILD */
+                                $eq->text['name'] = ' ' . $eq->children[0]->text['name'];
+                            }
+                            $eq->children = $eq->children[0]->children;
+                            $collapsesinglenodes = false;
+                            if ($collapsesinglenodes) {
+
+                                $this->collapseNot($eq->children);
+
+                            } else {
+                                $this->collapseNot($eq->children);
+                            }
+                        } else {
+//                            echo '____no more children     ' . $eq->text['name'] . '<br/>';
+                            /** no more subchildren */
+                            if(strpos($eq->text['name'], 'not') !== false){
+                                $eq->text['name'] = $eq->text['name']  . $eq->children[0]['text']['name'];
+                                unset($eq->children);
+                            } else {
+                                $eq->text['name'] = $eq->children[0]['text']['name'];
+
+                                unset($eq->children);
+                            }
+
+
+                        }
+                    } else {
+                        echo 'size : ' . sizeof($eq->children). ' <br/>';
+                        $this->collapseNot($eq->children);
+                    }
+                }
+            }
+        } else { //IF equation is not array
+//            echo  '<hr/><pre>';
+////            print_r($equation);
+//            echo 'reno';
+//            echo '</pre>';
+            if (key_exists('children', $equation)) {
+
+                if (sizeof($equation->children) == 1) {
+                    //echo 'nina';
+                } else {
+                    //echo sizeof($equation->children);
+                    // print_r($equation->children);
+                }
+
+                $this->collapseNot($equation->children);
+            }
+        }
+    }
+
 
     public function removeTrailingNumber($name)
     {
@@ -267,9 +348,18 @@ class RestController extends \yii\web\Controller
         $this->traverseItems($json_object);
 
         $this->itemsToChildren($json_object);
-
-        $this->collapseNodes($json_object);
+//
+//        $this->collapseNodes($json_object);
+//        $this->collapseSingle($json_object);
+        $this->collapseNot($json_object);
+        echo '<hr/><hr/>';
+        $this->collapseNot($json_object);
+                ob_end_clean();
+        ob_start();
         $this->collapseCommonPrefix($json_object);
+
+//        ob_end_clean();
+//        ob_start();
 
         return $this->renderAjax('test', [
             'json_object' => $json_object
@@ -806,6 +896,7 @@ class RestController extends \yii\web\Controller
             $flag = 0;
             foreach ($json_object as $eq) {
             if (key_exists('children', $eq)) {
+//                echo 'sadads<br/>';
                 if ($name = $this->collapseCommonPrefix($eq->children))
                 {
                     $eq->text['name'] = $eq->text['name'] . ' ' . $name;
