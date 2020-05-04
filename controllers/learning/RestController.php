@@ -169,10 +169,10 @@ class RestController extends \yii\web\Controller
 //                            echo  $eq->children[0]->text['name'] . 'nina<br/>';
                             echo '_____CHILDREN EXISTS!!!!<br/>';
                             /** collapseNot : this collapses nodes that are NOT -> THING into one node that is called NOT THING */
-                            if(strpos($eq->text['name'], 'not') !== false){
+                            if(strpos(strtolower($eq->text['name']), 'not') !== false){
 //                            if (trim($eq->text['name']) == 'not') {
                                 ECHO " ================================ " . $eq->text['name'] ."<br/>";
-                                $eq->text['name'] = $eq->text['name']  . ' ' . $eq->children[0]->text['name'];
+                                $eq->text['name'] = strtoupper($eq->text['name']);
                             } else {
                                 echo '_____&___' . $eq->text['name'] . '!!!!<br/>';
                                 /** collapseSingle = true, // this collapses nodes that only have one child into a single node: THING -> CHILD turns into CHILD */
@@ -190,7 +190,7 @@ class RestController extends \yii\web\Controller
                         } else {
 //                            echo '____no more children     ' . $eq->text['name'] . '<br/>';
                             /** no more subchildren */
-                            if(strpos($eq->text['name'], 'not') !== false){
+                            if(strpos(strtolower($eq->text['name']), 'not') !== false){
                                 $eq->text['name'] = $eq->text['name']  . $eq->children[0]['text']['name'];
                                 unset($eq->children);
                             } else {
@@ -334,46 +334,7 @@ class RestController extends \yii\web\Controller
     }
 
 
-    public function actionGettree($equation)
-    {
-        $request = Yii::$app->request;
 
-
-        $obj = urldecode($equation);
-        $json = json_decode($obj);
-        $json_string = json_encode($json);
-        //  return json_encode($json);
-        // json_de
-        $json_object = json_decode($json_string);
-        $this->traverseItems($json_object);
-
-        $this->itemsToChildren($json_object);
-//
-//        $this->collapseNodes($json_object);
-//        $this->collapseSingle($json_object);
-        $this->collapseNot($json_object);
-        echo '<hr/><hr/>';
-        $this->collapseNot($json_object);
-                ob_end_clean();
-        ob_start();
-        $this->collapseCommonPrefix($json_object);
-
-//        ob_end_clean();
-//        ob_start();
-
-        return $this->renderAjax('test', [
-            'json_object' => $json_object
-        ]);
-
-        ob_end_clean();
-        ob_start();
-        echo '<pre>';
-        print_r($json_object);
-        echo '</pre>';
-
-        // return;
-
-    }
 
 
     public function actionDiagram($search, $type)
@@ -887,33 +848,38 @@ class RestController extends \yii\web\Controller
         return $randoms;
 
     }
-
-    private function collapseCommonPrefix(&$json_object)
+    private function collapseCommonPrefixBackup(&$json_object)
     {
 
         if (is_array($json_object)) {
             $comparator = null;
             $flag = 0;
             foreach ($json_object as $eq) {
-            if (key_exists('children', $eq)) {
-//                echo 'sadads<br/>';
-                if ($name = $this->collapseCommonPrefix($eq->children))
-                {
-                    $eq->text['name'] = $eq->text['name'] . ' ' . $name;
-                }
+                if (key_exists('children', $eq)) {
+
+                    if ($name = $this->collapseCommonPrefix($eq->children))
+                    {
+//                    echo 'common prefix : ' . $name .'<br/>';
+                        $eq->text['name'] = $eq->text['name'] . ' ' . $name;
+                    } else {
+//                    echo 'common prefix<br/>';
+                    }
 
                 } else {
-                // no more sub-children
-                        if(is_array($eq)) {
+                    // no more sub-children
+
+                    if(is_array($eq)) {
+                        echo 'NO MORE CHILDREN - Still array<br/>';
+                    } else {
+                        echo 'NO MORE CHILDREN - no array<br/>';
+                        if (is_null($comparator)) {
+                            $comparator = $eq->text['name'];
+                        } else if ($comparator != $eq->text['name']) {
                         } else {
-                            if (is_null($comparator)) {
-                                $comparator = $eq->text['name'];
-                            } else if ($comparator != $eq->text['name']) {
-                            } else {
-                                $flag = 1;
-                            }
+                            $flag = 1;
                         }
-            }
+                    }
+                }
 
             }
 
@@ -924,11 +890,112 @@ class RestController extends \yii\web\Controller
                 return $json_object->text['name'];
             }
         } else {
+//            echo 'not an array<br/>';
             if (key_exists('children', $json_object)) {
                 $this->collapseCommonPrefix($json_object->children);
 
             }
         }
+    }
+
+    private function collapseCommonPrefix(&$json_object)
+    {
+
+        if (is_array($json_object)) {
+            $comparator = null;
+            $flag = 0;
+            $comp = null;
+            echo 'size of : ' . sizeof($json_object) . '<br/>';
+            foreach ($json_object as $eq) {
+            if (key_exists('children', $eq)) {
+                echo ' - <br/>';
+                if($comp = $this->collapseCommonPrefix($eq->children)) {
+                    $eq->text['name'] = $eq->text['name'] . ' ' . $comp;
+                    unset($eq->children);
+                } else {
+                    echo 'null comp <br/>';
+                }
+                } else {
+                echo 'children doesnt exist : ' . json_encode($eq) . '<hr/>';
+                $eq2 = json_decode(json_encode($eq),true);
+                if (is_null($comparator)) {
+                    $comparator = $eq2['text']['name'];
+                } else {
+                    if ($comparator == $eq2['text']['name']) {
+                        $flag = 1;
+                    } else {
+
+                    }
+                }
+//             print_r($eq2['text']['name']);
+//                echo '++++++++++++' . json_decode($eq,true)['text'] ['name'] . '<br/>';
+
+                if ($flag == 1) {
+                    echo 'POPOPOPOPO : '. $comparator.'<hr/>';
+//                    $json_object = $eq;
+//                $json_object->text['name'] = $json_object->text['name'] . ' kkjj';
+                    $flag = 0;
+//                    return $json_object->text['name'];
+                    return $comparator;
+                }
+
+
+            }
+
+
+
+
+
+            }
+
+        } else {
+//            echo 'not an array<br/>';
+            if (key_exists('children', $json_object)) {
+                $this->collapseCommonPrefix($json_object->children);
+
+            }
+        }
+    }
+
+    public function actionGettree($equation)
+    {
+        $request = Yii::$app->request;
+
+
+        $obj = urldecode($equation);
+        $json = json_decode($obj);
+        $json_string = json_encode($json);
+        //  return json_encode($json);
+        // json_de
+        $json_object = json_decode($json_string);
+        $this->traverseItems($json_object);
+
+        $this->itemsToChildren($json_object);
+//
+//        $this->collapseNodes($json_object);
+//        $this->collapseSingle($json_object);
+        $this->collapseNot($json_object);
+        echo '<hr/><hr/>';
+        $this->collapseNot($json_object);
+        ob_end_clean();
+        ob_start();
+        $this->collapseCommonPrefix($json_object);
+
+        ob_end_clean();
+        ob_start();
+
+        return $this->renderAjax('test', [
+            'json_object' => $json_object
+        ]);
+
+        ob_end_clean();
+        ob_start();
+        echo '<pre>';
+        print_r($json_object);
+        echo '</pre>';
+
+        // return;
+
     }
 
 }
