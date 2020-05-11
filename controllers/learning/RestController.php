@@ -719,7 +719,7 @@ class RestController extends \yii\web\Controller
 
             } else {
                 $tempstring = $img_result->name->text;
-
+//                $temparray['name'] = 'What is this?  ';
                 $temparray['preface'] = 'What is this?  ';
                 $temparray['type'] = 'image';
 
@@ -738,6 +738,8 @@ class RestController extends \yii\web\Controller
 
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
         return $randoms;
+echo '<pre>';
+        print_r($img_results);
 
     }
 
@@ -753,7 +755,8 @@ class RestController extends \yii\web\Controller
                 }
                 $temparray['preface'] = 'What is the differential diagnosis for ';
                 $temparray['type'] = 'differential_diagnosis';
-                $temparray['answer'] = $tempstring;
+                $rs =str_replace('"','',$tempstring);
+                $temparray['answer'] = $rs;
                 if (strpos($diff_result->name->text, '(')) {
                     $temparray['question'] = substr($diff_result->name->text, 0, strpos($diff_result->name->text, '(')) ;
                 } else {
