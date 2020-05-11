@@ -58,7 +58,7 @@ class RestController extends \yii\web\Controller
             $feedback = new Feedback();
             $feedback->message = $_POST['message'];
             $feedback->email = $_POST['email'];
-            $feedback->phone = $_POST['phone'];
+//            $feedback->phone = $_POST['phone'];
             $feedback->status = 'new';
             if ($feedback->save()) {
                 echo 'success';
