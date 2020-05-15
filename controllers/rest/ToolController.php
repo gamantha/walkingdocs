@@ -36,7 +36,7 @@ class ToolController extends ActiveController
     }
     public function actionGettools()
     {
-        $toolModels = Tool::find()->andWhere(['status' => 'enabled'])->All();
+        $toolModels = Tool::find()->andWhere(['status' => 'enabled'])->orderBy(['name' => SORT_ASC])->All();
         //print_r($toolModel);
         $ret = [];
         $retprep = [];
