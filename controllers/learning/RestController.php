@@ -2,6 +2,8 @@
 
 namespace app\controllers\learning;
 use app\models\learning\Feedback;
+use Aws\CognitoIdentityProvider\CognitoIdentityProviderClient;
+use SimpleXMLElement;
 use Yii;
 use yii\filters\VerbFilter;
 use yii\helpers\Json;
@@ -9,6 +11,11 @@ use yii\web\Response;
 use Nahid\JsonQ\Jsonq;
 
 USE Flow\JSONPath\JSONPath;
+use JsonPath\JsonObject;
+
+use Aws\CognitoIdentity\CognitoIdentityClient;
+
+
 
 class RestController extends \yii\web\Controller
 {
@@ -31,6 +38,55 @@ class RestController extends \yii\web\Controller
         return $this->render('index');
     }
 
+
+    public function actionGetnewcache() {
+
+
+        $args = [
+            'credentials' => [
+                'key' => 'AKIAITUU3I7XGWNZAQNQ',
+                'secret' => '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',
+            ],
+            'region' => 'ap-southeast-1',
+            'version' => 'latest',
+
+            'app_client_id' => '7oogi1gfr7hgod62cv1re21g87',
+            'app_client_secret' => 'bl18m3fbika2be35f34n2m1edvvmbqj0v4fc84dqba2q36cp5j5',
+            'user_pool_id' => 'ap-southeast-1_MyfrNxgT8'
+        ];
+
+        $client = new CognitoIdentityProviderClient($args);
+
+        $userId = "renowijoyo@gmail.com";
+        $clientId = "7oogi1gfr7hgod62cv1re21g87";
+        $clientSecret = "bl18m3fbika2be35f34n2m1edvvmbqj0v4fc84dqba2q36cp5j5";
+        $s = hash_hmac('sha256', $userId.$clientId, $clientSecret, true);
+        $secret_hash =  base64_encode($s);
+
+
+        $result = $client->initiateAuth([
+//            'AnalyticsMetadata' => [
+//                'AnalyticsEndpointId' => '<string>',
+//            ],
+            'AuthFlow' => 'USER_PASSWORD_AUTH', // REQUIRED
+            'AuthParameters' => [
+                'USERNAME' => 'renowijoyo@gmail.com',
+                'PASSWORD' => 'reno123',
+                'SECRET_HASH' => $secret_hash
+//                'SECRET_HASH' => base64_encode(hash_hmac('sha256', 'renowijoyo@gmail.com' . '4s0puccdrd78pn7gntd6f0nrnq', '4lcbtdgd47am8knkngkqh78ke1ds67j0r631ef4vv1au5rgoqo5', true))
+            ],
+            'ClientId' => '7oogi1gfr7hgod62cv1re21g87', // REQUIRED
+//            'ClientMetadata' => ['<string>', ...],
+//            'UserContextData' => [
+//                'EncodedData' => '<string>',
+//            ],
+            'UserPoolId' => 'ap-southeast-1_MyfrNxgT8',
+        ]);
+        $accessToken = $result->get('AuthenticationResult')['AccessToken'];
+
+        print_r($accessToken);
+
+}
     public function actionGetchecklistversion()
     {
         $appPath = Yii::getAlias('@app');
@@ -335,7 +391,29 @@ class RestController extends \yii\web\Controller
 
 
 
+    private function combineArray($array, &$completearray){
 
+        foreach($array as $nin) {
+            if (array_key_exists('name', $nin)) {
+                if ($nin['name']['text'] !== '') {
+                    if (in_array($nin['name']['text'], array_keys($completearray))) {
+//                    echo '<br/>';
+//                    echo $nin['name']['text'];
+                    } else {
+//                    echo '<br/>';
+//                    echo 'ADD to array here!!!';
+                        $completearray[$nin['name']['text']] = $nin;
+                    }
+                }
+
+
+
+            } else {
+//                echo 'ga ada';
+            }
+        }
+        return;
+    }
 
     public function actionDiagram($search, $type)
     {
@@ -558,36 +636,40 @@ class RestController extends \yii\web\Controller
         usort($json_object, function($a, $b) { //Sort the array using a user defined function
             return $a->name->text < $b->name->text ? -1 : 1; //Compare the scores
         });
-//        $result = (new JSONPath($json_object))->find('$..reference'); // returns new JSONPath
-        $diff_results = (new JSONPath($json_object))->find('$..[?(@.differential_diagnosis)]'); // returns new JSONPath
 
-        foreach($diff_results as $diff_result) {
-            $temparray = [];
-//            echo "what is the differential diagnosis for " . $diff_result->name->text . '<br/>';
-            if (sizeof($diff_result->differential_diagnosis) > 0) {
-                $tempstring = '';
-                foreach($diff_result->differential_diagnosis as $diff_diag) {
-                    $tempstring = $tempstring . json_encode($diff_diag->name->text) . ', ';
-                }
-                $temparray['preface'] = 'What is the differential diagnosis for ';
-                $temparray['type'] = 'differential_diagnosis';
-                $temparray['question'] = $tempstring;
-                if (strpos($diff_result->name->text, '(')) {
-                    $temparray['answer'] = substr($diff_result->name->text, 0, strpos($diff_result->name->text, '(')) ;
-                } else {
-                    $temparray['answer'] = $diff_result->name->text;
-                }
+        $jsonObject = new JsonObject($json_content);
+//        $..[?(@.image)]
+        $jsonPathTreatment = "$..*[?(@..treatment[*].reference.image)]"; //background more than 10 characters
+        $jsonPathPhysicalExam = "$..*[?(@..physical_exam[*].reference.image)]"; //background more than 10 characters
+        $jsonPathStudies = "$..*[?(@..studies[*].reference.image)]"; //background more than 10 characters
+        $jsonPathDifferentialDiagnosis = "$..*[?(@..differential_diagnosis[*].reference.image)]"; //background more than 10 characters
+        $jsonPathHistory = "$..*[?(@..history[*].reference.image)]"; //background more than 10 characters
+//        $jsonPath = "$..*[?(@..reference.image or @..differential_diagnosis.length > 1 or @..background.text.length > 10)]"; //background more than 10 characters
+        $jsonPath1 = "$..*[?(@..differential_diagnosis.length > 0 or @..background.text.length > 10)]";
+//        $jsonPath2 = "$..*[?(@..differential_diagnosis.length > 0 or @..background.text.length > 10)]";
 
 
-                array_push($ret, $temparray);
-            }
-        }
+        $completearray = [];
+        ob_end_clean();
+        ob_start();
+//        echo '<pre/>';
 
-//        $randoms = array_rand($ret,10);
-        $randoms = $ret;
+        $this->combineArray($jsonObject->get($jsonPath1), $completearray);
+        $this->combineArray($jsonObject->get($jsonPathTreatment), $completearray);
+        $this->combineArray($jsonObject->get($jsonPathPhysicalExam), $completearray);
+        $this->combineArray($jsonObject->get($jsonPathStudies), $completearray);
+        $this->combineArray($jsonObject->get($jsonPathDifferentialDiagnosis), $completearray);
+        $this->combineArray($jsonObject->get($jsonPathHistory), $completearray);
 
-        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-        return $randoms;
+
+//                echo '<pre>';
+////        print_r($completearray);
+//        print_r(array_keys($completearray));
+
+//        $this->getDiff2($ret,$nina);
+//            $randoms = $ret;
+            \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+            return $completearray;
 
     }
 
@@ -613,7 +695,7 @@ class RestController extends \yii\web\Controller
         });
 //        $result = (new JSONPath($json_object))->find('$..reference'); // returns new JSONPath
         $diff_results = (new JSONPath($json_object))->find('$..[?(@.differential_diagnosis)]'); // returns new JSONPath
-
+//print_r($diff_results);
         $this->getDiff($ret,$diff_results);
 //        $randoms = array_rand($ret,10);
         $randoms = $ret;
@@ -743,11 +825,70 @@ echo '<pre>';
 
     }
 
+    public function getDiff2(&$ret, $results){
+//        echo '<pre>';
+//print_r($results);
+        foreach($results as $result) {
+            $temparray = [];
+            if (array_key_exists("differential_diagnosis",$result)) {
+                if(sizeof($result['differential_diagnosis']) > 0) {
+                    $tempstring = '';
+                    foreach($result['differential_diagnosis'] as $diff_diag) {
+                        $tempstring = $tempstring . json_encode($result['name']['text']) . ', ';
+                    }
+                    $temparray['differential']['name'] = $result['name']['text'];
+                    $temparray['differential']['preface'] = 'What is the differential diagnosis for ';
+                    $temparray['differential']['type'] = 'differential_diagnosis';
+                    $rs =str_replace('"','',$tempstring);
+                    $temparray['differential']['answer'] = $rs;
+                    if (strpos($result['name']['text'], '(')) {
+                        $temparray['differential']['question'] = substr($result['name']['text'], 0, strpos($result['name']['text'], '(')) ;
+                    } else {
+                        $temparray['differential']['question'] = $result['name']['text'];
+                    }
+
+
+                   // array_push($ret, $temparray);
+                }
+            }
+
+//            if (array_key_exists("image",$result)) {
+//                $imgtempstring = '';
+//                $imgtempstring = $result['name']['text'];
+//
+//                $temparray['image']['preface'] = 'What is this?  ';
+//                $temparray['image']['type'] = 'image';
+//                $temparray['image']['question'] = $result['image'];
+//
+//                $temparray['image']['answer'] = $imgtempstring;
+//            }
+
+            if (array_key_exists("background",$result)) {
+                $bgtempstring = '';
+                $bgtempstring = $result['background']['text'];
+
+                $temparray['background']['preface'] = 'What is this?  ';
+                $temparray['background']['type'] = 'background';
+                if(strpos($result['name']['text'], '(')) {
+                    $temparray['background']['question'] = substr($result['name']['text'], 0, strpos($result['name']['text'], '(')) ;
+                } else {
+                    $temparray['background']['question'] = $result['name']['text'];
+                }
+                $temparray['background']['answer'] = $bgtempstring;
+            }
+
+
+            array_push($ret, $temparray);
+        }
+    }
     public function getDiff(&$ret, $diff_results){
 
         foreach($diff_results as $diff_result) {
             $temparray = [];
 //            echo "what is the differential diagnosis for " . $diff_result->name->text . '<br/>';
+
+//echo gettype($diff_result);
+//echo '<br/>';
             if (sizeof($diff_result->differential_diagnosis) > 0) {
                 $tempstring = '';
                 foreach($diff_result->differential_diagnosis as $diff_diag) {
@@ -766,6 +907,8 @@ echo '<pre>';
 
                 array_push($ret, $temparray);
             }
+
+
         }
     }
     public function actionGetquiz()

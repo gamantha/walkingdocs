@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "91f4d6320a2637fb49b40f5561aecc23",
+    "content-hash": "d33ef055e106fb35b3af3bfd7f9b22f2",
     "packages": [
         {
             "name": "andig/php-shunting-yard",
@@ -47,16 +47,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.133.46",
+            "version": "3.138.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "98d359e61b365f3040ca61c66ae8883334cf5d74"
+                "reference": "66df78e714c7ac87a9ea2bbb77cde586649d0141"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/98d359e61b365f3040ca61c66ae8883334cf5d74",
-                "reference": "98d359e61b365f3040ca61c66ae8883334cf5d74",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/66df78e714c7ac87a9ea2bbb77cde586649d0141",
+                "reference": "66df78e714c7ac87a9ea2bbb77cde586649d0141",
                 "shasum": ""
             },
             "require": {
@@ -127,14 +127,14 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2020-03-27T18:15:32+00:00"
+            "time": "2020-05-14T18:17:11+00:00"
         },
         {
             "name": "bower-asset/bootstrap",
             "version": "v3.4.1",
             "source": {
                 "type": "git",
-                "url": "git@github.com:twbs/bootstrap.git",
+                "url": "https://github.com/twbs/bootstrap.git",
                 "reference": "68b0d231a13201eb14acd3dc84e51543d16e5f7e"
             },
             "dist": {
@@ -176,7 +176,7 @@
             "version": "3.4.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/jquery/jquery-dist.git",
+                "url": "git@github.com:jquery/jquery-dist.git",
                 "reference": "15bc73803f76bc53b654b9fdbbbc096f56d7c03d"
             },
             "dist": {
@@ -606,6 +606,54 @@
             ],
             "description": "JSONPath implementation for parsing, searching and flattening arrays",
             "time": "2019-07-15T17:23:22+00:00"
+        },
+        {
+            "name": "galbar/jsonpath",
+            "version": "1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Galbar/JsonPath-PHP.git",
+                "reference": "d08d1efeadad3345257249e35e8cfd65f21256ae"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Galbar/JsonPath-PHP/zipball/d08d1efeadad3345257249e35e8cfd65f21256ae",
+                "reference": "d08d1efeadad3345257249e35e8cfd65f21256ae",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.0",
+                "sami/sami": ">=3.3.0",
+                "satooshi/php-coveralls": ">=1.0.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "JsonPath\\": "src/Skyscanner/",
+                    "Utilities\\": "src/Skyscanner/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache 2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Alessio Linares",
+                    "email": "alessio.linares@skyscanner.net",
+                    "role": "Software Engineer"
+                }
+            ],
+            "description": "JSONPath implementation for querying and updating JSON objects",
+            "keywords": [
+                "json",
+                "jsonpath",
+                "path"
+            ],
+            "time": "2017-09-13T09:14:46+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
@@ -2473,6 +2521,39 @@
                 "yii2"
             ],
             "time": "2019-09-03T03:11:11+00:00"
+        },
+        {
+            "name": "linq/php-linq",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/gallas12/php-linq.git",
+                "reference": "ac3c0e246e408de9006b33a1c710d0d80558e2ed"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/gallas12/php-linq/zipball/ac3c0e246e408de9006b33a1c710d0d80558e2ed",
+                "reference": "ac3c0e246e408de9006b33a1c710d0d80558e2ed",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Linq\\": "linq"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Milan Gallas",
+                    "email": "gallas@gmail.com"
+                }
+            ],
+            "description": "the fast and modern library for easy data manipulation",
+            "time": "2016-10-23T13:32:37+00:00"
         },
         {
             "name": "lodash-php/lodash-php",

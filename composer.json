@@ -32,13 +32,15 @@
         "kartik-v/yii2-grid": "^3.3",
         "kartik-v/yii2-editable": "^1.7",
         "kartik-v/yii2-datecontrol": "^1.9",
-        "aws/aws-sdk-php": "^3.133",
+        "aws/aws-sdk-php": "^3.138",
         "pmill/aws-cognito": "^0.2.11",
         "kartik-v/yii2-mpdf": "^1.0",
         "monolog/monolog": "^2.0",
         "nahid/jsonq": "^5.2",
         "lodash-php/lodash-php": "^0.0.6",
-        "flow/jsonpath": "^0.5.0"
+        "galbar/jsonpath": "^1.0",
+        "flow/jsonpath": "^0.5.0",
+        "linq/php-linq": "^1.0"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.1.0",
