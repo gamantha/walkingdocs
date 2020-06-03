@@ -390,6 +390,59 @@ class RestController extends \yii\web\Controller
     }
 
 
+    private function combineDiffDef($array, &$completearray){
+
+        foreach($array as $nin) {
+            if (array_key_exists('name', $nin)) {
+                if ($nin['name']['text'] !== '') {
+                    $idx = 0;
+                    $completearray[$nin['name']['text']]['differential_diagnosis'] = [];
+                    foreach($nin['differential_diagnosis'] as $history) {
+                        array_push($completearray[$nin['name']['text']]['differential_diagnosis'], $history['name']['text']);
+
+                    }
+                    $completearray[$nin['name']['text']]['background'] = $nin['background']['text'] ;
+
+                }
+
+            }
+        }
+        return;
+    }
+
+
+    private function combineImages($array, $type, &$completearray){
+
+        foreach($array as $nin) {
+
+
+            if (array_key_exists('name', $nin)) {
+                if ($nin['name']['text'] !== '') {
+                    $idx = 0;
+                        foreach($nin[$type] as $history) {
+
+                            if (array_key_exists('reference', $history)) {
+                                if (array_key_exists('image', $history['reference']) && array_key_exists('name', $history['reference'])) {
+                                    $completearray[$nin['name']['text']]['images'][$type][$idx] = $history['reference'];
+//                                    array_push($completearray[$nin['name']['text']]['images']['history'],  $history['reference']);
+                                    $idx++;
+                                }
+                            } else {
+                               // echo '<br/>NAAAAA';
+                            }
+
+                        }
+
+                }
+
+
+
+            } else {
+//                echo 'ga ada';
+            }
+        }
+        return;
+    }
 
     private function combineArray($array, &$completearray){
 
@@ -648,26 +701,45 @@ class RestController extends \yii\web\Controller
         $jsonPath1 = "$..*[?(@..differential_diagnosis.length > 0 or @..background.text.length > 10)]";
 //        $jsonPath2 = "$..*[?(@..differential_diagnosis.length > 0 or @..background.text.length > 10)]";
 
+//        $jsonPathTest = "$..*[?(@..history[*].reference.image)]"; //background more than 10 characters
+
+        $img_results = (new JSONPath($json_object))->find('$..[?(@.image)]'); // returns new JSONPath
 
         $completearray = [];
         ob_end_clean();
         ob_start();
 //        echo '<pre/>';
 
-        $this->combineArray($jsonObject->get($jsonPath1), $completearray);
-        $this->combineArray($jsonObject->get($jsonPathTreatment), $completearray);
-        $this->combineArray($jsonObject->get($jsonPathPhysicalExam), $completearray);
-        $this->combineArray($jsonObject->get($jsonPathStudies), $completearray);
-        $this->combineArray($jsonObject->get($jsonPathDifferentialDiagnosis), $completearray);
-        $this->combineArray($jsonObject->get($jsonPathHistory), $completearray);
+//        $this->combineArray($jsonObject->get($jsonPath1), $completearray);
+        $this->combineDiffDef($jsonObject->get($jsonPath1),$completearray);
+        $this->combineImages($jsonObject->get($jsonPathTreatment), 'treatment',$completearray);
+        $this->combineImages($jsonObject->get($jsonPathPhysicalExam), 'physical_exam',$completearray);
+        $this->combineImages($jsonObject->get($jsonPathStudies),'studies', $completearray);
+        $this->combineImages($jsonObject->get($jsonPathDifferentialDiagnosis), 'differential_diagnosis', $completearray);
+        $this->combineImages($jsonObject->get($jsonPathHistory), 'history',$completearray);
+
+//        foreach($jsonObject->get($jsonPathHistory) as $nin) {
+//            if (array_key_exists('name', $nin)) {
+//                if ($nin['name']['text'] !== '') {
+//                    if (in_array($nin['name']['text'], array_keys($completearray))) {
+//
+//                    } else {
+//
+//                        $completearray[$nin['name']['text']] = $nin;
+//                    }
+//                }
+//
+//            }
+//        }
+
+
 
 
 //                echo '<pre>';
-////        print_r($completearray);
+//                print_r($img_results);
+//        print_r($jsonObject->get($img_results));
 //        print_r(array_keys($completearray));
 
-//        $this->getDiff2($ret,$nina);
-//            $randoms = $ret;
             \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
             return $completearray;
 
