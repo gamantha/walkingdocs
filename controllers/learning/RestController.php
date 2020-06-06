@@ -969,11 +969,11 @@ echo '<pre>';
                 $temparray['preface'] = 'What is the differential diagnosis for ';
                 $temparray['type'] = 'differential_diagnosis';
                 $rs =str_replace('"','',$tempstring);
-                $temparray['answer'] = $rs;
+                $temparray['answer'] = trim($rs);
                 if (strpos($diff_result->name->text, '(')) {
-                    $temparray['question'] = substr($diff_result->name->text, 0, strpos($diff_result->name->text, '(')) ;
+                    $temparray['question'] = trim(substr($diff_result->name->text, 0, strpos($diff_result->name->text, '('))) ;
                 } else {
-                    $temparray['question'] = $diff_result->name->text;
+                    $temparray['question'] = trim($diff_result->name->text);
                 }
 
 
