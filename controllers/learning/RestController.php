@@ -819,9 +819,9 @@ class RestController extends \yii\web\Controller
                 $temparray['preface'] = 'Describe ';
                 $temparray['type'] = 'background';
                 if(strpos($bg_result->name->text, '(')) {
-                    $temparray['question'] = substr($bg_result->name->text, 0, strpos($bg_result->name->text, '(')) ;
+                    $temparray['question'] = trim(substr($bg_result->name->text, 0, strpos($bg_result->name->text, '('))) ;
                 } else {
-                    $temparray['question'] = $bg_result->name->text;
+                    $temparray['question'] = trim($bg_result->name->text);
                 }
 
 
@@ -908,15 +908,15 @@ echo '<pre>';
                     foreach($result['differential_diagnosis'] as $diff_diag) {
                         $tempstring = $tempstring . json_encode($result['name']['text']) . ', ';
                     }
-                    $temparray['differential']['name'] = $result['name']['text'];
+                    $temparray['differential']['name'] = trim($result['name']['text']);
                     $temparray['differential']['preface'] = 'What is the differential diagnosis for ';
                     $temparray['differential']['type'] = 'differential_diagnosis';
                     $rs =str_replace('"','',$tempstring);
-                    $temparray['differential']['answer'] = $rs;
+                    $temparray['differential']['answer'] = trim($rs);
                     if (strpos($result['name']['text'], '(')) {
-                        $temparray['differential']['question'] = substr($result['name']['text'], 0, strpos($result['name']['text'], '(')) ;
+                        $temparray['differential']['question'] = trim(substr($result['name']['text'], 0, strpos($result['name']['text'], '('))) ;
                     } else {
-                        $temparray['differential']['question'] = $result['name']['text'];
+                        $temparray['differential']['question'] = trim($result['name']['text']);
                     }
 
 
