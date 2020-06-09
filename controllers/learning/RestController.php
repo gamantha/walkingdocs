@@ -395,6 +395,8 @@ class RestController extends \yii\web\Controller
         foreach($array as $nin) {
             if (array_key_exists('name', $nin)) {
                 if ($nin['name']['text'] !== '') {
+                    $completearray[$nin['name']['text']]['name'] = $nin['name']['text'];
+                    $completearray[$nin['name']['text']]['id'] = $nin['id'];
                     $idx = 0;
                     $completearray[$nin['name']['text']]['differential_diagnosis'] = [];
                     foreach($nin['differential_diagnosis'] as $history) {
@@ -423,7 +425,13 @@ class RestController extends \yii\web\Controller
 
                             if (array_key_exists('reference', $history)) {
                                 if (array_key_exists('image', $history['reference']) && array_key_exists('name', $history['reference'])) {
-                                    $completearray[$nin['name']['text']]['images'][$type][$idx] = $history['reference'];
+                                    if (!key_exists($nin['name']['text'],$completearray)) {
+                                        $completearray[$nin['name']['text']] = [];
+                                    }
+                                    if (!key_exists('images',$completearray[$nin['name']['text']])) {
+                                        $completearray[$nin['name']['text']]['images'] = [];
+                                    }
+                                    array_push($completearray[$nin['name']['text']]['images'],$history['reference']);
 //                                    array_push($completearray[$nin['name']['text']]['images']['history'],  $history['reference']);
                                     $idx++;
                                 }
@@ -741,7 +749,7 @@ class RestController extends \yii\web\Controller
 //        print_r(array_keys($completearray));
 
             \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-            return $completearray;
+            return array_values($completearray);
 
     }
 
