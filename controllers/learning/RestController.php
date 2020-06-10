@@ -399,11 +399,19 @@ class RestController extends \yii\web\Controller
                     $completearray[$nin['name']['text']]['id'] = $nin['id'];
                     $idx = 0;
                     $completearray[$nin['name']['text']]['differential_diagnosis'] = [];
+                    $diffstring = '';
                     foreach($nin['differential_diagnosis'] as $history) {
-                        array_push($completearray[$nin['name']['text']]['differential_diagnosis'], $history['name']['text']);
+//                        array_push($completearray[$nin['name']['text']]['differential_diagnosis'], $history['name']['text']);
+                        $diffstring = $diffstring . ', ' . $history['name']['text'];
 
                     }
-                    $completearray[$nin['name']['text']]['background'] = $nin['background']['text'] ;
+
+                    $completearray[$nin['name']['text']]['differential_diagnosis']['preface'] = "What is the differential diagnosis for ";
+                    $completearray[$nin['name']['text']]['differential_diagnosis']['question'] = $nin['name']['text'];
+                    $completearray[$nin['name']['text']]['differential_diagnosis']['answer'] = substr($diffstring,2);
+                    $completearray[$nin['name']['text']]['background']['preface'] = "Describe ";
+                    $completearray[$nin['name']['text']]['background']['question'] = $nin['name']['text'];
+                    $completearray[$nin['name']['text']]['background']['answer'] = $nin['background']['text'] ;
 
                 }
 
@@ -431,12 +439,13 @@ class RestController extends \yii\web\Controller
                                     if (!key_exists('images',$completearray[$nin['name']['text']])) {
                                         $completearray[$nin['name']['text']]['images'] = [];
                                     }
+                                    $history['reference']['preface'] = "What is this? ";
+                                    $history['reference']['question'] = $history['reference']['image'];
+                                    $history['reference']['answer'] = $history['reference']['name']['text'];
                                     array_push($completearray[$nin['name']['text']]['images'],$history['reference']);
 //                                    array_push($completearray[$nin['name']['text']]['images']['history'],  $history['reference']);
                                     $idx++;
                                 }
-                            } else {
-                               // echo '<br/>NAAAAA';
                             }
 
                         }
