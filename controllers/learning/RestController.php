@@ -392,31 +392,57 @@ class RestController extends \yii\web\Controller
 
     private function combineDiffDef($array, &$completearray){
 
+
+
         foreach($array as $nin) {
+            $diffarraytopush = [];
+            $defarraytopush = [];
             if (array_key_exists('name', $nin)) {
                 if ($nin['name']['text'] !== '') {
-                    $completearray[$nin['name']['text']]['name'] = $nin['name']['text'];
-                    $completearray[$nin['name']['text']]['id'] = $nin['id'];
+//                    $completearray[$nin['name']['text']]['name'] = $nin['name']['text'];
+//                    $completearray[$nin['name']['text']]['id'] = $nin['id'];
                     $idx = 0;
-                    $completearray[$nin['name']['text']]['differential_diagnosis'] = [];
+//                    $completearray[$nin['name']['text']]['differential_diagnosis'] = [];
                     $diffstring = '';
                     foreach($nin['differential_diagnosis'] as $history) {
 //                        array_push($completearray[$nin['name']['text']]['differential_diagnosis'], $history['name']['text']);
                         $diffstring = $diffstring . ', ' . $history['name']['text'];
 
                     }
+                    $diffarraytopush['id'] = $nin['id'];
+                    $diffarraytopush['name'] = $nin['name']['text'];
+                    $diffarraytopush['type'] = "differential_diagnosis";
+                    $diffarraytopush['preface'] = "What is the differential diagnosis for ";
+                    $diffarraytopush['question'] = $nin['name']['text'];
+                    $diffarraytopush['answer'] = substr($diffstring,2);
 
-                    $completearray[$nin['name']['text']]['differential_diagnosis']['preface'] = "What is the differential diagnosis for ";
-                    $completearray[$nin['name']['text']]['differential_diagnosis']['question'] = $nin['name']['text'];
-                    $completearray[$nin['name']['text']]['differential_diagnosis']['answer'] = substr($diffstring,2);
-                    $completearray[$nin['name']['text']]['background']['preface'] = "Describe ";
-                    $completearray[$nin['name']['text']]['background']['question'] = $nin['name']['text'];
-                    $completearray[$nin['name']['text']]['background']['answer'] = $nin['background']['text'] ;
+                    $defarraytopush['id'] = $nin['id'];
+                    $defarraytopush['name'] = $nin['name']['text'];
+                    $defarraytopush['type'] = "definition";
+                    $defarraytopush ['preface'] = "Describe ";
+                    $defarraytopush ['question'] = $nin['name']['text'];
+                    $defarraytopush ['answer'] = $nin['background']['text'] ;
+
+//                    $completearray[$nin['name']['text']]['differential_diagnosis']['preface'] = "What is the differential diagnosis for ";
+//                    $completearray[$nin['name']['text']]['differential_diagnosis']['question'] = $nin['name']['text'];
+//                    $completearray[$nin['name']['text']]['differential_diagnosis']['answer'] = substr($diffstring,2);
+//                    $completearray[$nin['name']['text']]['background']['preface'] = "Describe ";
+//                    $completearray[$nin['name']['text']]['background']['question'] = $nin['name']['text'];
+//                    $completearray[$nin['name']['text']]['background']['answer'] = $nin['background']['text'] ;
 
                 }
 
             }
+            if (!empty($diffarraytopush)) {
+                array_push($completearray, $diffarraytopush);
+            }
+            if (!empty($defarraytopush)) {
+                array_push($completearray, $defarraytopush);
+            }
+
+
         }
+
         return;
     }
 
@@ -424,7 +450,7 @@ class RestController extends \yii\web\Controller
     private function combineImages($array, $type, &$completearray){
 
         foreach($array as $nin) {
-
+            $arraytopush = [];
 
             if (array_key_exists('name', $nin)) {
                 if ($nin['name']['text'] !== '') {
@@ -433,16 +459,25 @@ class RestController extends \yii\web\Controller
 
                             if (array_key_exists('reference', $history)) {
                                 if (array_key_exists('image', $history['reference']) && array_key_exists('name', $history['reference'])) {
-                                    if (!key_exists($nin['name']['text'],$completearray)) {
-                                        $completearray[$nin['name']['text']] = [];
-                                    }
-                                    if (!key_exists('images',$completearray[$nin['name']['text']])) {
-                                        $completearray[$nin['name']['text']]['images'] = [];
-                                    }
-                                    $history['reference']['preface'] = "What is this? ";
-                                    $history['reference']['question'] = $history['reference']['image'];
-                                    $history['reference']['answer'] = $history['reference']['name']['text'];
-                                    array_push($completearray[$nin['name']['text']]['images'],$history['reference']);
+//                                    if (!key_exists($nin['name']['text'],$completearray)) {
+//                                        $completearray[$nin['name']['text']] = [];
+//                                    }
+//                                    if (!key_exists('images',$completearray[$nin['name']['text']])) {
+//                                        $completearray[$nin['name']['text']]['images'] = [];
+//                                    }
+//                                    $history['reference']['preface'] = "What is this? ";
+//                                    $history['reference']['question'] = $history['reference']['image'];
+//                                    $history['reference']['answer'] = $history['reference']['name']['text'];
+//                                    array_push($completearray[$nin['name']['text']]['images'],$history['reference']);
+
+                                    $arraytopush['id'] = $nin['id'];
+                                    $arraytopush['name'] = $nin['name']['text'];
+                                    $arraytopush['key'] = $history['key'];
+                                    $arraytopush['type'] = "image";
+                                    $arraytopush['preface'] = "What is this? ";
+                                    $arraytopush['question'] = $history['reference']['image'];
+                                    $arraytopush['answer'] = $history['reference']['name']['text'];
+
 //                                    array_push($completearray[$nin['name']['text']]['images']['history'],  $history['reference']);
                                     $idx++;
                                 }
@@ -454,9 +489,11 @@ class RestController extends \yii\web\Controller
 
 
 
-            } else {
-//                echo 'ga ada';
             }
+            if (!empty($arraytopush)) {
+                array_push($completearray, $arraytopush);
+            }
+
         }
         return;
     }
@@ -758,7 +795,8 @@ class RestController extends \yii\web\Controller
 //        print_r(array_keys($completearray));
 
             \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-            return array_values($completearray);
+//            return array_values($completearray);
+        return $completearray;
 
     }
 
