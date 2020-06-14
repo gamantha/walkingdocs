@@ -409,19 +409,34 @@ class RestController extends \yii\web\Controller
                         $diffstring = $diffstring . ', ' . $history['name']['text'];
 
                     }
+
+                    if (strpos($nin['name']['text'], '(')) {
+                        $defarraytopush['name']  = trim(substr($nin['name']['text'], 0, strpos($nin['name']['text'], '('))) ;
+                        $diffarraytopush['name'] = $defarraytopush['name'];
+                    } else {
+                        $defarraytopush['name']  = trim($nin['name']['text']);
+                        $diffarraytopush['name'] = $defarraytopush['name'];
+                    }
+
+
                     $diffarraytopush['id'] = $nin['id'];
-                    $diffarraytopush['name'] = $nin['name']['text'];
+
                     $diffarraytopush['type'] = "differential_diagnosis";
                     $diffarraytopush['preface'] = "What is the differential diagnosis for ";
-                    $diffarraytopush['question'] = $nin['name']['text'];
+                    $diffarraytopush['question'] = $diffarraytopush['name'];
                     $diffarraytopush['answer'] = substr($diffstring,2);
 
                     $defarraytopush['id'] = $nin['id'];
-                    $defarraytopush['name'] = $nin['name']['text'];
+
+
+
                     $defarraytopush['type'] = "definition";
                     $defarraytopush ['preface'] = "Describe ";
-                    $defarraytopush ['question'] = $nin['name']['text'];
+                    $defarraytopush ['question'] = $diffarraytopush['name'];
                     $defarraytopush ['answer'] = $nin['background']['text'] ;
+
+
+
 
 //                    $completearray[$nin['name']['text']]['differential_diagnosis']['preface'] = "What is the differential diagnosis for ";
 //                    $completearray[$nin['name']['text']]['differential_diagnosis']['question'] = $nin['name']['text'];
