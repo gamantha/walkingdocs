@@ -38,7 +38,94 @@ class RestController extends \yii\web\Controller
         return $this->render('index');
     }
 
+    public function actionForgotpassword($userId) {
 
+
+
+        $args = [
+            'credentials' => [
+                'key' => 'AKIAITUU3I7XGWNZAQNQ',
+                'secret' => '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',
+            ],
+            'region' => 'ap-southeast-1',
+            'version' => 'latest',
+
+            'app_client_id' => '7oogi1gfr7hgod62cv1re21g87',
+            'app_client_secret' => 'bl18m3fbika2be35f34n2m1edvvmbqj0v4fc84dqba2q36cp5j5',
+            'user_pool_id' => 'ap-southeast-1_MyfrNxgT8'
+        ];
+
+        $client = new CognitoIdentityProviderClient($args);
+
+//        $userId = "renowijoyo@gmail.com";
+        $clientId = "7oogi1gfr7hgod62cv1re21g87";
+        $clientSecret = "bl18m3fbika2be35f34n2m1edvvmbqj0v4fc84dqba2q36cp5j5";
+        $s = hash_hmac('sha256', $userId.$clientId, $clientSecret, true);
+        $secret_hash =  base64_encode($s);
+
+        $result = $client->forgotPassword([
+            'AnalyticsMetadata' => [
+//                'AnalyticsEndpointId' => '<string>',
+            ],
+            'ClientId' => $clientId, // REQUIRED
+//            'ClientMetadata' => ['<string>', ...],
+            'SecretHash' => $secret_hash,
+            'UserContextData' => [
+//                'EncodedData' => '<string>',
+            ],
+            'Username' => $userId, // REQUIRED
+        ]);
+
+//        $accessToken = $result->get('AuthenticationResult')['AccessToken'];
+
+        return $result;
+
+
+    }
+
+    public function actionConfirmforgotpassword($userId,$confirmCode,$newPassword) {
+
+
+
+        $args = [
+            'credentials' => [
+                'key' => 'AKIAITUU3I7XGWNZAQNQ',
+                'secret' => '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',
+            ],
+            'region' => 'ap-southeast-1',
+            'version' => 'latest',
+
+            'app_client_id' => '7oogi1gfr7hgod62cv1re21g87',
+            'app_client_secret' => 'bl18m3fbika2be35f34n2m1edvvmbqj0v4fc84dqba2q36cp5j5',
+            'user_pool_id' => 'ap-southeast-1_MyfrNxgT8'
+        ];
+
+        $client = new CognitoIdentityProviderClient($args);
+
+//        $userId = "renowijoyo@gmail.com";
+        $clientId = "7oogi1gfr7hgod62cv1re21g87";
+        $clientSecret = "bl18m3fbika2be35f34n2m1edvvmbqj0v4fc84dqba2q36cp5j5";
+        $s = hash_hmac('sha256', $userId.$clientId, $clientSecret, true);
+        $secret_hash =  base64_encode($s);
+
+        $result = $client->confirmForgotPassword([
+            'AnalyticsMetadata' => [
+//                'AnalyticsEndpointId' => '<string>',
+            ],
+            'ClientId' => $clientId, // REQUIRED
+//            'ClientMetadata' => ['<string>', ...],
+            'ConfirmationCode' => $confirmCode, // REQUIRED
+            'Password' => $newPassword, // REQUIRED
+            'SecretHash' => $secret_hash,
+            'UserContextData' => [
+//                'EncodedData' => '<string>',
+            ],
+            'Username' => $userId, // REQUIRED
+        ]);
+
+return $result;
+
+    }
     public function actionGetnewcache() {
 
 
