@@ -2,9 +2,12 @@
 
 namespace app\controllers\learning;
 use app\models\learning\Feedback;
+use app\models\learning\Heartbeat;
+use app\models\Like;
 use Aws\CognitoIdentityProvider\CognitoIdentityProviderClient;
 use SimpleXMLElement;
 use Yii;
+use yii\db\Expression;
 use yii\filters\VerbFilter;
 use yii\helpers\Json;
 use yii\web\Response;
@@ -14,6 +17,8 @@ USE Flow\JSONPath\JSONPath;
 use JsonPath\JsonObject;
 
 use Aws\CognitoIdentity\CognitoIdentityClient;
+use yii\web\NotFoundHttpException;
+
 
 
 
@@ -36,6 +41,95 @@ class RestController extends \yii\web\Controller
     public function actionIndex()
     {
         return $this->render('index');
+    }
+
+    public function actionGetlikes($itemId)
+    {
+        $likes = Like::find()
+//            ->andWhere(['userId' => $userId])
+            ->andWhere(['itemId' => $itemId])
+            ->andWhere(['like' => 'true'])
+//            ->andWhere(['type' => $type])
+            ->count();
+        $dislikes = Like::find()
+            ->andWhere(['itemId' => $itemId])
+            ->andWhere(['like' => 'false'])
+            ->count();
+        $nulls = Like::find()
+            ->andWhere(['itemId' => $itemId])
+            ->andWhere(['like' => null])
+            ->count();
+
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        return ['likes' => $likes,'dislikes' => $dislikes,'nulls' =>$nulls];
+    }
+    public function actionSetlikes()
+    {
+
+        if ($_POST) {
+
+            $userId = $_POST['userId'];
+            $itemId = $_POST['itemId'];
+            $type = $_POST['type'];
+            $isTrue = $_POST['isTrue'];
+
+            $exist = Like::find()
+                ->andWhere(['itemId' => $itemId])
+                ->andWhere(['userId' => $userId])
+                ->andWhere(['type' => $type])
+//                ->andWhere(['like' => $isTrue])
+                ->One();
+            if ($exist) {
+//                echo 'ada - update';
+                $exist->like = $isTrue;
+                $exist->modifiedAt = new Expression('NOW()');
+            } else {
+//                echo 'none - create new';
+                $exist = new Like();
+                $exist->userId = $userId;
+                $exist->itemId = $itemId;
+                $exist->type = $type;
+                $exist->like = $isTrue;
+                $exist->insertAt = new Expression('NOW()');
+            }
+
+
+            if ($exist->save()) {
+                \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+                return $exist;
+            } else {
+                throw new NotFoundHttpException();
+//                return 'feedback failed to save';
+            }
+        } else {
+            throw new NotFoundHttpException();
+//            return 'not allowed';
+        }
+
+
+
+
+
+    }
+    public function actionHeartbeat()
+    {
+        if ($_POST) {
+            $heartbeat = new Heartbeat();
+            $heartbeat->userId = $_POST['userId'];
+            $heartbeat->location = $_POST['location'];
+            $heartbeat->createdAt = new Expression('NOW()');
+            if ($heartbeat->save()) {
+                \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+                return $heartbeat;
+            } else {
+                throw new NotFoundHttpException();
+//                return 'feedback failed to save';
+            }
+        } else {
+            throw new NotFoundHttpException();
+//            return 'not allowed';
+        }
+
     }
 
     public function actionForgotpassword($userId) {
