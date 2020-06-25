@@ -59,9 +59,13 @@ class RestController extends \yii\web\Controller
             ->andWhere(['itemId' => $itemId])
             ->andWhere(['like' => null])
             ->count();
+        $blanks = Like::find()
+            ->andWhere(['itemId' => $itemId])
+            ->andWhere(['like' => ''])
+            ->count();
 
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-        return ['likes' => $likes,'dislikes' => $dislikes,'nulls' =>$nulls];
+        return ['likes' => (int) $likes,'dislikes' => (int) $dislikes,'neutrals' =>($nulls + $blanks) ];
     }
     public function actionSetlikes()
     {
