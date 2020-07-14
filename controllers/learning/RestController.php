@@ -43,7 +43,7 @@ class RestController extends \yii\web\Controller
         return $this->render('index');
     }
 
-    public function actionGetlikes($itemId)
+    public function actionGetlikes($itemId, $userId)
     {
         $likes = Like::find()
 //            ->andWhere(['userId' => $userId])
@@ -64,8 +64,15 @@ class RestController extends \yii\web\Controller
             ->andWhere(['like' => ''])
             ->count();
 
+        $islike = Like::find()->select('like')
+            ->andWhere(['itemId' => $itemId])
+            ->andWhere(['userId' => $userId])->one();
+//            ->andWhere(['like' => ''])
+//            ->count();
+
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-        return ['likes' => (int) $likes,'dislikes' => (int) $dislikes,'neutrals' =>($nulls + $blanks) ];
+//        return $islike;
+        return ['likes' => (int) $likes,'dislikes' => (int) $dislikes,'neutrals' =>($nulls + $blanks),'isLike' => $islike->like ];
     }
     public function actionSetlikes()
     {
