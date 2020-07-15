@@ -3,6 +3,7 @@
 namespace app\controllers\learning;
 use app\models\learning\Feedback;
 use app\models\learning\Heartbeat;
+use app\models\learning\Ratingcomment;
 use app\models\Like;
 use Aws\CognitoIdentityProvider\CognitoIdentityProviderClient;
 use SimpleXMLElement;
@@ -42,6 +43,62 @@ class RestController extends \yii\web\Controller
     {
         return $this->render('index');
     }
+
+    public function actionSetratings() {
+
+        if ($_POST) {
+
+            $userId = $_POST['userId'];
+            $rating = $_POST['rating'];
+            $comment = $_POST['comment'];
+
+
+
+        $exist = Ratingcomment::find()->andWhere(['userId' => $userId])->One();
+        if($exist) {
+//            echo 'yes';
+            $exist->rating = $rating;
+            $exist->comment = $comment;
+            $exist->updatedAt = new Expression('NOW()');
+        } else {
+            $exist = new Ratingcomment();
+            $exist->userId = $userId;
+            $exist->rating = $rating;
+            $exist->comment = $comment;
+            $exist->createdAt = new Expression('NOW()');
+
+        }
+
+        if ($exist->save()) {
+            \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+            return $exist;
+        } else {
+            throw new NotFoundHttpException();
+//                return 'feedback failed to save';
+        }
+
+    } else {
+throw new NotFoundHttpException();
+//            return 'not allowed';
+}
+
+
+}
+    public function actionGetratings($userId)
+    {
+
+        $sumratings = Ratingcomment::find()->sum('rating');
+        $countratings = Ratingcomment::find()->count('rating');
+        $total_average = $sumratings / $countratings;
+
+
+
+$ratings = Ratingcomment::find()->andWhere(['userId' => $userId])->One();
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        return ['rating' => $ratings->rating,'comment' => $ratings->comment, 'total_count' => $countratings, 'total_sum' => $sumratings, 'total_average' => $total_average];
+
+    }
+
 
     public function actionGetlikes($itemId, $userId)
     {
