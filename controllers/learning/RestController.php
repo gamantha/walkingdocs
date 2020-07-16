@@ -99,6 +99,25 @@ $ratings = Ratingcomment::find()->andWhere(['userId' => $userId])->One();
 
     }
 
+    public function actionGetcomments($commentId, $count)
+    {
+
+
+        if ($commentId == '') {
+            $comments = Ratingcomment::find()
+                ->orderBy(['id' => SORT_DESC])
+                ->limit($count)->all();
+        } else {
+            $comments = Ratingcomment::find()
+                ->andWhere(['<','id', $commentId ])
+                ->orderBy(['id' => SORT_DESC])
+                ->limit($count)->all();
+        }
+
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        return $comments;
+
+    }
 
     public function actionGetlikes($itemId, $userId)
     {
