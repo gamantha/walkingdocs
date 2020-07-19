@@ -94,6 +94,13 @@ throw new NotFoundHttpException();
 
 
 $ratings = Ratingcomment::find()->andWhere(['userId' => $userId])->One();
+if ($ratings) {
+
+} else {
+    $ratings = new Ratingcomment();
+    $ratings->rating = null;
+    $ratings->comment = null;
+}
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
         return ['rating' => $ratings->rating,'comment' => $ratings->comment, 'total_count' => $countratings, 'total_sum' => $sumratings, 'total_average' => $total_average];
 
