@@ -8,7 +8,7 @@ use Yii;
  * This is the model class for table "heartbeat".
  *
  * @property int $id
- * @property int|null $userId
+ * @property string|null $userId
  * @property string|null $createdAt
  * @property string|null $location
  */
@@ -36,9 +36,8 @@ class Heartbeat extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['userId'], 'integer'],
             [['createdAt'], 'safe'],
-            [['location'], 'string', 'max' => 255],
+            [['userId', 'location'], 'string', 'max' => 255],
         ];
     }
 

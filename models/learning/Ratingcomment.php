@@ -8,7 +8,7 @@ use Yii;
  * This is the model class for table "ratingcomment".
  *
  * @property int $id
- * @property int|null $userId
+ * @property string|null $userId
  * @property int|null $rating
  * @property string|null $comment
  * @property string|null $createdAt
@@ -38,9 +38,10 @@ class Ratingcomment extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['userId', 'rating'], 'integer'],
+            [['rating'], 'integer'],
             [['comment'], 'string'],
             [['createdAt', 'updatedAt'], 'safe'],
+            [['userId'], 'string', 'max' => 255],
         ];
     }
 
