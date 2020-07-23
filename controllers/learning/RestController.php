@@ -106,6 +106,36 @@ if ($ratings) {
 
     }
 
+
+    public function actionGetmycomment()
+    {
+
+
+        if ($_POST) {
+
+            $userId = $_POST['userId'];
+
+
+
+            $exist = Ratingcomment::find()->andWhere(['userId' => $userId])->One();
+            if($exist) {
+
+                \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+                return $exist;
+            } else {
+                $exist = new Ratingcomment();
+                \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+                return $exist;
+            }
+
+
+        } else {
+            throw new NotFoundHttpException();
+//            return 'not allowed';
+        }
+
+    }
+
     public function actionGetcomments($commentId, $count)
     {
 
