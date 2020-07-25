@@ -643,6 +643,9 @@ return $result;
                 if (key_exists('type', $eq)) {
                     //$eq->text = "{ name : " . $eq->type. "}";
                     $eq->text['name'] = ' ' . $this->deEquation($eq->type) . ' ';
+                    $eq->HTMLclass = ' ' . $this->deEquation($eq->type) . ' ';
+                    $eq->connectors['style']['stroke'] = 'red';
+
                     unset($eq->type);
                 }
                 if (key_exists('items', $eq)) {
@@ -654,6 +657,7 @@ return $result;
                     $eq->children = [];
                     foreach ($eq->codes as $code) {
                         $temp['text']['name'] = ' ' . $this->removeTrailingNumber($code) . ' ';
+//                        $temp['HTMLclass']= ' ' . $this->removeTrailingNumber($code) . ' ';
                         array_push($eq->children, $temp);
                     }
                     unset($eq->codes);
@@ -670,6 +674,7 @@ return $result;
         } else { //IF equation is not array
             if (key_exists('type', $equation)) {
                 $equation->text['name'] = ' ' . $this->deEquation($equation->type) . ' ';
+//                $equation->text['HTMLclass'] = ' ' . $this->deEquation($equation->type) . ' ';
                 unset($equation->type);
             }
             //if $equation is not yet array
@@ -682,6 +687,7 @@ return $result;
                 $equation->children = [];
                 foreach ($equation->codes as $code) {
                     $temp['text']['name'] = ' ' . $this->removeTrailingNumber($code) . ' ';
+//                    $temp['HTMLclass'] = ' ' . $this->removeTrailingNumber($code) . ' ';
                     array_push($equation->children, $temp);
                 }
 

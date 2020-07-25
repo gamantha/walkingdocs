@@ -20,6 +20,25 @@ $this->registerJsFile(
     ['depends' => [\yii\web\JqueryAsset::className()]]
 );
 
+$this->registerCss("
+//body { background: #f00; }
+.Treant > .node.all { 
+  color: orange;
+  font-weight: bold;
+}
+
+.Treant > .node.not { 
+  color: red;
+  font-weight: bold;
+}
+
+.Treant > .node.only.one { 
+  color: blue;
+  font-weight: bold;
+}
+
+
+");
 
 //echo json_encode($json_object);
 
@@ -33,9 +52,16 @@ var simple_chart_config = {
 	},
 	nodeStructure: {
 			text: { name: "ALL" },
+							connectors : {
+				    style : {
+				    stroke : "red"
+				    }
+				},
 		children: [
 			{
 				text: { name: "ANY" },
+				HTMLclass : "any",
+
 				children: [
 					{
 						text: { name: "First Asthma Symptom" }
