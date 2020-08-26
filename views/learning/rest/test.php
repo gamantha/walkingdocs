@@ -23,20 +23,19 @@ $this->registerJsFile(
 $this->registerCss("
 //body { background: #f00; }
 .Treant > .node.all { 
-  color: #f53739ff;
+  color: orange;
   font-weight: bold;
 }
 
 .Treant > .node.not { 
-  color: #e19ff6ff;
+  color: red;
   font-weight: bold;
 }
 
 .Treant > .node.only.one { 
-  color: #ef9d9fff;
+  color: blue;
   font-weight: bold;
 }
-
 
 ");
 
@@ -123,10 +122,10 @@ $this->registerJs(
     View::POS_READY
 );
 
-$this->registerJs(
-    $js,
-    View::POS_READY
-);
+//$this->registerJs(
+//    $js,
+//    View::POS_READY
+//);
 
 //echo json_encode($json_object);
 ?>

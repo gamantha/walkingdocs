@@ -644,7 +644,7 @@ return $result;
                     //$eq->text = "{ name : " . $eq->type. "}";
                     $eq->text['name'] = ' ' . $this->deEquation($eq->type) . ' ';
                     $eq->HTMLclass = ' ' . $this->deEquation($eq->type) . ' ';
-//                    $eq->connectors['style']['stroke'] = 'red';
+                    $eq->connectors['style']['stroke'] = 'red';
 
                     unset($eq->type);
                 }
