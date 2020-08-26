@@ -23,17 +23,17 @@ $this->registerJsFile(
 $this->registerCss("
 //body { background: #f00; }
 .Treant > .node.all { 
-  color: orange;
+  color: #f53739ff;
   font-weight: bold;
 }
 
 .Treant > .node.not { 
-  color: red;
+  color: #e19ff6ff;
   font-weight: bold;
 }
 
 .Treant > .node.only.one { 
-  color: blue;
+  color: #ef9d9fff;
   font-weight: bold;
 }
 
@@ -113,10 +113,21 @@ new Treant( simple_chart_config );
 ';
 
 
+$js = '
+  $("p:contains(all)").css("background-color", "yellow");
+    alert($("p:contains(all)").html().split("all"));
+';
+
 $this->registerJs(
     $script2,
     View::POS_READY
 );
+
+$this->registerJs(
+    $js,
+    View::POS_READY
+);
+
 //echo json_encode($json_object);
 ?>
 
