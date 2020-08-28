@@ -644,7 +644,16 @@ return $result;
                     //$eq->text = "{ name : " . $eq->type. "}";
                     $eq->text['name'] = ' ' . $this->deEquation($eq->type) . ' ';
                     $eq->HTMLclass = ' ' . $this->deEquation($eq->type) . ' ';
-                    $eq->connectors['style']['stroke'] = 'red';
+                    if ($this->deEquation($eq->type) == 'all') {
+                        $eq->connectors['style']['stroke'] = 'orange';
+                    } elseif($this->deEquation($eq->type) == 'only one') {
+                        $eq->connectors['style']['stroke'] = 'blue';
+                    } elseif($this->deEquation($eq->type) == 'any') {
+                        $eq->connectors['style']['stroke'] = 'green';
+                    } else {
+                        $eq->connectors['style']['stroke'] = 'black';
+                    }
+
 
                     unset($eq->type);
                 }
@@ -674,6 +683,15 @@ return $result;
         } else { //IF equation is not array
             if (key_exists('type', $equation)) {
                 $equation->text['name'] = ' ' . $this->deEquation($equation->type) . ' ';
+//                if ($this->deEquation($equation->type) == 'all') {
+//                    $equation->connectors['style']['stroke'] = 'orange';
+//                } elseif($this->deEquation($equation->type) == 'only one') {
+//                    $equation->connectors['style']['stroke'] = 'blue';
+//                } elseif($this->deEquation($equation->type) == 'any') {
+//                    $equation->connectors['style']['stroke'] = 'green';
+//                } else {
+//                    $equation->connectors['style']['stroke'] = 'black';
+//                }
 //                $equation->text['HTMLclass'] = ' ' . $this->deEquation($equation->type) . ' ';
                 unset($equation->type);
             }

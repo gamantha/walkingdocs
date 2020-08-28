@@ -36,6 +36,11 @@ $this->registerCss("
   color: blue;
   font-weight: bold;
 }
+.Treant > .node.any { 
+  color: green;
+  font-weight: bold;
+}
+
 
 ");
 
