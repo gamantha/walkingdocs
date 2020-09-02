@@ -24,7 +24,6 @@ $this->registerCss("
 //body { background: #f00; }
 .Treant > .node.all { 
   color: orange;
-  font-weight: bold;
 }
 
 .Treant > .node.not { 
@@ -35,10 +34,11 @@ $this->registerCss("
 .Treant > .node.only.one { 
   color: blue;
   font-weight: bold;
+  
 }
 .Treant > .node.any { 
-  color: green;
-  font-weight: bold;
+  color: black;
+
 }
 
 

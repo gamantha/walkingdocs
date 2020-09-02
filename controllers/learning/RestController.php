@@ -645,13 +645,13 @@ return $result;
                     $eq->text['name'] = ' ' . $this->deEquation($eq->type) . ' ';
                     $eq->HTMLclass = ' ' . $this->deEquation($eq->type) . ' ';
                     if ($this->deEquation($eq->type) == 'all') {
-                        $eq->connectors['style']['stroke'] = 'orange';
+//                        $eq->connectors['style']['stroke'] = 'orange';
                     } elseif($this->deEquation($eq->type) == 'only one') {
-                        $eq->connectors['style']['stroke'] = 'blue';
+//                        $eq->connectors['style']['stroke'] = 'blue';
                     } elseif($this->deEquation($eq->type) == 'any') {
-                        $eq->connectors['style']['stroke'] = 'green';
+//                        $eq->connectors['style']['stroke'] = 'green';
                     } else {
-                        $eq->connectors['style']['stroke'] = 'black';
+//                        $eq->connectors['style']['stroke'] = 'black';
                     }
 
 
@@ -692,7 +692,7 @@ return $result;
 //                } else {
 //                    $equation->connectors['style']['stroke'] = 'black';
 //                }
-//                $equation->text['HTMLclass'] = ' ' . $this->deEquation($equation->type) . ' ';
+                $equation->HTMLclass = ' ' . $this->deEquation($equation->type) . ' ';
                 unset($equation->type);
             }
             //if $equation is not yet array
@@ -1588,11 +1588,11 @@ echo '<pre>';
         $this->traverseItems($json_object);
 
         $this->itemsToChildren($json_object);
-//
-//        $this->collapseNodes($json_object);
-//        $this->collapseSingle($json_object);
+
+
+//  TIDAK DINYALAKAN      $this->collapseSingle($json_object);
         $this->collapseNot($json_object);
-        echo '<hr/><hr/>';
+
         $this->collapseNot($json_object);
         ob_end_clean();
         ob_start();
@@ -1601,18 +1601,59 @@ echo '<pre>';
         ob_end_clean();
         ob_start();
 
+        $this->colorLines($json_object);
         return $this->renderAjax('test', [
             'json_object' => $json_object
         ]);
 
-        ob_end_clean();
-        ob_start();
-        echo '<pre>';
-        print_r($json_object);
-        echo '</pre>';
+//        ob_end_clean();
+//        ob_start();
+//        echo '<pre>';
+//        print_r($json_object);
+//        echo '</pre>';
 
         // return;
 
+    }
+
+    private function colorLines(&$json_object)
+    {
+        if (is_array($json_object)) {
+            foreach ($json_object as $each) {
+                if (key_exists('children', $each)) {
+                    $this->colorLines($each->children);
+                }
+//                echo $each->HTMLclass;
+                if (strpos($each->HTMLclass, 'not')) {
+                    $each->connectors['style']['stroke'] = 'red';
+                } else if (strpos($each->HTMLclass, 'all')) {
+                    $each->connectors['style']['stroke'] = 'orange';
+                } else if (strpos($each->HTMLclass, 'only one')) {
+                    $each->connectors['style']['stroke'] = 'blue';
+                } else if (strpos($each->HTMLclass, 'any')) {
+//                    $each->connectors['style']['stroke'] = 'red';
+                }
+//                $each->connectors['style']['stroke'] = 'red';
+//                echo '<br/>';
+                }
+//        echo '<pre>';
+//        print_r($json_object);
+//        echo '</pre>';
+        } else {
+//        echo '<pre>';
+//        print_r($json_object->text);
+//        echo '</pre>';
+            if (strpos($json_object->text['name'], 'not')) {
+                $json_object->connectors['style']['stroke'] = 'red';
+            } else if (strpos($json_object->text['name'], 'all')) {
+                $json_object->connectors['style']['stroke'] = 'orange';
+            } else if (strpos($json_object->text['name'], 'only one')) {
+                $json_object->connectors['style']['stroke'] = 'blue';
+            } else if (strpos($json_object->text['name'], 'any')) {
+//                    $each->connectors['style']['stroke'] = 'red';
+            }
+            $this->colorLines($json_object->children);
+        }
     }
 
 }
