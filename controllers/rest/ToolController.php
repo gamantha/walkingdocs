@@ -135,9 +135,15 @@ if(array_key_exists($input->input_name, $param)) {
         $equation = $toolModel->toolCalculations[0]->formula;
         $result = Parser::parse($equation, $ctx);
 
+        $resultrounded = 0;
+        if ($result >= 10) {
+            $resultrounded = round($result, 0);
+        } else {
+            $resultrounded = round($result, 1);
+        }
 
 
-        $ret['response']['result'] = $result;
+        $ret['response']['result'] = $resultrounded;
         $ret['response']['unit'] = $toolModel->background;
         $ret['response']['output_name'] = $output_name;
         $ret['response']['output_type'] = $output_type;
