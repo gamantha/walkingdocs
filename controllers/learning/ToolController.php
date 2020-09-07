@@ -169,6 +169,7 @@ class ToolController extends Controller
         $inputs = $model->toolInputs;
         $inputVals = [];
         $outputs = $model->toolOutputs;
+        $resultrounded = 0;
         //$output = $model->toolOutputs[0];
         if ($post = \Yii::$app->request->post()) {
 
