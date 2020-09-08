@@ -6,7 +6,12 @@ use Aws\CognitoIdentityProvider\CognitoIdentityProviderClient;
 
 class DashboardController extends \yii\web\Controller
 {
+
     public function actionIndex()
+    {
+        return $this->render('index');
+    }
+    public function actionCognito()
     {
         $args = [
             'credentials' => [
@@ -52,16 +57,37 @@ class DashboardController extends \yii\web\Controller
 
 //        print_r($accessToken);
 
-        $result = $client->listIdentities(array(
-            // IdentityPoolId is required
-            'IdentityPoolId' => 'string',
-            // MaxResults is required
-//            'MaxResults' => integer,
-            'NextToken' => 'string',
-//            'HideDisabled' => true || false,
-        ));
+
+        $result = $client->listUsers([
+//                    'AttributesToGet' => ['<string>', ...],
+//                    'Filter' => '<string>',
+//                    'Limit' => <integer>,
+//    'PaginationToken' => '<string>',
+ 'UserPoolId' => 'ap-southeast-1_MyfrNxgT8',
+]);
 
 
+//        $result = $client->listIdentities(array(
+//            // IdentityPoolId is required
+//            'IdentityPoolId' => 'string',
+//            // MaxResults is required
+////            'MaxResults' => integer,
+//            'NextToken' => 'string',
+////            'HideDisabled' => true || false,
+//        ));
+echo sizeof($result['Users']);
+
+foreach($result['Users'] as $user ) {
+    echo $user['Username'];
+    foreach($user['Attributes'] as $attribute) {
+        echo $attribute['Name'];
+        echo '<br/>';
+    }
+    echo '<br/>';
+}
+echo '<pre>';
+        print_r($result['Users']);
+        echo '</pre>';
         //return $this->render('index');
     }
 

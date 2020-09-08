@@ -1624,15 +1624,20 @@ echo '<pre>';
                     $this->colorLines($each->children);
                 }
 //                echo $each->HTMLclass;
-                if (strpos($each->HTMLclass, 'not')) {
-                    $each->connectors['style']['stroke'] = 'red';
-                } else if (strpos($each->HTMLclass, 'all')) {
-                    $each->connectors['style']['stroke'] = 'orange';
-                } else if (strpos($each->HTMLclass, 'only one')) {
-                    $each->connectors['style']['stroke'] = 'blue';
-                } else if (strpos($each->HTMLclass, 'any')) {
+                if(property_exists($each, 'HTMLclass')) {
+                    if (strpos($each->HTMLclass, 'not')) {
+                        $each->connectors['style']['stroke'] = 'red';
+                    } else if (strpos($each->HTMLclass, 'all')) {
+                        $each->connectors['style']['stroke'] = 'orange';
+                    } else if (strpos($each->HTMLclass, 'only one')) {
+                        $each->connectors['style']['stroke'] = 'blue';
+                    } else if (strpos($each->HTMLclass, 'any')) {
 //                    $each->connectors['style']['stroke'] = 'red';
+                    }
+                } else {
+//                    echo 'sdadadadsadsa';
                 }
+
 //                $each->connectors['style']['stroke'] = 'red';
 //                echo '<br/>';
                 }

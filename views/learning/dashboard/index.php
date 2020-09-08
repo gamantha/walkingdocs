@@ -24,6 +24,13 @@
 - % Thumbs Up for comprehensive – total # ratings
 - Comments listed in app but also categorized and displayed in Metrics/Dashboard
 **/
-echo '<br/># of Users : ';
-echo "<br/># of Users : ";
+echo '<h3># of Users : </h3><hr/>';
+echo '<h3># of Users by profession: </h3><hr/>';
+echo '<h3># of Users added per week : </h3><hr/>';
+echo '<h3>Average time per user on WD app per day : </h3><hr/>';
+echo '<h3>Most Popular checklist</h3><hr/>';
+echo '<h3>Average "Star" rating for app-number of ratings : </h3><hr/>';
+echo '<h3>Average "Star" rating for checklists-number of ratings : </h3><hr/>';
+echo '<h3>Average "Star" rating for quiz- number of ratings : </h3><hr/>';
+echo '<h3>Average "Star" rating for tools- number of ratings : </h3><hr/>';
 ?>
