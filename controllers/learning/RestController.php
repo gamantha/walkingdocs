@@ -1601,7 +1601,7 @@ echo '<pre>';
         ob_end_clean();
         ob_start();
 
-        $this->colorLines($json_object);
+//        $this->colorLines($json_object);
         return $this->renderAjax('test', [
             'json_object' => $json_object
         ]);
