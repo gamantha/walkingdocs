@@ -1601,7 +1601,7 @@ echo '<pre>';
         ob_end_clean();
         ob_start();
 
-//        $this->colorLines($json_object);
+        $this->colorLines($json_object);
         return $this->renderAjax('test', [
             'json_object' => $json_object
         ]);
@@ -1624,7 +1624,7 @@ echo '<pre>';
                     $this->colorLines($each->children);
                 }
 //                echo $each->HTMLclass;
-                if(property_exists($each, 'HTMLclass')) {
+                if((gettype($each) == 'object') && (property_exists($each, 'HTMLclass'))) {
                     if (strpos($each->HTMLclass, 'not')) {
                         $each->connectors['style']['stroke'] = 'red';
                     } else if (strpos($each->HTMLclass, 'all')) {
