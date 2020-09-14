@@ -2,16 +2,122 @@
 
 namespace app\controllers\learning;
 
+use app\models\learning\Like;
+use app\models\learning\Ratingcomment;
 use Aws\CognitoIdentityProvider\CognitoIdentityProviderClient;
+use JsonPath\JsonObject;
+USE Flow\JSONPath\JSONPath;
+use Yii;
+use yii\data\ArrayDataProvider;
+use yii\db\Query;
+use yii\data\ActiveDataProvider;
 
 class DashboardController extends \yii\web\Controller
 {
 
+    public function actionTest()
+    {
+        $this->layout = '@daxslab/coreui/views/layouts/main.php';
+        return $this->renderPartial('test',[
+
+        ]);
+    }
+
+    public function actionComments()
+    {
+        return $this->renderPartial('comments',[
+
+        ]);
+    }
     public function actionIndex()
     {
-        return $this->render('index');
+
+        $result = $this->getCognitoUsers();
+        $users_array = $this->getUserarray($result['Users']);
+        $occupation_array = $this->groupByOccupation($users_array);
+        $top_checklist = $this->topChecklist();
+        $checklist_arr = $this->getChecklistitem();
+        $average_rating = $this->getAveragerating();
+        $checklist_rating = $this->getChecklistrating();
+
+        $top_checklist_merge = [];
+
+
+        $ratingsquery = Ratingcomment::find();
+
+        $ratingsprovider = new ActiveDataProvider([
+            'query' => $ratingsquery,
+            'pagination' => [
+                'pageSize' => 10,
+            ],
+            'sort' => [
+//                'defaultOrder' => [
+//                    'created_at' => SORT_DESC,
+//                    'title' => SORT_ASC,
+//                ]
+            ],
+        ]);
+
+        foreach ($top_checklist as $top_item_key => $top_item_value) {
+            $arr_to_be_pushed = [];
+            $arr_to_be_pushed['itemId'] = $top_item_key;
+            $arr_to_be_pushed['count'] = $top_item_value;
+            if (key_exists($top_item_key,$checklist_arr)) {
+                $arr_to_be_pushed['name'] = $checklist_arr[$top_item_key];
+            }
+        array_push($top_checklist_merge, $arr_to_be_pushed);
+        }
+
+        $query = new Query;
+        $provider = new ArrayDataProvider([
+            'allModels' => $top_checklist_merge,
+            'sort' => [
+                //'attributes' => ['id', 'username', 'email'],
+            ],
+            'pagination' => [
+                'pageSize' => 10,
+            ],
+        ]);
+
+
+//echo '<pre>';
+//print_r($top_checklist_merge);
+//echo'</pre>';
+
+        return $this->render
+        ('index',[
+            'users' => $result,
+            'users_array' => $users_array,
+            'occupation_array' => $occupation_array,
+            'provider' => $provider,
+            'average_rating' => $average_rating,
+            'checklist_rating' => $checklist_rating,
+            'ratingsprovider' => $ratingsprovider
+            ]);
     }
-    public function actionCognito()
+
+    private function getUserarray($users) {
+        $ret_array = [];
+        foreach($users as $user ) {
+
+            $userobj['username'] = $user['Username'];
+            $userobj['create_date'] = $user['UserCreateDate']->format('Y-m-d H:i:s');
+            foreach($user['Attributes'] as $attribute) {
+                if ($attribute['Name'] == 'custom:occupation')
+                {
+                    $userobj['occupation'] =  $attribute['Value'];
+                } else if ($attribute['Name'] == 'email')
+                {
+                    $userobj['email'] =  $attribute['Value'];
+                }
+            }
+
+            array_push($ret_array, $userobj);
+        }
+        return $ret_array;
+    }
+
+    private function getCognitoUsers()
     {
         $args = [
             'credentials' => [
@@ -63,32 +169,110 @@ class DashboardController extends \yii\web\Controller
 //                    'Filter' => '<string>',
 //                    'Limit' => <integer>,
 //    'PaginationToken' => '<string>',
- 'UserPoolId' => 'ap-southeast-1_MyfrNxgT8',
-]);
+            'UserPoolId' => 'ap-southeast-1_MyfrNxgT8',
+        ]);
 
 
-//        $result = $client->listIdentities(array(
-//            // IdentityPoolId is required
-//            'IdentityPoolId' => 'string',
-//            // MaxResults is required
-////            'MaxResults' => integer,
-//            'NextToken' => 'string',
-////            'HideDisabled' => true || false,
-//        ));
-echo sizeof($result['Users']);
-
-foreach($result['Users'] as $user ) {
-    echo $user['Username'];
-    foreach($user['Attributes'] as $attribute) {
-        echo $attribute['Name'];
-        echo '<br/>';
+return $result;
     }
-    echo '<br/>';
-}
+    public function actionCognito()
+    {
+
+        $result = $this->getCognitoUsers();
+
+echo "Total users : "  . sizeof($result['Users']);
+echo '<hr/>';
+$users_array = $this->getUserarray($result['Users']);
+$occupation_array = $this->groupByOccupation($users_array);
+
 echo '<pre>';
-        print_r($result['Users']);
+//        print_r($result['Users']);
+//        print_r($users_array);
+        print_r($occupation_array);
         echo '</pre>';
         //return $this->render('index');
+    }
+
+    private function groupByOccupation(array $users_array)
+    {
+        $ret_array = [];
+//        $arr['occupation'] = '';
+        foreach ($users_array as $user) {
+            if (key_exists('occupation', $user)) {
+                $occupation = \_\lowerCase(trim($user['occupation']));
+                if (!key_exists( $occupation, $ret_array)) {
+                    $ret_array[$occupation] = [];
+                }
+            array_push($ret_array[$occupation], $user);
+            }
+
+        }
+        return $ret_array;
+    }
+
+    private function topChecklist()
+    {
+        $ret_array = [];
+        $likes = Like::find()
+            ->andWhere(['type' => 'checklist'])
+            ->andWhere(['like' => 'true'])
+            ->All();
+        foreach($likes as $like) {
+            if($like->like == 'true') {
+                if (!key_exists($like->itemId, $ret_array)) {
+                    $ret_array[$like->itemId] = 0;
+                }
+                $ret_array[$like->itemId]++;
+            }
+        }
+        arsort($ret_array);
+        return $ret_array;
+    }
+
+    public function getChecklistitem()
+    {
+
+        $ret_array = [];
+
+        $appPath = Yii::getAlias('@app');
+
+        $files = scandir($appPath . '/assets/checklists', 1);
+
+//        print_r($files);
+
+
+                $filecontent = file_get_contents("../assets/checklists/" . $files[0]);
+        $checklist = json_decode($filecontent);
+
+//        return $files[0];
+
+
+//
+        foreach ($checklist as $item)
+        {
+            $ret_array[$item->id] = $item->name->text;
+//            echo $item->id;
+//            echo $item->name->text;
+//            echo '<br/>';
+        }
+
+return $ret_array;
+    }
+    private function getAveragerating()
+    {
+        $sum = Ratingcomment::find()->sum('rating');
+        $count = Ratingcomment::find()->count('rating');
+        return $sum/$count;
+    }
+
+    public function getChecklistrating()
+    {
+        $ret_array = [];
+        $counttrue = Like::find()->andWhere(['like' => 'true'])->count();
+        $countall = Like::find()->count();
+
+        $percentage = $counttrue / $countall;
+        return $percentage  * 100;
     }
 
 }

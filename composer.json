@@ -29,7 +29,7 @@
         "andig/php-shunting-yard": "^1.0",
       "ext-json": "*",
         "yiisoft/yii2-bootstrap4": "^2.0",
-        "kartik-v/yii2-grid": "^3.3",
+        "kartik-v/yii2-grid": "dev-master",
         "kartik-v/yii2-editable": "^1.7",
         "kartik-v/yii2-datecontrol": "^1.9",
         "aws/aws-sdk-php": "^3.138",
@@ -39,8 +39,10 @@
         "nahid/jsonq": "^5.2",
         "lodash-php/lodash-php": "^0.0.6",
         "galbar/jsonpath": "^1.0",
+        "linq/php-linq": "^1.0",
         "flow/jsonpath": "^0.5.0",
-        "linq/php-linq": "^1.0"
+        "fruppel/yii2-googlecharts": "^1.2",
+        "daxslab/yii2-coreui": "*"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.1.0",

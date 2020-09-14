@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d33ef055e106fb35b3af3bfd7f9b22f2",
+    "content-hash": "292d51d713b0a6d14f6431d1944a7fd7",
     "packages": [
         {
             "name": "andig/php-shunting-yard",
@@ -135,7 +135,7 @@
             "version": "v3.4.1",
             "source": {
                 "type": "git",
-                "url": "git@github.com:twbs/bootstrap.git",
+                "url": "https://github.com/twbs/bootstrap.git",
                 "reference": "68b0d231a13201eb14acd3dc84e51543d16e5f7e"
             },
             "dist": {
@@ -177,7 +177,7 @@
             "version": "3.5.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/jquery/jquery-dist.git",
+                "url": "git@github.com:jquery/jquery-dist.git",
                 "reference": "4c0e4becb8263bb5b3e6dadc448d8e7305ef8215"
             },
             "dist": {
@@ -285,6 +285,87 @@
                 "markdown-extra"
             ],
             "time": "2018-03-26T11:24:36+00:00"
+        },
+        {
+            "name": "coreui/coreui",
+            "version": "v3.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/coreui/coreui.git",
+                "reference": "aed098b4037e14f6fb4dd7e4eb4b70868d6790ef"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/coreui/coreui/zipball/aed098b4037e14f6fb4dd7e4eb4b70868d6790ef",
+                "reference": "aed098b4037e14f6fb4dd7e4eb4b70868d6790ef",
+                "shasum": ""
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Open Source UI Kit built on top of Bootstrap 4.",
+            "homepage": "https://coreui.io/",
+            "keywords": [
+                "JS",
+                "css",
+                "framework",
+                "front-end",
+                "mobile-first",
+                "responsive",
+                "sass",
+                "web"
+            ],
+            "funding": [
+                {
+                    "url": "https://coreui.io/",
+                    "type": "custom"
+                }
+            ],
+            "time": "2020-09-02T20:16:24+00:00"
+        },
+        {
+            "name": "daxslab/yii2-coreui",
+            "version": "3.3.0.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/daxslab/yii2-coreui.git",
+                "reference": "52f1f058240302753b335cff9ff0a0e4855fcbd9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/daxslab/yii2-coreui/zipball/52f1f058240302753b335cff9ff0a0e4855fcbd9",
+                "reference": "52f1f058240302753b335cff9ff0a0e4855fcbd9",
+                "shasum": ""
+            },
+            "require": {
+                "coreui/coreui": "~3.3.0"
+            },
+            "type": "yii2-extension",
+            "autoload": {
+                "psr-4": {
+                    "daxslab\\coreui\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Daxslab",
+                    "email": "info@daxslab.com"
+                }
+            ],
+            "description": "CoreUi for Yii2",
+            "keywords": [
+                "coreui",
+                "layout",
+                "yii",
+                "yii2"
+            ],
+            "time": "2020-09-08T17:34:14+00:00"
         },
         {
             "name": "denissimon/formula-parser",
@@ -624,6 +705,49 @@
             ],
             "description": "JSONPath implementation for parsing, searching and flattening arrays",
             "time": "2019-07-15T17:23:22+00:00"
+        },
+        {
+            "name": "fruppel/yii2-googlecharts",
+            "version": "v1.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/fruppel/yii2-googlecharts.git",
+                "reference": "e50eadef8cf9fb78a8d8e0aa587400feea4bd30b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/fruppel/yii2-googlecharts/zipball/e50eadef8cf9fb78a8d8e0aa587400feea4bd30b",
+                "reference": "e50eadef8cf9fb78a8d8e0aa587400feea4bd30b",
+                "shasum": ""
+            },
+            "require": {
+                "yiisoft/yii2": "*"
+            },
+            "type": "yii2-extension",
+            "autoload": {
+                "psr-4": {
+                    "fruppel\\googlecharts\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Florian Ruppel",
+                    "email": "ruppel.florian@gmail.com"
+                }
+            ],
+            "description": "Google Charts widget for Yii2.",
+            "keywords": [
+                "Google Charts",
+                "chart",
+                "extension",
+                "widget",
+                "yii"
+            ],
+            "time": "2020-06-04T18:44:11+00:00"
         },
         {
             "name": "galbar/jsonpath",
@@ -1322,16 +1446,16 @@
         },
         {
             "name": "kartik-v/yii2-grid",
-            "version": "v3.3.5",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/kartik-v/yii2-grid.git",
-                "reference": "e4ba0c68ecb864e1a158f16cc73a5e73a6cdf7c7"
+                "reference": "3199b406f796ab761d6466d62fe132c965b1605a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kartik-v/yii2-grid/zipball/e4ba0c68ecb864e1a158f16cc73a5e73a6cdf7c7",
-                "reference": "e4ba0c68ecb864e1a158f16cc73a5e73a6cdf7c7",
+                "url": "https://api.github.com/repos/kartik-v/yii2-grid/zipball/3199b406f796ab761d6466d62fe132c965b1605a",
+                "reference": "3199b406f796ab761d6466d62fe132c965b1605a",
                 "shasum": ""
             },
             "require": {
@@ -1371,7 +1495,13 @@
                 "widget",
                 "yii2"
             ],
-            "time": "2020-03-27T11:31:59+00:00"
+            "funding": [
+                {
+                    "url": "https://opencollective.com/yii2-grid",
+                    "type": "open_collective"
+                }
+            ],
+            "time": "2020-07-08T07:12:17+00:00"
         },
         {
             "name": "kartik-v/yii2-krajee-base",
@@ -6843,6 +6973,7 @@
             "keywords": [
                 "tokenizer"
             ],
+            "abandoned": true,
             "time": "2017-11-27T05:48:46+00:00"
         },
         {
@@ -8421,7 +8552,8 @@
         "kartik-v/yii2-widget-datetimepicker": 20,
         "kartik-v/yii2-widget-typeahead": 20,
         "kartik-v/yii2-widget-select2": 20,
-        "kartik-v/yii2-widget-datepicker": 20
+        "kartik-v/yii2-widget-datepicker": 20,
+        "kartik-v/yii2-grid": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
