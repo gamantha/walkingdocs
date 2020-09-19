@@ -51,10 +51,10 @@ class DashboardController extends \yii\web\Controller
                 'pageSize' => 10,
             ],
             'sort' => [
-//                'defaultOrder' => [
-//                    'created_at' => SORT_DESC,
+                'defaultOrder' => [
+                    'rating' => SORT_DESC,
 //                    'title' => SORT_ASC,
-//                ]
+                ]
             ],
         ]);
 

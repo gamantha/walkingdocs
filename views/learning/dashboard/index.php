@@ -85,33 +85,13 @@ $colorPluginOptions =  [
     ]
 ];
 $gridColumns = [
-//[
-//    'class'=>'kartik\grid\SerialColumn',
-//    'contentOptions'=>['class'=>'kartik-sheet-style'],
-//    'width'=>'36px',
-//    'pageSummary'=>'Total',
-//    'pageSummaryOptions' => ['colspan' => 6],
-//    'header'=>'',
-//    'headerOptions'=>['class'=>'kartik-sheet-style']
-//],
     [
         'attribute' => 'rating',
-        'width' => '310px',
-//        'value' => function ($model, $key, $index, $widget) {
-//            return $model->supplier->company_name;
-//        },
-//        'filterType' => GridView::FILTER_SELECT2,
-//        'filter' => ArrayHelper::map(Suppliers::find()->orderBy('company_name')->asArray()->all(), 'id', 'company_name'),
-        'filterWidgetOptions' => [
-            'pluginOptions' => ['allowClear' => true],
-        ],
-
         'group' => true,  // enable grouping
     ],
-//'rating',
+
     [
         'attribute' => 'userId',
-        'width' => '250px',
 //        'value' => function ($model, $key, $index, $widget) {
 //            return $model->category->category_name;
 //        },
@@ -121,8 +101,8 @@ $gridColumns = [
             'pluginOptions' => ['allowClear' => true],
         ],
         'filterInputOptions' => ['placeholder' => 'Any category'],
-        'group' => true,  // enable grouping
-        'subGroupOf' => 0 // supplier column index is the parent group
+//        'group' => true,  // enable grouping
+//        'subGroupOf' => 0 // supplier column index is the parent group
     ],
 //    'userId',
     'comment'
