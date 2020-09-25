@@ -7,6 +7,7 @@ use app\models\learning\Ratingcomment;
 use Aws\CognitoIdentityProvider\CognitoIdentityProviderClient;
 use JsonPath\JsonObject;
 USE Flow\JSONPath\JSONPath;
+use kartik\grid\GridView;
 use Yii;
 use yii\data\ArrayDataProvider;
 use yii\db\Query;
@@ -28,6 +29,81 @@ class DashboardController extends \yii\web\Controller
         return $this->renderPartial('comments',[
 
         ]);
+    }
+
+    private function getLikes()
+    {
+
+    }
+    public function actionChecklist()
+    {
+
+        $checklist_array = [];
+        $likes = Like::find()->andWhere(['type' => 'checklist'])->andWhere(['like' => 'true'])->All();
+        $unlikes = Like::find()->andWhere(['type' => 'checklist'])->andWhere(['like' => 'false'])->All();
+        $neutrals = Like::find()->andWhere(['type' => 'checklist'])->andWhere(['like' => ''])->All();
+
+        foreach ($likes as $like) {
+            if (!key_exists($like['itemId'], $checklist_array)) {
+                $checklist_array[$like['itemId']]['likes'] = 0;
+                $checklist_array[$like['itemId']]['unlikes'] = 0;
+            }
+            $checklist_array[$like['itemId']]['likes']++ ;
+        }
+
+        foreach ($unlikes as $unlike) {
+            if (!key_exists($unlike['itemId'], $checklist_array)) {
+                $checklist_array[$unlike['itemId']]['likes'] = 0;
+                $checklist_array[$unlike['itemId']]['unlikes'] = 0;
+            }
+            $checklist_array[$unlike['itemId']]['unlikes']++ ;
+        }
+
+
+                echo '<pre>';
+        print_r($checklist_array);
+
+//        $likesprovider = new ActiveDataProvider([
+//            'query' => $neutralquery,
+//            'pagination' => [
+//                'pageSize' => 10,
+//            ],
+//            'sort' => [
+//                'defaultOrder' => [
+////                    'rating' => SORT_DESC,
+//////                    'title' => SORT_ASC,
+//                ]
+//            ],
+//        ]);
+
+
+
+//        $gridColumns = [
+//            [
+//                'attribute' => 'userId',
+//            ],
+//            'like'
+//        ];
+//        echo GridView::widget([
+//            'id' => 'kv-grid-demo',
+//            'dataProvider' => $likesprovider,
+//            'columns' => $gridColumns, // check the configuration for grid columns by clicking button above
+//            'containerOptions' => ['style' => 'overflow: auto'], // only set when $responsive = false
+//            'headerRowOptions' => ['class' => 'kartik-sheet-style'],
+//            'filterRowOptions' => ['class' => 'kartik-sheet-style'],
+//            'pjax' => true, // pjax is set to always true for this demo
+//            // set your toolbar
+//
+//            'toggleDataContainer' => ['class' => 'btn-group mr-2'],
+//            // set export properties
+//            'export' => [
+//                'fontAwesome' => true
+//            ],
+//
+//        ]);
+
+
+
     }
     public function actionIndex()
     {
