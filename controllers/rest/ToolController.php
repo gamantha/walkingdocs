@@ -137,7 +137,7 @@ if(array_key_exists($input->input_name, $param)) {
 
         $resultrounded = 0;
         if ($result >= 10) {
-            $resultrounded = round($result, 0);
+            $resultrounded = round($result, 1);
         } else {
             $resultrounded = round($result, 1);
         }
