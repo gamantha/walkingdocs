@@ -5,12 +5,9 @@ RUN cd /etc/apache2/mods-enabled && \
 
 # Install required PHP extensions
 # -- GD
-RUN apt-get update && \
-    apt-get install -y libfreetype6-dev && \
-    docker-php-ext-configure gd --with-freetype=/usr/include/ && \
-    docker-php-ext-install -j$(nproc) gd
-
-# -- mysql
-RUN docker-php-ext-install -j$(nproc) mysql pdo_mysql
+RUN apt-get update
+RUN apt-get install
+RUN apt-get install
+RUN apt-get clean
 
 COPY 000-default.conf /etc/apache2/sites-available/

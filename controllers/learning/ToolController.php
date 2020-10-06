@@ -193,7 +193,7 @@ class ToolController extends Controller
             $equation = $model->toolCalculations[0]->formula;
             $result = Parser::parse($equation, $ctx);
             if ($result >= 10) {
-                $resultrounded = round($result, 0);
+                $resultrounded = round($result, 1);
             } else {
                 $resultrounded = round($result, 1);
             }
