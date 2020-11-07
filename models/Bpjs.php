@@ -78,6 +78,8 @@ class Bpjs extends Model
 
 
     }
+
+
     public function getSpesialis()
     {
 
@@ -788,7 +790,32 @@ class Bpjs extends Model
     } 
     }
 
-    public function getPeserta($no_bpjs)
+    public function getPeserta($wdid, $no_bpjs)
+    {
+
+        $bpjs_user = self::getUsercreds($wdid);
+
+        $model = Peserta::find()->andWhere(['bpjs_no' => $no_bpjs])->One();
+
+
+                $client = new Client(['baseUrl' => 'https://dvlp.bpjs-kesehatan.go.id:9081/pcare-rest-v3.0/peserta/' . $no_bpjs]);
+                $request = $client->createRequest()
+                    ->setHeaders(['X-cons-id' => $bpjs_user['cons_id']])
+                    ->addHeaders(['content-type' => 'application/json'])
+                    ->addHeaders(['X-Timestamp' => $bpjs_user['time']])
+                    ->addHeaders(['X-Signature' => $bpjs_user['encoded_sig']])
+                    ->addHeaders(['X-Authorization' => $bpjs_user['encoded_auth_string']]);
+
+                $response = $request->send();
+
+                return $response->content;
+
+
+
+
+    }
+
+    public function getPesertaOld($no_bpjs)
     {
 
       $bpjs_user = self::getUsercreds(self::$globalWdId);

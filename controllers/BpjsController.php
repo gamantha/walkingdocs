@@ -806,22 +806,29 @@ class BpjsController extends \yii\web\Controller
         // your custom code here, if you want the code to run before action filters,
         // which are triggered on the [[EVENT_BEFORE_ACTION]] event, e.g. PageCache or AccessControl
 
-        if (!parent::beforeAction($action)) {
-            return false;
-        }
-        $consids = \app\models\UserCons::find()->andWhere(['userid' => yii::$app->user->id])->All();
-  if(sizeof($consids) == 0) {
-      Yii::$app->session->setFlash('danger', 'NO CONSID');
-      //return false;
-
-      return $this->redirect('site/noconsid');
-  }
+//        if (!parent::beforeAction($action)) {
+//            return false;
+//        }
+//        $consids = \app\models\UserCons::find()->andWhere(['userid' => yii::$app->user->id])->All();
+//  if(sizeof($consids) == 0) {
+//      Yii::$app->session->setFlash('danger', 'NO CONSID');
+//      //return false;
+//
+//      return $this->redirect('site/noconsid');
+//  }
 
         //return true; // or false to not run the action
 
         return parent::beforeAction($action);
     }
 
+
+
+    public function actionGetpeserta($wdid, $nokartu)
+    {
+     $user_bpjs = Bpjs::getPeserta($wdid,$nokartu);
+     print_r($user_bpjs);
+    }
 
 
 }
