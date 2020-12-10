@@ -1679,4 +1679,9 @@ print_r($result);
 curl_close($ch);
 
     }
+
+    public function actionTest()
+    {
+        return 'rete';
+    }
 }

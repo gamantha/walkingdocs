@@ -34,12 +34,12 @@ class Bpjs extends Model
     public $jenisKelasNama;
     public $jenisPesertaKode;
     public $jenisPesertaNama;
-    
 
-    static $globalConsId = '30428';
-    static $globalWdId = 'wdid1';
 
-    static $globalKdProviderPeserta = '0114U163';
+    public $globalConsId;
+    public $globalWdId;
+
+    public $globalKdProviderPeserta;
 
     /**
      * @return array the validation rules.
@@ -55,6 +55,14 @@ class Bpjs extends Model
            // ['password', 'validatePassword'],
         ];
     }
+
+    function __construct($wdid) {
+//        $this->globalConsId = '16744';
+        $this->globalWdId = $wdid;
+//        $this->globalKdProviderPeserta = '0114U163';
+
+    }
+
 
     public function loadData($data)
     {
@@ -593,15 +601,14 @@ class Bpjs extends Model
 
     }
 
-
-    public function addPendaftaran($kunjungan_id)
+    public function addPendaftaran2($kunjungan_id)
     {
-      $bpjs_user = self::getUsercreds(self::$globalWdId);
+        $bpjs_user = self::getUsercreds(self::$globalWdId);
 
 
-      $kunjunganModel = Kunjungan::findOne($kunjungan_id);
-      $kunjunganSakit = ($kunjunganModel->jenis_kunjungan == "sakit")? true : false;
-      $payload = '{
+        $kunjunganModel = Kunjungan::findOne($kunjungan_id);
+        $kunjunganSakit = ($kunjunganModel->jenis_kunjungan == "sakit")? true : false;
+        $payload = '{
         "kdProviderPeserta": "'.self::$globalKdProviderPeserta.'",
         "tglDaftar": "'.date("d-m-Y" , strtotime($kunjunganModel->tanggal_kunjungan)).'", 
         "noKartu": "'.$kunjunganModel->pendaftaran->no_bpjs.'",
@@ -617,6 +624,33 @@ class Bpjs extends Model
         "rujukBalik": 0,
         "kdTkp": "10"
       }';
+        try {
+
+            $client = new Client(['baseUrl' => 'https://dvlp.bpjs-kesehatan.go.id:9081/pcare-rest-v3.0/pendaftaran']);
+            $request = $client->createRequest()
+                ->setContent($payload)->setMethod('POST')
+                ->setHeaders(['X-cons-id' => $bpjs_user['cons_id']])
+                ->addHeaders(['content-type' => 'application/json'])
+                ->addHeaders(['X-Timestamp' => $bpjs_user['time']])
+                ->addHeaders(['X-Signature' => $bpjs_user['encoded_sig']])
+                ->addHeaders(['X-Authorization' => $bpjs_user['encoded_auth_string']]);
+
+            $response = $request->send();
+            return $response->content;
+            //return $kunjunganModel;
+            //return $payload;
+        } catch (\yii\base\Exception $exception) {
+
+            Yii::warning("ERROR GETTING RESPONSE FROM BPJS.");
+        }
+
+    }
+
+    public function addPendaftaran($payload)
+    {
+      $bpjs_user = self::getUsercreds($this->globalWdId);
+
+
       try {
 
       $client = new Client(['baseUrl' => 'https://dvlp.bpjs-kesehatan.go.id:9081/pcare-rest-v3.0/pendaftaran']);
@@ -630,8 +664,6 @@ class Bpjs extends Model
       
       $response = $request->send();
       return $response->content;
-      //return $kunjunganModel;
-      //return $payload;
     } catch (\yii\base\Exception $exception) {
 
      Yii::warning("ERROR GETTING RESPONSE FROM BPJS.");
@@ -641,7 +673,7 @@ class Bpjs extends Model
 
     public function addKunjungan($kunjungan_id)
     {
-      $bpjs_user = self::getUsercreds(self::$globalWdId);
+      $bpjs_user = self::getUsercreds($this->globalWdId);
       $kunjunganModel = Kunjungan::findOne($kunjungan_id);
       $rujukanModel = Rujukan::find()->andWhere(['kunjungan_id' => $kunjungan_id])->One();
       //$kunjunganModel = Kunjungan::find()->andWhere(['pendaftaran_id' => $kunjungan_id])->One();

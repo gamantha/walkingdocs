@@ -31,6 +31,13 @@ class BpjsController extends \yii\web\Controller
         ]);
     }
 
+    public function actionRegister()
+    {
+        return $this->render('/bpjs/register', [
+//            'searchModel' => $searchModel,
+//            'dataProvider' => $dataProvider,
+        ]);
+    }
     public function actionRegistration()
     {
 
@@ -219,25 +226,39 @@ class BpjsController extends \yii\web\Controller
 
     }
 
-    public function actionAddpendaftaran($id)
+    public function actionAddpendaftaran2($id)
     {
         $res = Bpjs::addPendaftaran($id);
         echo '<pre>';
         print_r($res);
-/*
-        if ($res != null) {
-            $json_response = json_decode($res);
-            if ($json_response->metaData->code == '200') {
-            } else {
-                Yii::$app->session->setFlash('warning', $json_response->response[0]->message);
-            }
-    echo '<pre>';
-    print_r($json_response);
-            //return $json_response;
-        } else {
-            return null;
-        }
-*/
+        /*
+                if ($res != null) {
+                    $json_response = json_decode($res);
+                    if ($json_response->metaData->code == '200') {
+                    } else {
+                        Yii::$app->session->setFlash('warning', $json_response->response[0]->message);
+                    }
+            echo '<pre>';
+            print_r($json_response);
+                    //return $json_response;
+                } else {
+                    return null;
+                }
+        */
+    }
+
+
+    public function actionAddpendaftaran()
+    {
+//
+
+
+        $post = file_get_contents('php://input');
+        $bpjsmodel = new Bpjs('wdid2');
+       $res = $bpjsmodel->addPendaftaran($post);
+print_r($res);
+//        print_r($_POST);
+
     }
     public function actionKunjungantobpjs($id)
     {
@@ -824,11 +845,13 @@ class BpjsController extends \yii\web\Controller
 
 
 
+
+
     public function actionGetpeserta($wdid, $nokartu)
     {
      $user_bpjs = Bpjs::getPeserta($wdid,$nokartu);
-     print_r($user_bpjs);
+//        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+     return $user_bpjs;
     }
-
 
 }
