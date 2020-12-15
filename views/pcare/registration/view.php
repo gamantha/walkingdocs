@@ -13,41 +13,59 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="pcare-registration-view">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+    <p>
+        <?php
+
+        echo Html::a(Yii::t('app', 'Registration Data'), ['pcare/registration/view', 'id' => $model->id], ['class' => 'btn btn-primary disabled']);
+        echo ' ';
+        echo Html::a(Yii::t('app', 'Visit Data'), ['pcare/visit/view', 'id' => $model->id], ['class' => 'btn btn-default']);
+
+
+        ?>
+    </p>
+
+    <h1>Registration Data : <?= Html::encode($this->title) ?></h1>
+<p>
+    <?php
+    echo Html::a(Yii::t('app', 'check peserta bpjs'), ['checkpeserta', 'id' => $model->id], ['class' => 'btn btn-default']);
+    ?>
+</p>
 
     <p>
-        <?= Html::a(Yii::t('app', 'Modify data registrasi'), ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+
         <?php
+        if ($model->status != 'registered') {
+            echo Html::a(Yii::t('app', 'Modify registration data'), ['update', 'id' => $model->id], ['class' => 'btn btn-warning']);
+        }
 
-//        if ($model->kdProviderPeserta != null) {
-//            echo Html::a(Yii::t('app', 'peserta aktif (re-check)'), ['checkpeserta', 'id' => $model->id], ['class' => 'btn btn-success']);
-//
-//        }  else {
-//            echo Html::a(Yii::t('app', 'check peserta bpjs'), ['checkpeserta', 'id' => $model->id], ['class' => 'btn btn-primary']);
-//        }
-        echo Html::a(Yii::t('app', 'check peserta bpjs'), ['checkpeserta', 'id' => $model->id], ['class' => 'btn btn-primary']);
+        else {
 
-
-
-//        echo Html::a(Yii::t('app', 'Delete'), ['delete', 'id' => $model->id], [
-//            'class' => 'btn btn-danger',
-//            'data' => [
-//                'confirm' => Yii::t('app', 'Are you sure you want to delete this item?'),
-//                'method' => 'post',
-//            ],
-//        ];
-        ?>
-        <?php
-        if ($model->status != null) {
             echo Html::a(Yii::t('app', 'Pcare registered'), ['register', 'id' => $model->id], ['class' => 'btn btn-default disabled']);
 
+            if ($model->status == 'submitted') {
+                echo Html::a(Yii::t('app', 'submitted'), ['pcare/visit/submit', 'id' => $model->id], ['class' => 'btn btn-default disabled']);
+            }  else {
+                echo Html::a(Yii::t('app', 'Submit to Pcare'), ['pcare/visit/submit', 'id' => $model->id], ['class' => 'btn btn-primary']);
 
-        }  else {
-            echo Html::a(Yii::t('app', 'Register to Pcare'), ['register', 'id' => $model->id], ['class' => 'btn btn-primary']);
+            }
+
+
+
+
+
         }
-        echo Html::a(Yii::t('app', 'VISIT DATA'), ['pcare/visit/view', 'id' => $model->id], ['class' => 'btn btn-primary']);
+
         ?>
 
+    </p>
+    <p>
+<?php
+if (empty($model->kdProviderPeserta)) {
+    echo Html::a(Yii::t('app', 'check bpjs peserta first'), ['register', 'id' => $model->id], ['class' => 'btn btn-default disabled']);
+} else {
+    echo Html::a(Yii::t('app', 'Register to Pcare'), ['register', 'id' => $model->id], ['class' => 'btn btn-success']);
+}
+   ?>
     </p>
 
     <?= DetailView::widget([
@@ -55,20 +73,21 @@ $this->params['breadcrumbs'][] = $this->title;
         'attributes' => [
 //            'id',
             'no_urut',
-//            'status',
-//            'kdProviderPeserta',
+            'status',
+            'kdProviderPeserta',
             'tglDaftar',
             'noKartu',
             'kdPoli',
             'kunjSakit',
             'keluhan:ntext',
-            'sistole',
-            'diastole',
-            'beratBadan',
-            'tinggiBadan',
-            'respRate',
-            'heartRate',
-            'rujukBalik',
+//            'sistole',
+//            'sistole',
+//            'diastole',
+//            'beratBadan',
+//            'tinggiBadan',
+//            'respRate',
+//            'heartRate',
+//            'rujukBalik',
             'kdTkp',
 //            'created_at',
 //            'modified_at',

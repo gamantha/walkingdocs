@@ -7,6 +7,7 @@ $reportingdb = require __DIR__ . '/reportingdb.php';
 
 $config = [
     'id' => 'basic',
+    'name'=>'PCare Bridging',
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
     'aliases' => [

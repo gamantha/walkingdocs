@@ -19,16 +19,26 @@ use yii\web\JsExpression;
 
 
     $this->registerJs(
+
         "$('#pcarevisit-kdstatuspulang').on('change', function() { 
-        
+        $('#rujukan').hide();
         if (this.value == 4) {
 //         alert('value ' + this.value); 
+           $('#rujukan').show();
         } else if (this.value == 6){
         alert('rujuk horizontal belum dipakai'); 
         }
        
         
         });
+        
+        if($('#pcarevisit-kdstatuspulang').val() == 4) {
+      
+          $('#rujukan').show();
+        } else {
+       
+         $('#rujukan').hide();
+        }
         
         $('input:radio[name=tipe_rujukan_vertikal]').on('change', function() { 
         if (this.value == 'khusus') {
@@ -63,12 +73,36 @@ use yii\web\JsExpression;
 
 
     <?php
-//    $listData = $this->context->getKesadaran();
-//    echo $form->field($model, 'kdSadar')->dropDownList(
-//        $listData,
-//        ['prompt'=>'Select...']);
-//
-//
+
+    //    kdTkp
+    //    10 -> rawat jalan
+    //    20 -> rawat inap
+    //    50 -> promotif
+
+    $refspesialis = [];
+    $refsarana = [];
+    $listData2 = [];
+    $refkhususdata = [];
+
+    $listData2 = $this->context->getDokter($model->pendaftaranId);
+    if (!empty($listData2)) {
+        $refsarana = $this->context->getSarana($model->pendaftaranId);
+        $refspesialis = $this->context->getReferensiSpesialis($model->pendaftaranId);
+        $refkhususdata = $this->context->getReferensiKhusus($model->pendaftaranId);
+        $refStatuspulang = $this->context->getStatuspulang($model->pendaftaranId);
+        $refKesadaran = $this->context->getKesadaran($model->pendaftaranId);
+    } else {
+        Yii::$app->session->addFlash('danger', 'pcare web service is DOWN');
+    }
+
+
+
+
+    echo $form->field($model, 'kdSadar')->dropDownList(
+        $refKesadaran,
+        ['prompt'=>'Select...']);
+
+
 
     ?>
 
@@ -82,11 +116,7 @@ use yii\web\JsExpression;
 //    20 -> rawat inap
 //    50 -> promotif
 
-//    $listData = $this->context->getStatuspulang($model->pendaftaran->kdTkp);
-//    echo $form->field($model, 'kdStatusPulang')->dropDownList(
-//        $listData,
-//        ['prompt'=>'Select...']);
-//
+
 
 
     ?>
@@ -101,6 +131,8 @@ use yii\web\JsExpression;
         'attribute' => 'tglPulang',
         //'language' => 'ru',
         'pluginOptions' => [
+            'todayHighlight' => true,
+            'todayBtn' => true,
             'autoclose'=>true,
             'format' => 'yyyy-mm-dd'
         ]
@@ -108,24 +140,6 @@ use yii\web\JsExpression;
     ?>
 
     <?php
-    //    kdTkp
-    //    10 -> rawat jalan
-    //    20 -> rawat inap
-    //    50 -> promotif
-
-    $refspesialis = [];
-    $refsarana = [];
-    $listData2 = [];
-    $refkhususdata = [];
-
-    $listData2 = $this->context->getDokter();
-        if (!empty($listData2)) {
-                $refsarana = $this->context->getSarana();
-    $refspesialis = $this->context->getReferensiSpesialis();
-    $refkhususdata = $this->context->getReferensiKhusus();
-        } else {
-            Yii::$app->session->addFlash('danger', 'pcare web service is DOWN');
-        }
 
 
     echo $form->field($model, 'kdDokter')->dropDownList(
@@ -144,11 +158,11 @@ use yii\web\JsExpression;
             'ajax' => [
                 'url' => $url,
                 'dataType' => 'json',
-                'data' => new JsExpression('function(params) { return {q:params.term}; }')
+                'data' => new JsExpression('function(params) { return {q:params.term, id:'.$model->id.'}; }')
             ],
             'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
-            'templateResult' => new JsExpression('function(city) { return (city.id + " : " + city.text); }'),
-            'templateSelection' => new JsExpression('function (city) { return (city.id + " : " + city.text); }'),
+            'templateResult' => new JsExpression('function(city) { return (city.id + " : " + city.text + " : " + city.nonspesialis); }'),
+            'templateSelection' => new JsExpression('function (city) { return (city.id + " : " + city.text + " : " + city.nonspesialis); }'),
         ],
     ]);
     echo $form->field($model, 'kdDiag2')->widget(Select2::classname(), [
@@ -162,11 +176,11 @@ use yii\web\JsExpression;
             'ajax' => [
                 'url' => $url,
                 'dataType' => 'json',
-                'data' => new JsExpression('function(params) { return {q:params.term}; }')
+                'data' => new JsExpression('function(params) { return {q:params.term, id:'.$model->id.'}; }')
             ],
             'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
-            'templateResult' => new JsExpression('function(city) { return (city.id + " : " + city.text); }'),
-            'templateSelection' => new JsExpression('function (city) { return (city.id + " : " + city.text); }'),
+            'templateResult' => new JsExpression('function(city) { return (city.id + " : " + city.text + " : " + city.nonspesialis); }'),
+            'templateSelection' => new JsExpression('function (city) { return (city.id + " : " + city.text + " : " + city.nonspesialis); }'),
         ],
     ]);
 
@@ -181,11 +195,11 @@ use yii\web\JsExpression;
             'ajax' => [
                 'url' => $url,
                 'dataType' => 'json',
-                'data' => new JsExpression('function(params) { return {q:params.term}; }')
+                'data' => new JsExpression('function(params) { return {q:params.term, id:'.$model->id.'}; }')
             ],
             'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
-            'templateResult' => new JsExpression('function(city) { return (city.id + " : " + city.text); }'),
-            'templateSelection' => new JsExpression('function (city) { return (city.id + " : " + city.text); }'),
+            'templateResult' => new JsExpression('function(city) { return (city.id + " : " + city.text + " : " + city.nonspesialis); }'),
+            'templateSelection' => new JsExpression('function (city) { return (city.id + " : " + city.text + " : " + city.nonspesialis); }'),
         ],
     ]);
 
@@ -196,8 +210,32 @@ use yii\web\JsExpression;
     <?php
 
 //    echo $form->field($model, 'kdPoliRujukInternal')->textInput(['maxlength' => true]);
+
+    echo $form->field($model, 'kdStatusPulang')->dropDownList(
+        $refStatuspulang,
+        ['prompt'=>'Select...']);
+
+
+
+
     ?>
 
+    <?= $form->field($registrationModel, 'sistole')->textInput(['maxlength' => true]) ?>
+
+    <?= $form->field($registrationModel, 'diastole')->textInput(['maxlength' => true]) ?>
+
+    <?= $form->field($registrationModel, 'beratBadan')->textInput(['maxlength' => true]) ?>
+
+    <?= $form->field($registrationModel, 'tinggiBadan')->textInput(['maxlength' => true]) ?>
+
+
+    <?= $form->field($registrationModel, 'respRate')->textInput(['maxlength' => true]) ?>
+
+
+    <?= $form->field($registrationModel, 'heartRate')->textInput(['maxlength' => true]) ?>
+
+
+        <div id="rujukan">
 
         <h3>Rujukan</h3>
 
@@ -290,7 +328,7 @@ use yii\web\JsExpression;
 
     <?= $form->field($model, 'alasanTacc')->textarea(['rows' => 6]) ?>
 
-
+        </div>
 
     <div class="form-group">
         <?= Html::submitButton(Yii::t('app', 'Save'), ['class' => 'btn btn-success']) ?>

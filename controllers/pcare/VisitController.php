@@ -101,17 +101,21 @@ $visit = PcareVisit::find()->andWhere(['pendaftaranId' => $id])->One();
     public function actionUpdate($id)
     {
         $model = PcareVisit::find()->andWhere(['pendaftaranId' => $id])->One();
+        $registrationModel = PcareRegistration::findOne($id);
         if ($model == null) {
             $model = new PcareVisit();
             $model->pendaftaranId = $id;
         }
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->pendaftaranId]);
+            if ($registrationModel->load(Yii::$app->request->post()) && $registrationModel->save()) {
+                return $this->redirect(['view', 'id' => $model->pendaftaranId]);
+            }
         }
 
         return $this->render('update', [
             'model' => $model,
+            'registrationModel' => $registrationModel
         ]);
     }
 
@@ -155,8 +159,8 @@ $visit = PcareVisit::find()->andWhere(['pendaftaranId' => $id])->One();
 
         $registration = PcareRegistration::findOne($id);
         $visit = PcareVisit::findOne($id);
-        $registration->setWdId('wdid2');
-        $visit->setWdId('wdid2');
+//        $registration->setWdId('wdid2');
+//        $visit->setWdId('wdid2');
         $response = $registration->Cekpeserta();
 
         $jsonval = json_decode($response);
@@ -170,21 +174,21 @@ $visit = PcareVisit::find()->andWhere(['pendaftaranId' => $id])->One();
                 $registerresp = $visit->submitvisitdata($id); //actual register to pcare
                 $jsonresp = json_decode($registerresp);
 
-                print_r($registerresp);
-//                if($jsonresp->metaData->message == 'CREATED') {
-//                    if(strpos($jsonresp->response->message, "null") ) {
-//                        Yii::$app->session->setFlash('danger', $registerresp);
-//                    } else {
-////                        echo 'no urut created ' . $jsonresp->response->message;
-//                        $registration->no_urut = $jsonresp->response->message;
-//                        $registration->status = 'pcare_created';
-//                        Yii::$app->session->setFlash('success', 'no urut created ' . $jsonresp->response->message);
-//                    }
-//                    $registration->save();
-//                } else {
-//                    Yii::$app->session->setFlash('danger', $registerresp);
-//
-//                }
+//                print_r($registerresp);
+                if($jsonresp->metaData->message == 'CREATED') {
+                    if(strpos($jsonresp->response->message, "null") ) {
+                        Yii::$app->session->setFlash('danger', $registerresp);
+                    } else {
+//                        echo 'no urut created ' . $jsonresp->response->message;
+                        $visit->noKunjungan = $jsonresp->response->message;
+                        $visit->status = 'submitted';
+                        Yii::$app->session->setFlash('success', 'no kunjungan received ' . $jsonresp->response->message);
+                    }
+                    $visit->save();
+                } else {
+                    Yii::$app->session->setFlash('danger', $registerresp);
+
+                }
             } else {
                 Yii::$app->session->setFlash('danger', 'peserta tidak valid');
             }
@@ -195,22 +199,22 @@ $visit = PcareVisit::find()->andWhere(['pendaftaranId' => $id])->One();
 
         //echo ' validate';
         Yii::$app->user->returnUrl = Yii::$app->request->referrer;
-//        return $this->goBack();
+        return $this->goBack();
 
     }
 
     public function actionApitest() {
         $registration = new PcareRegistration();
-        $registration->setWdId('wdid2');
+//        $registration->setWdId('wdid2');
         $kesadaran = $registration->getKesadaran();
 
         echo '<pre>';
         print_r($kesadaran);
     }
-    public function getKesadaran()
+    public function getKesadaran($pendaftaranId)
     {
-        $registration = new PcareRegistration();
-        $registration->setWdId('wdid2');
+        $registration = PcareRegistration::findOne($pendaftaranId);
+//        $registration->setWdId('wdid2');
         $kesadaran = $registration->getKesadaran();
         $json = json_decode($kesadaran);
 
@@ -233,11 +237,13 @@ $visit = PcareVisit::find()->andWhere(['pendaftaranId' => $id])->One();
 
     }
 
-    public function getStatuspulang($kdTkp)
+    public function getStatuspulang($pendaftaranId)
     {
-        $registration = new PcareRegistration();
-        $registration->setWdId('wdid2');
-        $kesadaran = $registration->getStatuspulang($kdTkp);
+
+//        $registration = PcareVisit::find()->andWhere(['pendaftaranId' => $pendaftaranId])->One();
+        $registration = PcareRegistration::findOne($pendaftaranId);
+//        $registration->setWdId('wdid2');
+        $kesadaran = $registration->getStatuspulang($pendaftaranId);
         $json = json_decode($kesadaran);
         $options = [];
         foreach ($json->response->list as $i)
@@ -248,11 +254,13 @@ $visit = PcareVisit::find()->andWhere(['pendaftaranId' => $id])->One();
         return $options;
     }
 
-    public function getDokter()
+    public function getDokter($pendaftaranId)
     {
-        $registration = new PcareRegistration();
-        $registration->setWdId('wdid2');
+        $registration = PcareRegistration::findOne($pendaftaranId);
+//        $registration->setWdId('wdid2');
         $kesadaran = $registration->getDokter();
+
+
         $json = json_decode($kesadaran);
         $options = [];
         if (isset($json->response)) {
@@ -269,10 +277,11 @@ $visit = PcareVisit::find()->andWhere(['pendaftaranId' => $id])->One();
         return $options;
     }
 
-    public function getReferensiKhusus()
+    public function getReferensiKhusus($pendaftaranId)
     {
-        $registration = new PcareVisit();
-        $registration->setWdId('wdid2');
+        $registration = PcareVisit::find()->andWhere(['pendaftaranId' => $pendaftaranId])->One();
+
+//        $registration->setWdId('wdid2');
         $kesadaran = $registration->getReferensiKhusus();
         $json = json_decode($kesadaran);
         $options = [];
@@ -289,10 +298,11 @@ $visit = PcareVisit::find()->andWhere(['pendaftaranId' => $id])->One();
 
         return $options;
     }
-    public function getReferensiSpesialis()
+    public function getReferensiSpesialis($pendaftaranId)
     {
-        $registration = new PcareVisit();
-        $registration->setWdId('wdid2');
+        $registration = PcareVisit::find()->andWhere(['pendaftaranId' => $pendaftaranId])->One();
+//        $registration = new PcareVisit();
+//        $registration->setWdId('wdid2');
         $kesadaran = $registration->getReferensiSpesialis();
         $json = json_decode($kesadaran);
         $options = [];
@@ -307,10 +317,9 @@ $visit = PcareVisit::find()->andWhere(['pendaftaranId' => $id])->One();
         }
         return $options;
     }
-    public function getSarana()
+    public function getSarana($pendaftaranId)
     {
-        $registration = new PcareVisit();
-        $registration->setWdId('wdid2');
+        $registration = PcareVisit::find()->andWhere(['pendaftaranId' => $pendaftaranId])->One();
         $kesadaran = $registration->getSarana();
         $json = json_decode($kesadaran);
         $options = [];
@@ -330,23 +339,22 @@ $visit = PcareVisit::find()->andWhere(['pendaftaranId' => $id])->One();
 
 
 
-    public function actionDiagnosecode($q = null)
+    public function actionDiagnosecode($q = null, $id)
     {
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
         $out = ['results' => [['id' => '', 'text' => '']]];
         if (!is_null($q)) {
-            $registration = new PcareRegistration();
-            $visit = new PcareVisit();
-            $registration->setWdId('wdid2');
-            $visit->setWdId('wdid2');
+
+            $visit = PcareVisit::findOne($id);
+
+//            $visit->setWdId('wdid2');
             $response = $visit->getDiagnosecodes($q);
 
             $jsonval = json_decode($response);
-            if (isset($json->response)) {
-
+            if (isset($jsonval->response)) {
 
                 foreach ($jsonval->response->list as $item) {
-                    $temp = ['id' => $item->kdDiag, 'text' => $item->nmDiag];
+                    $temp = ['id' => $item->kdDiag, 'text' => $item->nmDiag, 'nonspesialis' => var_export($item->nonSpesialis, true)];
                     array_push($out['results'], $temp);
                 }
                 array_shift($out['results']);

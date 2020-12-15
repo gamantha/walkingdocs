@@ -110,10 +110,10 @@ class PcareRegistration extends \yii\db\ActiveRecord
         }
     }
 
-    public function getUsercreds($wdId)
+    public function getUsercreds($consId)
     {
         $usercreds = [];
-        $bpjs_user = Consid::find()->andWhere(['wd_id' => $wdId])->One();
+        $bpjs_user = Consid::find()->andWhere(['cons_id' => $consId])->One();
         $usercreds['username'] = $bpjs_user->username;
         $usercreds['password'] = $bpjs_user->password;
         $usercreds['kdaplikasi'] = $bpjs_user->kdaplikasi;
@@ -138,7 +138,7 @@ class PcareRegistration extends \yii\db\ActiveRecord
 
     public function Cekpeserta()
     {
-        $bpjs_user = self::getUsercreds($this->wdId);
+        $bpjs_user = self::getUsercreds($this->cons_id);
 
 
         try {
@@ -165,7 +165,7 @@ class PcareRegistration extends \yii\db\ActiveRecord
 
     public function Register($id)
     {
-        $bpjs_user = self::getUsercreds($this->wdId);
+        $bpjs_user = self::getUsercreds($this->cons_id);
 
         $registrationModel = PcareRegistration::findOne($id);
     echo '<pre>';
@@ -212,16 +212,16 @@ class PcareRegistration extends \yii\db\ActiveRecord
 
 public function setConsId($consId)
 {
-    $this->consId = $consId;
+    $this->cons_id = $consId;
 }
-    public function setWdId($wdId)
-    {
-        $this->wdId = $wdId;
-    }
+//    public function setWdId($consId)
+//    {
+//        $this->consId = $consId;
+//    }
 
     public function getKesadaran()
     {
-        $bpjs_user = self::getUsercreds($this->wdId);
+        $bpjs_user = self::getUsercreds($this->cons_id);
         try {
 
             $client = new Client(['baseUrl' => 'https://dvlp.bpjs-kesehatan.go.id:9081/pcare-rest-v3.0/kesadaran']);
@@ -245,12 +245,12 @@ public function setConsId($consId)
     {
 
         $true = '';
-        if ($kdTkp == 10) {
+        if ($this->kdTkp == 10) {
             $true = 'false';
-        } else if  ($kdTkp == 20) {
+        } else if  ($this->kdTkp == 20) {
             $true = 'true';
         }
-        $bpjs_user = self::getUsercreds($this->wdId);
+        $bpjs_user = self::getUsercreds($this->cons_id);
         try {
 
             $client = new Client(['baseUrl' => 'https://dvlp.bpjs-kesehatan.go.id:9081/pcare-rest-v3.0/statuspulang/rawatInap/' . $true]);
@@ -273,7 +273,7 @@ public function setConsId($consId)
     public function getDokter()
     {
 
-        $bpjs_user = self::getUsercreds($this->wdId);
+        $bpjs_user = self::getUsercreds($this->cons_id);
         try {
 
             $client = new Client(['baseUrl' => 'https://dvlp.bpjs-kesehatan.go.id:9081/pcare-rest-v3.0/dokter/0/999']);
@@ -295,7 +295,7 @@ public function setConsId($consId)
 
     public function getPendaftaranprovider($date)
     {
-        $bpjs_user = self::getUsercreds($this->wdId);
+        $bpjs_user = self::getUsercreds($this->cons_id);
         try {
 
             $client = new Client(['baseUrl' => 'https://dvlp.bpjs-kesehatan.go.id:9081/pcare-rest-v3.0/pendaftaran/tglDaftar/'.$date.'/0/999']);
@@ -314,6 +314,31 @@ public function setConsId($consId)
             Yii::warning("ERROR GETTING RESPONSE FROM BPJS.");
             return $exception;
         }
+    }
+
+    public function deletePcare() {
+        $bpjs_user = self::getUsercreds($this->cons_id);
+        try {
+//            peserta/0001113569638/tglDaftar/31-10-2020/noUrut/A1/kdPoli/001
+            $client = new Client(['baseUrl' => 'https://dvlp.bpjs-kesehatan.go.id:9081/pcare-rest-v3.0/pendaftaran/peserta/'.$this->noKartu.'/tglDaftar/'
+                .date("d-m-Y" , strtotime($this->tglDaftar)).'/noUrut/'.$this->no_urut.'/kdPoli/' . $this->kdPoli]);
+            $request = $client->createRequest()
+//                ->setContent($payload)
+                ->setMethod('DELETE')
+                ->setHeaders(['X-cons-id' => $bpjs_user['cons_id']])
+                ->addHeaders(['content-type' => 'application/json'])
+                ->addHeaders(['X-Timestamp' => $bpjs_user['time']])
+                ->addHeaders(['X-Signature' => $bpjs_user['encoded_sig']])
+                ->addHeaders(['X-Authorization' => $bpjs_user['encoded_auth_string']]);
+
+            $response = $request->send();
+            return $response;
+        } catch (\yii\base\Exception $exception) {
+
+            Yii::warning("ERROR GETTING RESPONSE FROM BPJS.");
+            return $exception;
+        }
+
     }
 
 

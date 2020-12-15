@@ -40,6 +40,8 @@ use kartik\select2\Select2;
  */
 class PcareVisit extends \yii\db\ActiveRecord
 {
+
+    public $wdId;
     /**
      * {@inheritdoc}
      */
@@ -117,10 +119,10 @@ class PcareVisit extends \yii\db\ActiveRecord
 
     public function Submitvisitdata($id)
     {
-        $bpjs_user = self::getUsercreds($this->wdId);
+        $bpjs_user = self::getUsercreds($this->pendaftaran->cons_id);
 
         $visitModel = PcareVisit::findOne($id);
-        $registrationModel = PcareRegistration::findOne($id);
+        $registrationModel = PcareRegistration::findOne($visitModel->pendaftaranId);
 
 //        {
 //            "noKunjungan": null,
@@ -225,10 +227,10 @@ class PcareVisit extends \yii\db\ActiveRecord
     }
 
 
-    public function getUsercreds($wdId)
+    public function getUsercreds($cons_id)
     {
         $usercreds = [];
-        $bpjs_user = Consid::find()->andWhere(['wd_id' => $wdId])->One();
+        $bpjs_user = Consid::find()->andWhere(['cons_id' => $cons_id])->One();
         $usercreds['username'] = $bpjs_user->username;
         $usercreds['password'] = $bpjs_user->password;
         $usercreds['kdaplikasi'] = $bpjs_user->kdaplikasi;
@@ -253,7 +255,9 @@ class PcareVisit extends \yii\db\ActiveRecord
 
     public function getDiagnosecodes($keyword)
     {
-        $bpjs_user = self::getUsercreds($this->wdId);
+        $clinic = Consid::find()->andWhere(['wd_id' => 'wdid2'])->One();
+        $bpjs_user = self::getUsercreds($clinic->cons_id);
+//        $bpjs_user = self::getUsercreds($this->pendaftaran->cons_id);
         try {
 
             $client = new Client(['baseUrl' => 'https://dvlp.bpjs-kesehatan.go.id:9081/pcare-rest-v3.0/diagnosa/'.$keyword.'/0/1000']);
@@ -276,7 +280,7 @@ class PcareVisit extends \yii\db\ActiveRecord
 
     public function getReferensiSpesialis()
     {
-        $bpjs_user = self::getUsercreds($this->wdId);
+        $bpjs_user = self::getUsercreds($this->pendaftaran->cons_id);
         try {
 
             $client = new Client(['baseUrl' => 'https://dvlp.bpjs-kesehatan.go.id:9081/pcare-rest-v3.0/spesialis']);
@@ -300,7 +304,7 @@ class PcareVisit extends \yii\db\ActiveRecord
 
     public function getReferensiKhusus()
     {
-        $bpjs_user = self::getUsercreds($this->wdId);
+        $bpjs_user = self::getUsercreds($this->pendaftaran->cons_id);
         try {
 
             $client = new Client(['baseUrl' => 'https://dvlp.bpjs-kesehatan.go.id:9081/pcare-rest-v3.0/spesialis/khusus']);
@@ -322,7 +326,7 @@ class PcareVisit extends \yii\db\ActiveRecord
 
     public function getSarana()
     {
-        $bpjs_user = self::getUsercreds($this->wdId);
+        $bpjs_user = self::getUsercreds($this->pendaftaran->cons_id);
         try {
 
             $client = new Client(['baseUrl' => 'https://dvlp.bpjs-kesehatan.go.id:9081/pcare-rest-v3.0/spesialis/sarana']);
@@ -344,7 +348,7 @@ class PcareVisit extends \yii\db\ActiveRecord
 
     public function getKhusussubspesialis($keyword)
     {
-        $bpjs_user = self::getUsercreds($this->wdId);
+        $bpjs_user = self::getUsercreds($this->pendaftaran->cons_id);
         try {
 
             $client = new Client(['baseUrl' => 'https://dvlp.bpjs-kesehatan.go.id:9081/pcare-rest-v3.0/spesialis/'.$keyword.'/subspesialis']);
@@ -367,6 +371,11 @@ class PcareVisit extends \yii\db\ActiveRecord
     {
         $this->wdId = $wdId;
     }
+    public function setConsId($consId)
+    {
+        $this->consId = $consId;
+    }
+
 
 
 

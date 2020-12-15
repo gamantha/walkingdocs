@@ -23,6 +23,8 @@ use yii\widgets\ActiveForm;
         'attribute' => 'tglDaftar',
         //'language' => 'ru',
             'pluginOptions' => [
+                'todayHighlight' => true,
+                'todayBtn' => true,
         'autoclose'=>true,
         'format' => 'yyyy-mm-dd'
     ]
@@ -52,6 +54,9 @@ use yii\widgets\ActiveForm;
         ['prompt'=>'Select...']);
 
         ?>
+
+
+    <?= $form->field($model, 'keluhan')->textArea(['maxlength' => true]) ?>
 
 
 

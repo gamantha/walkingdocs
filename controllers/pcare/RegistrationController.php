@@ -17,6 +17,9 @@ use yii\filters\VerbFilter;
 
 /**
  * RegistrationController implements the CRUD actions for PcareRegistration model.
+ *
+ * registration status cycle :
+ * new -> modified -> registered -> modified -> registered -> modified -> deleted
  */
 class RegistrationController extends Controller
 {
@@ -73,7 +76,7 @@ class RegistrationController extends Controller
         $model = new PcareRegistration();
         $request = Yii::$app->request;
         $params = $request->bodyParams;
-//return json_encode($params);
+
         if (isset($params['clinicId'])) {
             $considmodel = Consid::find()->andWhere(['wd_id' => $params['clinicId']])->One();
             if (isset($considmodel->cons_id)) {
@@ -103,10 +106,11 @@ class RegistrationController extends Controller
             Yii::$app->session->addFlash('warning', "NO POST data");
         }
 
-
+        $model->status = 'new';
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             $pcarevisit = new PcareVisit();
             $pcarevisit->pendaftaranId = $model->id;
+            $pcarevisit->status = 'new';
             $pcarevisit->save();
             return $this->redirect(['view', 'id' => $model->id]);
         }
@@ -126,6 +130,10 @@ class RegistrationController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
+        if ($model->status != 'new') {
+            $model->status = 'modified';
+        }
+
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
@@ -169,7 +177,7 @@ class RegistrationController extends Controller
     public function actionCheckpeserta($id)
     {
         $registration = PcareRegistration::findOne($id);
-        $registration->setWdId('wdid2');
+//        $registration->setConsId('16744');
         $response = $registration->Cekpeserta();
 
         $jsonval = json_decode($response);
@@ -201,7 +209,7 @@ class RegistrationController extends Controller
     public function actionRegister($id)
     {
         $registration = PcareRegistration::findOne($id);
-        $registration->setWdId('wdid2');
+//        $registration->setWdId('wdid2');
         $response = $registration->Cekpeserta();
 
         $jsonval = json_decode($response);
@@ -211,25 +219,30 @@ class RegistrationController extends Controller
             {
                 $registration->kdProviderPeserta = $jsonval->response->kdProviderPst->kdProvider;
 
-//                $post = file_get_contents('php://input');
+
+                //check if status has been modified
+
                 $registerresp = $registration->register($id); //actual register to pcare
                 $jsonresp = json_decode($registerresp);
                 if($jsonresp->metaData->message == 'CREATED') {
                     if(strpos($jsonresp->response->message, "null") ) {
                         Yii::$app->session->setFlash('danger', $registerresp);
                     } else {
-//                        echo 'no urut created ' . $jsonresp->response->message;
                         $registration->no_urut = $jsonresp->response->message;
-                        $registration->status = 'pcare_created';
+                        $registration->status = 'registered';
                         Yii::$app->session->setFlash('success', 'no urut created ' . $jsonresp->response->message);
                     }
                                     $registration->save();
                 } else {
                     Yii::$app->session->setFlash('danger', $registerresp);
-//echo $registerresp;
+
                 }
 
-//print_r($jsonval->response->kdProviderPst->kdProvider);
+
+
+
+
+
             } else {
                 Yii::$app->session->setFlash('danger', 'peserta tidak valid');
             }
@@ -247,7 +260,7 @@ class RegistrationController extends Controller
 {
 
     $registration = new PcareRegistration();
-    $registration->setWdId('wdid2');
+    $registration->setConsId('16744');
 
 
 //    print_r($response);
@@ -302,5 +315,17 @@ $provider = new ArrayDataProvider();
 //        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
     }
 
+    public function actionReregister($id)
+    {
+        $registration = PcareRegistration::findOne($id);
+//        $registration->setWdId('wdid2');
+        $response = $registration->deletePcare();
+
+echo '<pre>';
+        print_r($response);
+//        Yii::$app->user->returnUrl = Yii::$app->request->referrer;
+//        return $this->goBack();
+
+    }
 
 }
