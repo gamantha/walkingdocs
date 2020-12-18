@@ -1,7 +1,10 @@
 <?php
 
 use kartik\date\DatePicker;
+use kartik\widgets\DepDrop;
+use kartik\widgets\Select2;
 use yii\helpers\Html;
+use yii\web\JsExpression;
 use yii\widgets\ActiveForm;
 
 /* @var $this yii\web\View */
@@ -12,7 +15,7 @@ use yii\widgets\ActiveForm;
 <div class="pcare-registration-form">
 
     <?php $form = ActiveForm::begin(); ?>
-    <?= $form->field($model, 'cons_id')->textInput(['maxlength' => true, 'readonly' => true]) ?>
+    <?= $form->field($model, 'cons_id')->textInput(['maxlength' => true, 'readonly' => false]) ?>
     <?= $form->field($model, 'kdProviderPeserta')->textInput(['maxlength' => true, 'readonly' => true]) ?>
 
 
@@ -34,7 +37,37 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'noKartu')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'kdPoli')->textInput(['maxlength' => true]) ?>
+    <?php
+
+    $refPoli = [];
+
+//    if ($model->cons_id) {
+//        $refPoli = $this->context->getPoli($model->id);
+//    } else {
+//
+//    }
+
+    $url = \yii\helpers\Url::to(['getpolicodes']);
+
+    echo $form->field($model, 'kdPoli')->widget(DepDrop::classname(), [
+        'options'=>['id'=>'subcat-id'],
+        'data' => [$model->kdPoli],
+        'pluginOptions'=>[
+            'depends'=>['pcareregistration-cons_id'],
+            'placeholder'=>'Select...',
+            'url'=>$url
+        ]
+    ]);
+
+//    echo $form->field($model, 'kdPoli')->dropDownList(
+//        $refPoli,
+//        ['prompt'=>'Select...']);
+
+
+
+
+    ?>
+
 
 
     <?php

@@ -315,17 +315,90 @@ $provider = new ArrayDataProvider();
 //        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
     }
 
-    public function actionReregister($id)
+
+
+    public function getPoli($id)
     {
         $registration = PcareRegistration::findOne($id);
-//        $registration->setWdId('wdid2');
-        $response = $registration->deletePcare();
+        $response = $registration->getPoli();
 
-echo '<pre>';
-        print_r($response);
-//        Yii::$app->user->returnUrl = Yii::$app->request->referrer;
-//        return $this->goBack();
+        $json = json_decode($response);
+        $options = [];
+        foreach ($json->response->list as $i)
+        {
+            $options[$i->kdPoli] = $i->kdPoli . ' : ' . $i->nmPoli;
+        }
+
+        return $options;
+//        echo '<pre>';
+//print_r($response);
+    }
+
+    public function actionPoli($id)
+    {
+        $registration = PcareRegistration::findOne($id);
+        $response = $registration->getPoli();
+
+        $jsonval = json_decode($response);
+        $options = [];
+        foreach ($jsonval->response->list as $i)
+        {
+            $options[$i->kdPoli] = $i->kdPoli . ' : ' . $i->nmPoli;
+        }
+
+//        return $options;
+        echo '<pre>';
+        print_r($options);
+    }
+
+    public function actionPoli2($id)
+    {
+        $registration = new PcareRegistration();
+        $response = $registration->getPolicodesarray($id);
+
+        $jsonval = json_decode($response);
+        $options = [];
+        foreach ($jsonval->response->list as $i)
+        {
+            $options[$i->kdPoli] = $i->kdPoli . ' : ' . $i->nmPoli;
+        }
+
+//        return $options;
+        echo '<pre>';
+        print_r($options);
+    }
+
+
+
+
+
+    public function actionGetpolicodes()
+    {
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        $options = [];
+        if (isset($_POST['depdrop_parents'])) {
+            $parents = $_POST['depdrop_parents'];
+            if ($parents != null) {
+                $cat_id = $parents[0];
+
+                $registration = new PcareRegistration();
+                $response = $registration->getPolicodesarray($cat_id);
+//
+                $jsonval = json_decode($response);
+
+                foreach ($jsonval->response->list as $i)
+                {
+                    array_push($options, ['id'=>$i->kdPoli, 'name'=>$i->kdPoli . ' ' . $i->nmPoli]);
+                }
+                return ['output'=>$options, 'selected'=>''];
+            }
+            return ['output'=>$options, 'selected'=>''];
+        }
+        return ['output'=>'', 'selected'=>''];
 
     }
+
+
+
 
 }

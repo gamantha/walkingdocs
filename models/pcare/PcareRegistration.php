@@ -293,6 +293,54 @@ public function setConsId($consId)
         }
     }
 
+    public function getPoli()
+    {
+        $bpjs_user = self::getUsercreds($this->cons_id);
+        try {
+
+            $client = new Client(['baseUrl' => 'https://dvlp.bpjs-kesehatan.go.id:9081/pcare-rest-v3.0/poli/fktp/0/999']);
+            $request = $client->createRequest()
+//                ->setContent($payload)->setMethod('POST')
+                ->setHeaders(['X-cons-id' => $bpjs_user['cons_id']])
+                ->addHeaders(['content-type' => 'application/json'])
+                ->addHeaders(['X-Timestamp' => $bpjs_user['time']])
+                ->addHeaders(['X-Signature' => $bpjs_user['encoded_sig']])
+                ->addHeaders(['X-Authorization' => $bpjs_user['encoded_auth_string']]);
+
+            $response = $request->send();
+            return $response->content;
+        } catch (\yii\base\Exception $exception) {
+
+            Yii::warning("ERROR GETTING RESPONSE FROM BPJS.");
+            return $exception;
+        }
+    }
+
+
+    public function getPolicodesarray($consid)
+    {
+        $bpjs_user = self::getUsercreds($consid);
+        try {
+
+            $client = new Client(['baseUrl' => 'https://dvlp.bpjs-kesehatan.go.id:9081/pcare-rest-v3.0/poli/fktp/0/999']);
+            $request = $client->createRequest()
+//                ->setContent($payload)->setMethod('POST')
+                ->setHeaders(['X-cons-id' => $bpjs_user['cons_id']])
+                ->addHeaders(['content-type' => 'application/json'])
+                ->addHeaders(['X-Timestamp' => $bpjs_user['time']])
+                ->addHeaders(['X-Signature' => $bpjs_user['encoded_sig']])
+                ->addHeaders(['X-Authorization' => $bpjs_user['encoded_auth_string']]);
+
+            $response = $request->send();
+            return $response->content;
+        } catch (\yii\base\Exception $exception) {
+
+            Yii::warning("ERROR GETTING RESPONSE FROM BPJS.");
+            return $exception;
+        }
+    }
+
+
     public function getPendaftaranprovider($date)
     {
         $bpjs_user = self::getUsercreds($this->cons_id);
@@ -315,6 +363,9 @@ public function setConsId($consId)
             return $exception;
         }
     }
+
+
+
 
     public function deletePcare() {
         $bpjs_user = self::getUsercreds($this->cons_id);
