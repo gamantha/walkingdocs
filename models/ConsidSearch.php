@@ -17,7 +17,7 @@ class ConsidSearch extends Consid
     public function rules()
     {
         return [
-            [['wd_id', 'cons_id'], 'safe'],
+            [['wd_id', 'cons_id', 'username', 'password', 'secretkey', 'kdaplikasi'], 'safe'],
         ];
     }
 
@@ -57,7 +57,11 @@ class ConsidSearch extends Consid
 
         // grid filtering conditions
         $query->andFilterWhere(['like', 'wd_id', $this->wd_id])
-            ->andFilterWhere(['like', 'cons_id', $this->cons_id]);
+            ->andFilterWhere(['like', 'cons_id', $this->cons_id])
+            ->andFilterWhere(['like', 'username', $this->username])
+            ->andFilterWhere(['like', 'password', $this->password])
+            ->andFilterWhere(['like', 'secretkey', $this->secretkey])
+            ->andFilterWhere(['like', 'kdaplikasi', $this->kdaplikasi]);
 
         return $dataProvider;
     }
