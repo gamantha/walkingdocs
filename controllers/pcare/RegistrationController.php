@@ -11,6 +11,8 @@ use app\models\pcare\PcareRegistrationSearch;
 use yii\base\Module;
 
 use yii\data\ArrayDataProvider;
+use yii\helpers\Html;
+use yii\httpclient\Client;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -400,5 +402,68 @@ $provider = new ArrayDataProvider();
 
 
 
+public function actionTestpost()
+{
 
+    $payload = '{
+    "clinicId" : "wdid2",
+  "tglDaftar": "02-11-2020",
+  "noKartu": "0001113569638",
+  "kdPoli": "005",
+  "kunjSakit": true,
+  "kdTkp": "10",
+
+  "no_urut" : "",
+  "keluhan" : "",
+  "sistole" : "",
+  "diastole" : "",
+  "beratBadan" : "",
+  "tinggiBadan" : "",
+  "respRate" : "",
+  "heartRate" : ""
+      }';
+//    $model->no_urut = $params['no_urut'];
+//    $model->keluhan = $params['keluhan'];
+//    $model->sistole = $params['sistole'];
+//    $model->diastole = $params['diastole'];
+//    $model->beratBadan = $params['beratBadan'];
+//    $model->tinggiBadan = $params['tinggiBadan'];
+//    $model->respRate = $params['respRate'];
+//    $model->heartRate = $params['heartRate'];
+
+    $payload = 'clinicId=wdid2&kdPoli=005&kdTkp=005&tglDaftar=02-11-2020' .
+        '&noKartu=0001113569638&kunjSakit=true' .
+        '&kdProviderPeserta=' .
+        '&no_urut=' .
+    '&keluhan=' .
+    '&sistole=' .
+    '&diastole=' .
+    '&beratBadan=' .
+    '&tinggiBadan=' .
+    '&respRate=' .
+    '&heartRate=';
+
+//echo '<pre>';
+    try {
+
+        $client = new Client(['baseUrl' => 'http://localhost/walkingdocs/web/index.php/pcare/registration/create']);
+        $request = $client->createRequest()
+//            ->setData($payload)
+//            ->setData(['name' => 'John Doe', 'email' => 'johndoe@domain.com'])
+            ->setContent($payload)
+            ->setMethod('POST')
+            ->addHeaders(['content-type' => 'application/x-www-form-urlencoded'])
+        ;
+
+//        ob_start();
+//        ob_clean();
+        $response = $request->send();
+        echo $response->content;
+    } catch (\yii\base\Exception $exception) {
+//print_r($exception);
+        Yii::warning("ERROR GETTING RESPONSE FROM BPJS.");
+       // return $exception;
+    }
+
+}
 }

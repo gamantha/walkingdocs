@@ -90,6 +90,8 @@ use yii\widgets\ActiveForm;
 
 
     <?= $form->field($model, 'keluhan')->textArea(['maxlength' => true]) ?>
+    <?= $form->field($model, 'sistole')->textArea(['maxlength' => true]) ?>
+    <?= $form->field($model, 'diastole')->textArea(['maxlength' => true]) ?>
 
 
 
