@@ -15,7 +15,7 @@ use yii\widgets\ActiveForm;
 <div class="pcare-registration-form">
 
     <?php $form = ActiveForm::begin(); ?>
-    <?= $form->field($model, 'cons_id')->textInput(['maxlength' => true, 'readonly' => false]) ?>
+    <?= $form->field($model, 'cons_id')->textInput(['maxlength' => true, 'readonly' => true, 'id' => 'pcareregistration-cons_id']) ?>
     <?= $form->field($model, 'kdProviderPeserta')->textInput(['maxlength' => true, 'readonly' => true]) ?>
 
 
@@ -41,27 +41,27 @@ use yii\widgets\ActiveForm;
 
     $refPoli = [];
 
-//    if ($model->cons_id) {
-//        $refPoli = $this->context->getPoli($model->id);
-//    } else {
-//
-//    }
+    if ($model->cons_id) {
+        $refPoli = $this->context->getPoli($model->cons_id);
+    } else {
+
+    }
 
     $url = \yii\helpers\Url::to(['getpolicodes']);
 
-    echo $form->field($model, 'kdPoli')->widget(DepDrop::classname(), [
-        'options'=>['id'=>'subcat-id'],
-        'data' => [$model->kdPoli],
-        'pluginOptions'=>[
-            'depends'=>['pcareregistration-cons_id'],
-            'placeholder'=>'Select...',
-            'url'=>$url
-        ]
-    ]);
+//    echo $form->field($model, 'kdPoli')->widget(DepDrop::classname(), [
+//        'options'=>['id'=>'subcat-id'],
+//        'data' => [$model->kdPoli],
+//        'pluginOptions'=>[
+//            'depends'=>['pcareregistration-cons_id'],
+//            'placeholder'=>'Select...',
+//            'url'=>$url
+//        ]
+//    ]);
 
-//    echo $form->field($model, 'kdPoli')->dropDownList(
-//        $refPoli,
-//        ['prompt'=>'Select...']);
+    echo $form->field($model, 'kdPoli')->dropDownList(
+        $refPoli,
+        ['prompt'=>'Select...']);
 
 
 

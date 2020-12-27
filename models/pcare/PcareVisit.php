@@ -120,8 +120,7 @@ class PcareVisit extends \yii\db\ActiveRecord
     public function Submitvisitdata($id)
     {
         $bpjs_user = self::getUsercreds($this->pendaftaran->cons_id);
-
-        $visitModel = PcareVisit::findOne($id);
+        $visitModel = PcareVisit::find()->andWhere(['pendaftaranId' => $id])->One();
         $registrationModel = PcareRegistration::findOne($visitModel->pendaftaranId);
 
 //        {

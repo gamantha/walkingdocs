@@ -158,9 +158,8 @@ $visit = PcareVisit::find()->andWhere(['pendaftaranId' => $id])->One();
     {
 
         $registration = PcareRegistration::findOne($id);
-        $visit = PcareVisit::findOne($id);
-//        $registration->setWdId('wdid2');
-//        $visit->setWdId('wdid2');
+        $visit = PcareVisit::find()->andWhere(['pendaftaranId' => $id])->One();
+
         $response = $registration->Cekpeserta();
 
         $jsonval = json_decode($response);
@@ -168,13 +167,8 @@ $visit = PcareVisit::find()->andWhere(['pendaftaranId' => $id])->One();
         if ($jsonval->metaData->code == 200) {
             if ($jsonval->response->aktif)
             {
-//                $visit->kdProviderPeserta = $jsonval->response->kdProviderPst->kdProvider;
-
-//                $post = file_get_contents('php://input');
                 $registerresp = $visit->submitvisitdata($id); //actual register to pcare
                 $jsonresp = json_decode($registerresp);
-
-//                print_r($registerresp);
                 if($jsonresp->metaData->message == 'CREATED') {
                     if(strpos($jsonresp->response->message, "null") ) {
                         Yii::$app->session->setFlash('danger', $registerresp);
@@ -182,9 +176,11 @@ $visit = PcareVisit::find()->andWhere(['pendaftaranId' => $id])->One();
 //                        echo 'no urut created ' . $jsonresp->response->message;
                         $visit->noKunjungan = $jsonresp->response->message;
                         $visit->status = 'submitted';
+                        $registration->status = 'submitted';
                         Yii::$app->session->setFlash('success', 'no kunjungan received ' . $jsonresp->response->message);
                     }
                     $visit->save();
+                    $registration->save();
                 } else {
                     Yii::$app->session->setFlash('danger', $registerresp);
 

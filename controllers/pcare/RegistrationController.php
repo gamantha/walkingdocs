@@ -107,16 +107,41 @@ class RegistrationController extends Controller
         } else {
             Yii::$app->session->addFlash('warning', "NO POST data");
         }
-
-        $model->status = 'new';
+        $model->status = 'not ready';
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
+
+
+            $response = $model->Cekpeserta();
+
+            $jsonval = json_decode($response);
+
+            if ($jsonval->metaData->code == 200) {
+                if ($jsonval->response->aktif)
+                {
+
+                    $model->kdProviderPeserta = $jsonval->response->kdProviderPst->kdProvider;
+                    $model->status = 'ready';
+                    $model->save();
+                    Yii::$app->session->addFlash('success', "Peserta aktif");
+
+
+                } else {
+                    Yii::$app->session->setFlash('danger', "nomor peserta tidak aktif");
+//                return ' nomor peserta tidak valid';
+
+                }
+            } else {
+                Yii::$app->session->setFlash('danger', "cek peserta failed");
+//            return 'cek peserta failed';
+            }
+
             $pcarevisit = new PcareVisit();
             $pcarevisit->pendaftaranId = $model->id;
             $pcarevisit->status = 'new';
             $pcarevisit->save();
             return $this->redirect(['view', 'id' => $model->id]);
         }
-
+        $model->save();
         return $this->render('create', [
             'model' => $model,
         ]);
@@ -132,12 +157,40 @@ class RegistrationController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-        if ($model->status != 'new') {
-            $model->status = 'modified';
-        }
+//        if ($model->status != 'new') {
+//            $model->status = 'modified';
+//        } else {
+//            $model->status = 'modified';
+//        }
 
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            $model->status = 'not ready';
+            $response = $model->Cekpeserta();
+
+            $jsonval = json_decode($response);
+
+            if ($jsonval->metaData->code == 200) {
+                if ($jsonval->response->aktif)
+                {
+
+                    $model->kdProviderPeserta = $jsonval->response->kdProviderPst->kdProvider;
+                    $model->status = 'ready';
+
+                    Yii::$app->session->addFlash('success', "Peserta aktif");
+
+
+                } else {
+                    Yii::$app->session->setFlash('danger', "nomor peserta tidak aktif");
+//                return ' nomor peserta tidak valid';
+
+                }
+            } else {
+                Yii::$app->session->setFlash('danger', "cek peserta failed");
+//            return 'cek peserta failed';
+            }
+
+            $model->save();
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
@@ -190,6 +243,7 @@ class RegistrationController extends Controller
 
 //                echo $response;
                 $registration->kdProviderPeserta = $jsonval->response->kdProviderPst->kdProvider;
+                $registration->status = 'ready';
                 $registration->save();
                 Yii::$app->session->addFlash('success', "Peserta aktif");
 
@@ -319,9 +373,11 @@ $provider = new ArrayDataProvider();
 
 
 
-    public function getPoli($id)
+    public function getPoli($consid)
     {
-        $registration = PcareRegistration::findOne($id);
+//        $registration = PcareRegistration::findOne($id);
+        $registration = new PcareRegistration();
+        $registration->setConsId($consid);
         $response = $registration->getPoli();
 
         $json = json_decode($response);
@@ -396,7 +452,7 @@ $provider = new ArrayDataProvider();
             }
             return ['output'=>$options, 'selected'=>''];
         }
-        return ['output'=>'', 'selected'=>''];
+        return ['output'=>$options, 'selected'=>''];
 
     }
 
@@ -409,7 +465,7 @@ public function actionTestpost()
     "clinicId" : "wdid2",
   "tglDaftar": "02-11-2020",
   "noKartu": "0001113569638",
-  "kdPoli": "005",
+  "kdPoli": "004",
   "kunjSakit": true,
   "kdTkp": "10",
 
@@ -431,7 +487,7 @@ public function actionTestpost()
 //    $model->respRate = $params['respRate'];
 //    $model->heartRate = $params['heartRate'];
 
-    $payload = 'clinicId=wdid2&kdPoli=005&kdTkp=005&tglDaftar=02-11-2020' .
+    $payload = 'clinicId=wdid2&kdPoli=004&kdTkp=10&tglDaftar=02-11-2020' .
         '&noKartu=0001113569638&kunjSakit=true' .
         '&kdProviderPeserta=' .
         '&no_urut=' .
