@@ -35,7 +35,7 @@ $this->params['breadcrumbs'][] = $this->title;
     } else {
         echo ' <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span> ';
 
-        echo Html::button(Yii::t('app', 'Submit Visit Data to BPJS'),['class' => 'btn btn-default', 'disabled' => 'true']);
+        echo Html::button(Yii::t('app', 'Data Submitted'),['class' => 'btn btn-success', 'disabled' => 'true']);
     }
 
     ?>
