@@ -118,7 +118,7 @@ class RegistrationController extends Controller
 
             $jsonval = json_decode($response);
 
-            if ($jsonval->metaData->code == 200) {
+            if (isset($jsonval->metaData->code) && ($jsonval->metaData->code == 200)) {
                 if ($jsonval->response->aktif)
                 {
 
@@ -177,23 +177,34 @@ class RegistrationController extends Controller
 
             $jsonval = json_decode($response);
 
-            if ($jsonval->metaData->code == 200) {
+//            Yii::$app->session->setFlash('danger', json_encode($jsonval ));
+
+            if (isset($jsonval->metaData->code) && ($jsonval->metaData->code == 200)) {
                 if ($jsonval->response->aktif)
                 {
 
                     $model->kdProviderPeserta = $jsonval->response->kdProviderPst->kdProvider;
+                    $model->noKartu = $jsonval->response->noKartu;
+                    $model->nik = $jsonval->response->noKTP;
                     $model->status = 'ready';
 
                     Yii::$app->session->addFlash('success', "Peserta aktif");
 
 
                 } else {
+                    $model->kdProviderPeserta = '';
                     Yii::$app->session->setFlash('danger', "nomor peserta tidak aktif");
 //                return ' nomor peserta tidak valid';
 
                 }
             } else {
-                Yii::$app->session->setFlash('danger', "cek peserta failed");
+                $model->kdProviderPeserta = '';
+                if (isset($jsonval->response)) {
+                    Yii::$app->session->setFlash('danger', json_encode($jsonval->response)   );
+                } else {
+                    Yii::$app->session->setFlash('danger', 'cek peserta failed 2'   );
+                }
+
 //            return 'cek peserta failed';
             }
 

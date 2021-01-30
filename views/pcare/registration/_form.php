@@ -35,8 +35,9 @@ use yii\widgets\ActiveForm;
 //        'dateFormat' => 'yyyy-MM-dd',
     ]);
     ?>
-
+<br/>
     <?= $form->field($model, 'noKartu')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'nik')->textInput(['maxlength' => true])->label('KTP - digunakan untuk cek peserta apabila no Kartu kosong')  ?>
 
     <?php
 
@@ -50,7 +51,7 @@ use yii\widgets\ActiveForm;
 
     $url = \yii\helpers\Url::to(['getpolicodes']);
 
-//    echo $form->field($model, 'kdPoli')->widget(DepDrop::classname(), [
+//    ech   o $form->field($model, 'kdPoli')->widget(DepDrop::classname(), [
 //        'options'=>['id'=>'subcat-id'],
 //        'data' => [$model->kdPoli],
 //        'pluginOptions'=>[

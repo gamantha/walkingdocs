@@ -1,6 +1,7 @@
 <?php
 
 namespace app\models\pcare;
+
 use app\models\Consid;
 use Yii;
 use yii\httpclient\Client;
@@ -14,6 +15,8 @@ use yii\httpclient\Client;
  * @property string|null $tglDaftar
  * @property string|null $no_urut
  * @property string|null $noKartu
+ * @property string|null $nik
+ * @property string|null $noka
  * @property string|null $kdPoli
  * @property string|null $kunjSakit
  * @property string|null $keluhan
@@ -28,6 +31,8 @@ use yii\httpclient\Client;
  * @property string|null $status
  * @property string|null $created_at
  * @property string|null $modified_at
+ *
+ * @property PcareVisit[] $pcareVisits
  */
 class PcareRegistration extends \yii\db\ActiveRecord
 {
@@ -48,7 +53,7 @@ class PcareRegistration extends \yii\db\ActiveRecord
             [['cons_id', 'sistole', 'diastole', 'beratBadan', 'tinggiBadan', 'respRate', 'heartRate', 'rujukBalik'], 'integer'],
             [['tglDaftar', 'created_at', 'modified_at'], 'safe'],
             [['keluhan'], 'string'],
-            [['kdProviderPeserta', 'no_urut','noKartu', 'kdPoli', 'kunjSakit', 'kdTkp', 'status'], 'string', 'max' => 255],
+            [['kdProviderPeserta', 'no_urut', 'noKartu', 'nik', 'noka', 'kdPoli', 'kunjSakit', 'kdTkp', 'status'], 'string', 'max' => 255],
         ];
     }
 
@@ -64,6 +69,8 @@ class PcareRegistration extends \yii\db\ActiveRecord
             'tglDaftar' => Yii::t('app', 'Tgl Daftar'),
             'no_urut' => Yii::t('app', 'No Urut'),
             'noKartu' => Yii::t('app', 'No Kartu'),
+            'nik' => Yii::t('app', 'Nik'),
+            'noka' => Yii::t('app', 'Noka'),
             'kdPoli' => Yii::t('app', 'Kd Poli'),
             'kunjSakit' => Yii::t('app', 'Kunj Sakit'),
             'keluhan' => Yii::t('app', 'Keluhan'),
@@ -79,6 +86,16 @@ class PcareRegistration extends \yii\db\ActiveRecord
             'created_at' => Yii::t('app', 'Created At'),
             'modified_at' => Yii::t('app', 'Modified At'),
         ];
+    }
+
+    /**
+     * Gets query for [[PcareVisits]].
+     *
+     * @return \yii\db\ActiveQuery|PcareVisitQuery
+     */
+    public function getPcareVisits()
+    {
+        return $this->hasMany(PcareVisit::className(), ['pendaftaranId' => 'id']);
     }
 
     /**
@@ -140,24 +157,70 @@ class PcareRegistration extends \yii\db\ActiveRecord
     {
         $bpjs_user = self::getUsercreds($this->cons_id);
 
+        if (!empty($this->noKartu)) {
+            try {
 
-        try {
-
-            $client = new Client(['baseUrl' => 'https://dvlp.bpjs-kesehatan.go.id:9081/pcare-rest-v3.0/peserta/' . $this->noKartu]);
-            $request = $client->createRequest()
+                $client = new Client(['baseUrl' => 'https://dvlp.bpjs-kesehatan.go.id:9081/pcare-rest-v3.0/peserta/' . $this->noKartu]);
+                $request = $client->createRequest()
 //                ->setContent($payload)->setMethod('POST')
-                ->setHeaders(['X-cons-id' => $bpjs_user['cons_id']])
-                ->addHeaders(['content-type' => 'application/json'])
-                ->addHeaders(['X-Timestamp' => $bpjs_user['time']])
-                ->addHeaders(['X-Signature' => $bpjs_user['encoded_sig']])
-                ->addHeaders(['X-Authorization' => $bpjs_user['encoded_auth_string']]);
+                    ->setHeaders(['X-cons-id' => $bpjs_user['cons_id']])
+                    ->addHeaders(['content-type' => 'application/json'])
+                    ->addHeaders(['X-Timestamp' => $bpjs_user['time']])
+                    ->addHeaders(['X-Signature' => $bpjs_user['encoded_sig']])
+                    ->addHeaders(['X-Authorization' => $bpjs_user['encoded_auth_string']]);
 
-            $response = $request->send();
-            return $response->content;
-        } catch (\yii\base\Exception $exception) {
+                $response = $request->send();
+//                return '1';
+                return $response->content;
+            } catch (\yii\base\Exception $exception) {
 
-            Yii::warning("ERROR GETTING RESPONSE FROM BPJS.");
+                Yii::warning("ERROR GETTING RESPONSE FROM BPJS.");
+            }
+        } else if (!empty($this->nik)){
+            try {
+
+                $client2 = new Client(['baseUrl' => 'https://dvlp.bpjs-kesehatan.go.id:9081/pcare-rest-v3.0/peserta/nik/' . $this->nik]);
+                $request2 = $client2->createRequest()
+//                ->setContent($payload)->setMethod('POST')
+                    ->setHeaders(['X-cons-id' => $bpjs_user['cons_id']])
+                    ->addHeaders(['content-type' => 'application/json'])
+                    ->addHeaders(['X-Timestamp' => $bpjs_user['time']])
+                    ->addHeaders(['X-Signature' => $bpjs_user['encoded_sig']])
+                    ->addHeaders(['X-Authorization' => $bpjs_user['encoded_auth_string']]);
+
+                $response2 = $request2->send();
+//                return '2';
+                return $response2->content;
+            } catch (\yii\base\Exception $exception) {
+
+                Yii::warning("ERROR GETTING RESPONSE FROM BPJS.");
+            }
+
+        } else {
+
+            try {
+
+                $client = new Client(['baseUrl' => 'https://dvlp.bpjs-kesehatan.go.id:9081/pcare-rest-v3.0/peserta/' . $this->noKartu]);
+                $request = $client->createRequest()
+//                ->setContent($payload)->setMethod('POST')
+                    ->setHeaders(['X-cons-id' => $bpjs_user['cons_id']])
+                    ->addHeaders(['content-type' => 'application/json'])
+                    ->addHeaders(['X-Timestamp' => $bpjs_user['time']])
+                    ->addHeaders(['X-Signature' => $bpjs_user['encoded_sig']])
+                    ->addHeaders(['X-Authorization' => $bpjs_user['encoded_auth_string']]);
+
+                $response = $request->send();
+                return $response->content;
+            } catch (\yii\base\Exception $exception) {
+
+                Yii::warning("ERROR GETTING RESPONSE FROM BPJS.");
+            }
         }
+
+
+
+
+
 
     }
 
@@ -168,7 +231,7 @@ class PcareRegistration extends \yii\db\ActiveRecord
         $bpjs_user = self::getUsercreds($this->cons_id);
 
         $registrationModel = PcareRegistration::findOne($id);
-    echo '<pre>';
+        echo '<pre>';
 
 
 
@@ -210,10 +273,10 @@ class PcareRegistration extends \yii\db\ActiveRecord
         }
     }
 
-public function setConsId($consId)
-{
-    $this->cons_id = $consId;
-}
+    public function setConsId($consId)
+    {
+        $this->cons_id = $consId;
+    }
 //    public function setWdId($consId)
 //    {
 //        $this->consId = $consId;
@@ -394,3 +457,4 @@ public function setConsId($consId)
 
 
 }
+
