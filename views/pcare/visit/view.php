@@ -22,9 +22,10 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php
 
     $statusoptions2 = ['ready'];
+    $statusoptions3 = ['ready', 'not ready'];
 
     if (in_array($model->pendaftaran->status, $statusoptions2)) {
-        echo Html::a(Yii::t('app', 'Register to Pcare'), ['pcare/registration/register', 'id' => $model->pendaftaran->id], ['class' => 'btn btn-default']);
+        echo Html::a(Yii::t('app', 'Register to Pcare'), ['pcare/registration/register', 'id' => $model->pendaftaran->id], ['class' => 'btn btn-primary']);
     } else {
         echo Html::button(Yii::t('app', 'Registered to Pcare'),['class' => 'btn btn-success', 'disabled' => 'true']);
     }
@@ -32,6 +33,10 @@ $this->params['breadcrumbs'][] = $this->title;
     if ($model->pendaftaran->status == 'registered') {
         echo ' <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span> ';
         echo Html::a(Yii::t('app', 'Submit to Pcare'), ['pcare/visit/submit', 'id' => $model->pendaftaran->id], ['class' => 'btn btn-default']);
+    } else if (in_array($model->pendaftaran->status, $statusoptions3)) {
+        echo ' <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span> ';
+        echo Html::button(Yii::t('app', 'finish registration first'),['class' => 'btn btn-danger', 'disabled' => 'true']);
+
     } else {
         echo ' <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span> ';
 

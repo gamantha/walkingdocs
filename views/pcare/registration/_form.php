@@ -29,7 +29,8 @@ use yii\widgets\ActiveForm;
                 'todayHighlight' => true,
                 'todayBtn' => true,
         'autoclose'=>true,
-        'format' => 'yyyy-mm-dd'
+//        'format' => 'yyyy-mm-dd'
+                   'format' => 'dd-mm-yyyy'
     ]
 //        'dateFormat' => 'yyyy-MM-dd',
     ]);
@@ -63,7 +64,8 @@ use yii\widgets\ActiveForm;
         $refPoli,
         ['prompt'=>'Select...']);
 
-
+//echo '<pre>';
+//print_r($refPoli);
 
 
     ?>

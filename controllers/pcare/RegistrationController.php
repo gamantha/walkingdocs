@@ -106,6 +106,9 @@ class RegistrationController extends Controller
 
         } else {
             Yii::$app->session->addFlash('warning', "NO POST data");
+
+
+
         }
         $model->status = 'not ready';
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
@@ -142,6 +145,10 @@ class RegistrationController extends Controller
             return $this->redirect(['view', 'id' => $model->id]);
         }
         $model->save();
+
+
+
+
         return $this->render('create', [
             'model' => $model,
         ]);
@@ -380,16 +387,21 @@ $provider = new ArrayDataProvider();
         $registration->setConsId($consid);
         $response = $registration->getPoli();
 
-        $json = json_decode($response);
         $options = [];
-        foreach ($json->response->list as $i)
-        {
-            $options[$i->kdPoli] = $i->kdPoli . ' : ' . $i->nmPoli;
+
+            $json = json_decode($response);
+if ($json->metaData->code == 200) {
+            foreach ($json->response->list as $i)
+            {
+                $options[$i->kdPoli] = $i->kdPoli . ' : ' . $i->nmPoli;
+            }
+        } else {
+            Yii::$app->session->setFlash('danger', "BPJS Error : " . $json->metaData->message);
         }
 
+
         return $options;
-//        echo '<pre>';
-//print_r($response);
+
     }
 
     public function actionPoli($id)
@@ -465,10 +477,10 @@ public function actionTestpost()
     "clinicId" : "wdid2",
   "tglDaftar": "02-11-2020",
   "noKartu": "0001113569638",
-  "kdPoli": "004",
+  "kdPoli": "001",
   "kunjSakit": true,
   "kdTkp": "10",
-
+    
   "no_urut" : "",
   "keluhan" : "",
   "sistole" : "",
@@ -510,10 +522,10 @@ public function actionTestpost()
             ->setMethod('POST')
             ->addHeaders(['content-type' => 'application/x-www-form-urlencoded'])
         ;
-
-//        ob_start();
-//        ob_clean();
         $response = $request->send();
+        ob_start();
+        ob_clean();
+
         echo $response->content;
     } catch (\yii\base\Exception $exception) {
 //print_r($exception);

@@ -83,6 +83,8 @@ use yii\web\JsExpression;
     $refsarana = [];
     $listData2 = [];
     $refkhususdata = [];
+    $refKesadaran = [];
+    $refStatuspulang = [];
 
     $listData2 = $this->context->getDokter($model->pendaftaranId);
     if (!empty($listData2)) {
@@ -134,7 +136,8 @@ use yii\web\JsExpression;
             'todayHighlight' => true,
             'todayBtn' => true,
             'autoclose'=>true,
-            'format' => 'yyyy-mm-dd'
+//            'format' => 'yyyy-mm-dd'
+        'format' => 'dd-mm-yyyy'
         ]
     ]);
     ?>
