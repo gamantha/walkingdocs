@@ -376,6 +376,26 @@ class PcareVisit extends \yii\db\ActiveRecord
     }
 
 
+    public function beforeSave($insert)
+    {
+        if (!parent::beforeSave($insert)) {
+            return false;
+        }
+
+
+
+//        $this->tglPulang = date('Y-m-d', strtotime($this->tglPulang));
+//        $this->tglEstRujuk = date('Y-m-d', strtotime($this->tglEstRujuk));
+
+        if($this->isNewRecord)
+        {
+
+//            $this->createddate=new CDbExpression('NOW()');
+        }else{
+//            $this->modifieddate = new CDbExpression('NOW()');
+        }
+        return true;
+    }
 
 
 

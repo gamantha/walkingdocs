@@ -189,6 +189,7 @@ class RegistrationController extends Controller
                     $model->status = 'ready';
 
                     Yii::$app->session->addFlash('success', "Peserta aktif");
+                    Yii::$app->session->addFlash('success', $model->tglDaftar);
 
 
                 } else {

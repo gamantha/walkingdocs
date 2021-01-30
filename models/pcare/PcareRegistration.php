@@ -455,6 +455,36 @@ class PcareRegistration extends \yii\db\ActiveRecord
 
     }
 
+    public function beforeSave($insert)
+    {
+        if (!parent::beforeSave($insert)) {
+            return false;
+        }
+
+//        $this->tglDaftar = date('Y-m-d', strtotime($this->tglDaftar));
+
+        if($this->isNewRecord)
+        {
+
+//            $this->createddate=new CDbExpression('NOW()');
+        }else{
+
+//            $this->modifieddate = new CDbExpression('NOW()');
+        }
+        return true;
+    }
+
+    public function afterFind()
+    {
+        if (!parent::afterFind()) {
+            return false;
+        }
+
+//        $this->tglDaftar = date('d-m-Y', strtotime($this->tglDaftar));
+
+        return true;
+    }
+
 
 }
 

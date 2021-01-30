@@ -136,8 +136,8 @@ use yii\web\JsExpression;
             'todayHighlight' => true,
             'todayBtn' => true,
             'autoclose'=>true,
-//            'format' => 'yyyy-mm-dd'
-        'format' => 'dd-mm-yyyy'
+            'format' => 'yyyy-mm-dd'
+//        'format' => 'dd-mm-yyyy'
         ]
     ]);
     ?>

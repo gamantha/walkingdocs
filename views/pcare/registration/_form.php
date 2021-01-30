@@ -24,13 +24,16 @@ use yii\widgets\ActiveForm;
     echo DatePicker::widget([
         'model' => $model,
         'attribute' => 'tglDaftar',
+//'convertFormat' => true,
+//        'value' => Date('d-m-Y', strtotime($model->tglDaftar)),
+//        'value' => '31-Dec-2010',
         //'language' => 'ru',
             'pluginOptions' => [
                 'todayHighlight' => true,
                 'todayBtn' => true,
         'autoclose'=>true,
-//        'format' => 'yyyy-mm-dd'
-                   'format' => 'dd-mm-yyyy'
+        'format' => 'yyyy-mm-dd'
+//                   'format' => 'dd-mm-yyyy'
     ]
 //        'dateFormat' => 'yyyy-MM-dd',
     ]);
