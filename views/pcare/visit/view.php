@@ -107,7 +107,7 @@ echo '<p>';
         ?>
         <?php
         if ($model->status == null) {
-            echo Html::a(Yii::t('app', 'submit data to pcare'), ['pcare/visit/submit', 'id' => $model->id], ['class' => 'btn btn-primary']);
+          //  echo Html::a(Yii::t('app', 'submit data to pcare'), ['pcare/visit/submit', 'id' => $model->id], ['class' => 'btn btn-primary']);
         }  else {
 
         }
@@ -134,6 +134,7 @@ echo '<p>';
             'kdPoliRujukInternal',
             'tglEstRujuk',
             'kdppk',
+            'subSpesialis_kdSpesialis',
             'subSpesialis_kdSubSpesialis1',
             'subSpesialis_kdSarana',
             'khusus_kdKhusus',

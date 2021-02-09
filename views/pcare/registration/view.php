@@ -110,6 +110,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'kdProviderPeserta',
             'tglDaftar',
             'noKartu',
+            'nik',
             'kdPoli',
             'kunjSakit',
             'keluhan:ntext',

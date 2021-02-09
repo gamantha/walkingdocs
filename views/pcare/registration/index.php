@@ -29,7 +29,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
-//            'id',
+            'id',
             'tglDaftar',
             'no_urut',
             'kdProviderPeserta',

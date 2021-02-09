@@ -52,6 +52,7 @@ class PcareRegistration extends \yii\db\ActiveRecord
         return [
             [['cons_id', 'sistole', 'diastole', 'beratBadan', 'tinggiBadan', 'respRate', 'heartRate', 'rujukBalik'], 'integer'],
             [['tglDaftar', 'created_at', 'modified_at'], 'safe'],
+            [['kdTkp'], 'required'],
             [['keluhan'], 'string'],
             [['kdProviderPeserta', 'no_urut', 'noKartu', 'nik', 'noka', 'kdPoli', 'kunjSakit', 'kdTkp', 'status'], 'string', 'max' => 255],
         ];

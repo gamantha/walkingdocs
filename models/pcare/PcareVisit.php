@@ -24,10 +24,20 @@ use kartik\select2\Select2;
  * @property string|null $kdPoliRujukInternal
  * @property string|null $tglEstRujuk
  * @property string|null $kdppk
+ * @property string|null $kdppk_subSpesialis
+ * @property string|null $nmppk
+ * @property string|null $nmppk_subSpesialis
+ * @property string|null $spesialis_type
+ * @property string|null $subSpesialis_kdSpesialis
+ * @property string|null $subSpesialis_nmSpesialis
+ * @property string|null $subSpesialis_nmSubSpesialis1
  * @property string|null $subSpesialis_kdSubSpesialis1
  * @property string|null $subSpesialis_kdSarana
+ * @property string|null $subSpesialis_nmSarana
  * @property string|null $khusus_kdKhusus
+ * @property string|null $khusus_nmKhusus
  * @property string|null $khusus_kdSubSpesialis
+ * @property string|null $khusus_nmSubSpesialis
  * @property string|null $khusus_catatan
  * @property string|null $kdTacc
  * @property string|null $alasanTacc
@@ -59,7 +69,7 @@ class PcareVisit extends \yii\db\ActiveRecord
             [['pendaftaranId'], 'integer'],
             [['terapi', 'khusus_catatan', 'alasanTacc', 'json'], 'string'],
             [['tglPulang', 'tglEstRujuk', 'created_at', 'modified_at'], 'safe'],
-            [['noKunjungan', 'kdSadar', 'kdStatusPulang', 'kdDokter', 'kdDiag1', 'kdDiag2', 'kdDiag3', 'kdPoliRujukInternal', 'kdppk', 'subSpesialis_kdSubSpesialis1', 'subSpesialis_kdSarana', 'khusus_kdKhusus', 'khusus_kdSubSpesialis', 'kdTacc', 'status'], 'string', 'max' => 255],
+            [['noKunjungan', 'kdSadar', 'kdStatusPulang', 'kdDokter', 'kdDiag1', 'kdDiag2', 'kdDiag3', 'kdPoliRujukInternal', 'kdppk', 'kdppk_subSpesialis', 'nmppk', 'nmppk_subSpesialis', 'spesialis_type', 'subSpesialis_kdSpesialis', 'subSpesialis_nmSpesialis', 'subSpesialis_nmSubSpesialis1', 'subSpesialis_kdSubSpesialis1', 'subSpesialis_kdSarana', 'subSpesialis_nmSarana', 'khusus_kdKhusus', 'khusus_nmKhusus', 'khusus_kdSubSpesialis', 'khusus_nmSubSpesialis', 'kdTacc', 'status'], 'string', 'max' => 255],
             [['pendaftaranId'], 'exist', 'skipOnError' => true, 'targetClass' => PcareRegistration::className(), 'targetAttribute' => ['pendaftaranId' => 'id']],
         ];
     }
@@ -84,10 +94,20 @@ class PcareVisit extends \yii\db\ActiveRecord
             'kdPoliRujukInternal' => Yii::t('app', 'Kd Poli Rujuk Internal'),
             'tglEstRujuk' => Yii::t('app', 'Tgl Est Rujuk'),
             'kdppk' => Yii::t('app', 'Kdppk'),
+            'kdppk_subSpesialis' => Yii::t('app', 'Kdppk Sub Spesialis'),
+            'nmppk' => Yii::t('app', 'Nmppk'),
+            'nmppk_subSpesialis' => Yii::t('app', 'Nmppk Sub Spesialis'),
+            'spesialis_type' => Yii::t('app', 'Spesialis Type'),
+            'subSpesialis_kdSpesialis' => Yii::t('app', 'Sub Spesialis Kd Spesialis'),
+            'subSpesialis_nmSpesialis' => Yii::t('app', 'Sub Spesialis Nm Spesialis'),
+            'subSpesialis_nmSubSpesialis1' => Yii::t('app', 'Sub Spesialis Nm Sub Spesialis1'),
             'subSpesialis_kdSubSpesialis1' => Yii::t('app', 'Sub Spesialis Kd Sub Spesialis1'),
             'subSpesialis_kdSarana' => Yii::t('app', 'Sub Spesialis Kd Sarana'),
+            'subSpesialis_nmSarana' => Yii::t('app', 'Sub Spesialis Nm Sarana'),
             'khusus_kdKhusus' => Yii::t('app', 'Khusus Kd Khusus'),
+            'khusus_nmKhusus' => Yii::t('app', 'Khusus Nm Khusus'),
             'khusus_kdSubSpesialis' => Yii::t('app', 'Khusus Kd Sub Spesialis'),
+            'khusus_nmSubSpesialis' => Yii::t('app', 'Khusus Nm Sub Spesialis'),
             'khusus_catatan' => Yii::t('app', 'Khusus Catatan'),
             'kdTacc' => Yii::t('app', 'Kd Tacc'),
             'alasanTacc' => Yii::t('app', 'Alasan Tacc'),
@@ -162,11 +182,19 @@ class PcareVisit extends \yii\db\ActiveRecord
 
         $subspesialis_payload = 'null';
         $khusus_payload = 'null';
-        $payload = '{
-               
 
-     
-     
+        if ($visitModel->spesialis_type == 'spesialis')
+        {
+            $subspesialis_payload = '{
+       "kdSubSpesialis1": "'.$visitModel->subSpesialis_kdSubSpesialis1.'",
+      "kdSarana": "'.$visitModel->subSpesialis_kdSarana .'"
+            }';
+
+            $ppk_payload = $visitModel->kdppk_subSpesialis;
+        } else {
+            $ppk_payload = $visitModel->kdppk;
+        }
+        $payload = '{
          "noKunjungan": "'.$visitModel->noKunjungan.'",
         "tglDaftar": "'.date("d-m-Y" , strtotime($registrationModel->tglDaftar)).'", 
         "noKartu": "'.$registrationModel->noKartu.'",
@@ -193,7 +221,7 @@ class PcareVisit extends \yii\db\ActiveRecord
      "kdPoliRujukInternal": "'.$visitModel->kdPoliRujukInternal.'",
   "rujukLanjut": {	
   	"tglEstRujuk": "'.date("d-m-Y" , strtotime($visitModel->tglEstRujuk)).'", 
-    "kdppk": "'.$visitModel->kdppk.'",
+    "kdppk": "'.$ppk_payload.'",
     "subSpesialis": '.$subspesialis_payload.',
     "khusus":  '.$khusus_payload.'
   },
@@ -250,6 +278,28 @@ class PcareVisit extends \yii\db\ActiveRecord
         $usercreds['encoded_sig'] = base64_encode($return);
 
         return $usercreds;
+    }
+
+    public function getReferensiSubspesialis($keyword)
+    {
+        $bpjs_user = self::getUsercreds($this->pendaftaran->cons_id);
+        try {
+
+            $client = new Client(['baseUrl' => 'https://dvlp.bpjs-kesehatan.go.id:9081/pcare-rest-v3.0/spesialis/'.$keyword.'/subspesialis']);
+            $request = $client->createRequest()
+//                ->setContent($payload)->setMethod('POST')
+                ->setHeaders(['X-cons-id' => $bpjs_user['cons_id']])
+                ->addHeaders(['content-type' => 'application/json'])
+                ->addHeaders(['X-Timestamp' => $bpjs_user['time']])
+                ->addHeaders(['X-Signature' => $bpjs_user['encoded_sig']])
+                ->addHeaders(['X-Authorization' => $bpjs_user['encoded_auth_string']]);
+
+            $response = $request->send();
+            return $response->content;
+        } catch (\yii\base\Exception $exception) {
+
+            Yii::warning("ERROR GETTING RESPONSE FROM BPJS.");
+        }
     }
 
     public function getDiagnosecodes($keyword)
@@ -366,6 +416,61 @@ class PcareVisit extends \yii\db\ActiveRecord
             Yii::warning("ERROR GETTING RESPONSE FROM BPJS.");
         }
     }
+
+
+    public function getRujukanKhusus($kdkhusus, $kdsubspesialis, $tglrujuk, $noKartu)
+    {
+        $bpjs_user = self::getUsercreds($this->pendaftaran->cons_id);
+        try {
+            $converted_date = date("d-m-Y" , strtotime($tglrujuk));
+            $list = ['THA', 'HEM'];
+            if (in_array(strtoupper($kdkhusus), $list)) {
+                $client = new Client(['baseUrl' => 'https://dvlp.bpjs-kesehatan.go.id:9081/pcare-rest-v3.0/spesialis/rujuk/khusus/'.$kdkhusus.'/subspesialis/'.$kdsubspesialis.'/noKartu/'.$noKartu.'/tglEstRujuk/' . $converted_date]);
+            } else {
+                $client = new Client(['baseUrl' => 'https://dvlp.bpjs-kesehatan.go.id:9081/pcare-rest-v3.0/spesialis/rujuk/khusus/'.$kdkhusus.'/noKartu/'.$noKartu.'/tglEstRujuk/' . $converted_date]);
+            }
+
+            $request = $client->createRequest()
+//                ->setContent($payload)->setMethod('POST')
+                ->setHeaders(['X-cons-id' => $bpjs_user['cons_id']])
+                ->addHeaders(['content-type' => 'application/json'])
+                ->addHeaders(['X-Timestamp' => $bpjs_user['time']])
+                ->addHeaders(['X-Signature' => $bpjs_user['encoded_sig']])
+                ->addHeaders(['X-Authorization' => $bpjs_user['encoded_auth_string']]);
+
+            $response = $request->send();
+            return $response->content;
+        } catch (\yii\base\Exception $exception) {
+
+            Yii::warning("ERROR GETTING RESPONSE FROM BPJS.");
+        }
+    }
+
+    public function getRujukanSpesialis($kdsubspesialis,$sarana,$tglrujuk)
+    {
+
+
+        $bpjs_user = self::getUsercreds($this->pendaftaran->cons_id);
+        try {
+            $converted_date = date("d-m-Y" , strtotime($tglrujuk));
+            $client = new Client(['baseUrl' => 'https://dvlp.bpjs-kesehatan.go.id:9081/pcare-rest-v3.0/spesialis/rujuk/subspesialis/'.$kdsubspesialis.'/sarana/'.$sarana.'/tglEstRujuk/' . $converted_date]);
+            $request = $client->createRequest()
+//                ->setContent($payload)->setMethod('POST')
+                ->setHeaders(['X-cons-id' => $bpjs_user['cons_id']])
+                ->addHeaders(['content-type' => 'application/json'])
+                ->addHeaders(['X-Timestamp' => $bpjs_user['time']])
+                ->addHeaders(['X-Signature' => $bpjs_user['encoded_sig']])
+                ->addHeaders(['X-Authorization' => $bpjs_user['encoded_auth_string']]);
+
+            $response = $request->send();
+            return $response->content;
+        } catch (\yii\base\Exception $exception) {
+
+            Yii::warning("ERROR GETTING RESPONSE FROM BPJS.");
+        }
+
+    }
+
     public function setWdId($wdId)
     {
         $this->wdId = $wdId;

@@ -3,6 +3,7 @@
 use kartik\date\DatePicker;
 use kartik\widgets\DepDrop;
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\web\View;
 use yii\widgets\ActiveForm;
 use kartik\select2\Select2;
@@ -19,11 +20,9 @@ use yii\web\JsExpression;
 
 
     $this->registerJs(
-
         "$('#pcarevisit-kdstatuspulang').on('change', function() { 
         $('#rujukan').hide();
         if (this.value == 4) {
-//         alert('value ' + this.value); 
            $('#rujukan').show();
         } else if (this.value == 6){
         alert('rujuk horizontal belum dipakai'); 
@@ -40,20 +39,71 @@ use yii\web\JsExpression;
          $('#rujukan').hide();
         }
         
-        $('input:radio[name=tipe_rujukan_vertikal]').on('change', function() { 
+        
+
+        
+        
+        $('input[name=\"PcareVisit[spesialis_type]\"]').on('change', function() { 
         if (this.value == 'khusus') {
-   
+
         $('#khusus').show();
         $('#spesialis').hide();
-        } else {
-
+        } else {    
         $('#khusus').hide();
         $('#spesialis').show();
         }
 
         });
+                $('#khusus_subspesialis').show();
+                
+                if($('#khusus-id.form-control :selected').val() == 'HDL') {
+      
+                } else {
+            
+                }
+         
+         
+         
+                 $('#khusus-id.form-control').on('change', function() { 
+            if (this.value == 'HEM') {
+        
+                    $('#khusus_subspesialis').show();
+                    
+            } else if(this.value == 'THA') {
+        
+                    $('#khusus_subspesialis').show();
+            } else {
+            $('#khusus_subspesialis').hide();
+            }
+            
+
+        }); 
+        
+               
+
+        
+        $('#pcarevisit-subspesialis_kdsubspesialis1').on('change', function() { 
+        $('#pcarevisit-subspesialis_nmsubspesialis1').val($('#pcarevisit-subspesialis_kdsubspesialis1 option:selected').text());
+        
+//alert($('#pcarevisit-subspesialis_kdsubspesialis1 option:selected').text());
+
+        }); 
         
         
+                $('#pcarevisit-kdppk_subspesialis').on('change', function() { 
+        $('#pcarevisit-nmppk_subspesialis').val($('#pcarevisit-kdppk_subspesialis option:selected').text());
+        
+
+        }); 
+        
+        
+  if($('input[name=\"PcareVisit[spesialis_type]\"]:checked').val() == 'khusus') {
+        $('#khusus').show();
+        $('#spesialis').hide();
+        } else {    
+        $('#khusus').hide();
+        $('#spesialis').show();
+        }                
         ",
         View::POS_READY,
         'my-button-handler'
@@ -145,6 +195,8 @@ use yii\web\JsExpression;
     <?php
 
 
+    echo Html::hiddenInput('PcareVisit[subSpesialis_nmSubSpesialis1]', $model->subSpesialis_nmSubSpesialis1, ['id' => 'pcarevisit-subspesialis_nmsubspesialis1']);
+
     echo $form->field($model, 'kdDokter')->dropDownList(
         $listData2,
         ['prompt'=>'Select...']);
@@ -208,20 +260,7 @@ use yii\web\JsExpression;
 
     ?>
 
-    HANYA KALAU PILIH RUJUK maka pilihan dibawah jadi nyala .Saat ini hanya ada rujukan vertikal (spesialis , khusus)
 
-    <?php
-
-//    echo $form->field($model, 'kdPoliRujukInternal')->textInput(['maxlength' => true]);
-
-    echo $form->field($model, 'kdStatusPulang')->dropDownList(
-        $refStatuspulang,
-        ['prompt'=>'Select...']);
-
-
-
-
-    ?>
 
     <?= $form->field($registrationModel, 'sistole')->textInput(['maxlength' => true]) ?>
 
@@ -237,16 +276,26 @@ use yii\web\JsExpression;
 
     <?= $form->field($registrationModel, 'heartRate')->textInput(['maxlength' => true]) ?>
 
+    HANYA KALAU PILIH RUJUK maka pilihan dibawah jadi nyala .Saat ini hanya ada rujukan vertikal (spesialis , khusus)
+
+    <?php
+
+    //    echo $form->field($model, 'kdPoliRujukInternal')->textInput(['maxlength' => true]);
+
+    echo $form->field($model, 'kdStatusPulang')->label('Status Pulang')->dropDownList(
+        $refStatuspulang,
+        ['prompt'=>'Select...']);
+
+
+
+
+    ?>
 
         <div id="rujukan">
 
         <h3>Rujukan</h3>
 
         <?php
-        echo Html::radioList('tipe_rujukan_vertikal', '',[
-            'khusus' => 'Kondisi Khusus',
-            'spesialis' => 'Spesialis'
-        ]);
 
         echo '<label class="control-label">Tanggal Rencana Berkunjung / rujuk </label>';
         echo DatePicker::widget([
@@ -255,54 +304,90 @@ use yii\web\JsExpression;
             //'language' => 'ru',
             'pluginOptions' => [
                 'autoclose'=>true,
+                'todayHighlight' => true,
+                'todayBtn' => true,
                 'format' => 'yyyy-mm-dd'
             ]
 //        'dateFormat' => 'yyyy-MM-dd',
         ]);
 
-        ?>
 
 
-    <?= $form->field($model, 'kdppk')->textInput(['maxlength' => true]) ?>
+        echo $form->field($model, 'spesialis_type')->radioList(['khusus' => 'Kondisi Khusus',
+            'spesialis' => 'Spesialis']);
 
-    <div id="spesialis" class="well" style="display:none">
+
+ ?>
+<div class="well">
+    <div id="spesialis" style="display:none">
         <h2>Spesialis</h2><br/>
-
         <?php
+        echo $form->field($model, 'subSpesialis_kdSpesialis')->dropDownList(
+            $refspesialis,
+            ['prompt'=>'Select...']);
 
-
-        echo Html::dropDownList('spesialis', null,$refspesialis
-            );
-
-
-
-
-        ?>
-    <?= $form->field($model, 'subSpesialis_kdSubSpesialis1')->textInput(['maxlength' => true]) ?>
-
-
-
-        <?php
-
-
+        echo $form->field($model, 'subSpesialis_kdSubSpesialis1')->widget(DepDrop::classname(), [
+//            'options'=>['id'=>'subspesialis-id'],
+        'data'=>[$model->subSpesialis_kdSubSpesialis1=>$model->subSpesialis_nmSubSpesialis1],
+            'pluginOptions'=>[
+                'depends'=>['pcarevisit-subspesialis_kdspesialis'],
+                'placeholder'=>'Select...',
+                'url'=>Url::to(['subspesialis','id' => $model->id])
+            ]
+        ]);
 
         echo $form->field($model, 'subSpesialis_kdSarana')->dropDownList(
             $refsarana,
-            ['id'=>'khusus-id','prompt'=>'Select...']);
+            ['id'=>'pcarevisit-subspesialis_kdsarana','prompt'=>'Select...']);
 
+
+        echo Html::hiddenInput('PcareVisit[nmppk_subSpesialis]', $model->nmppk_subSpesialis, ['id' => 'pcarevisit-nmppk_subspesialis']);
+
+        echo $form->field($model, 'kdppk_subSpesialis')->widget(DepDrop::classname(), [
+                'data'=>[$model->kdppk_subSpesialis=>$model->nmppk_subSpesialis],
+            'pluginOptions'=>[
+                    'depends'=>['pcarevisit-subspesialis_kdsubspesialis1', 'pcarevisit-subspesialis_kdsarana', 'pcarevisit-tglestrujuk'],
+                'placeholder'=>'Select...',
+                'url'=>Url::to(['rujukanspesialis','id' => $model->id])
+            ]
+        ]);
 
         ?>
-
     </div>
-    <div id="khusus" class="well" style="display:none">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div id="khusus" style="display:none">
         <h2>Keadaan Khusus</h2><br/>
 
         <?php
 
 
-
-
-        echo $form->field($model, 'khusus_kdKhusus')->dropDownList(
+        echo $form->field($model, 'khusus_kdKhusus')->label('Kategori')->dropDownList(
             $refkhususdata,
             ['id'=>'khusus-id','prompt'=>'Select...']);
 
@@ -314,19 +399,58 @@ use yii\web\JsExpression;
     "30" => "ANAK HEMATOLOGI ONKOLOGI"
 ];
 
+?>
+    <div id="khusus_subspesialis">
+        <?php
 
 
-        echo $form->field($model, 'khusus_kdSubSpesialis')->dropDownList(
+        echo $form->field($model, 'khusus_kdSubSpesialis')->label('Spesialis')->dropDownList(
             $datasubspesialis,
             ['prompt'=>'Select...']);
 
 
         ?>
-
+    </div>
 
     <?= $form->field($model, 'khusus_catatan')->textarea(['rows' => 6]) ?>
+        <?php
+
+        echo Html::hiddenInput('PcareVisit[nmppk]', $model->nmppk, ['id' => 'pcarevisit-nmppk']);
+
+
+        echo $form->field($model, 'kdppk')->widget(DepDrop::classname(), [
+//            'data'=>[$model->kdppk_subSpesialis=>$model->nmppk_subSpesialis],
+            'pluginOptions'=>[
+                'depends'=>['pcarevisit-khusus_kdkhusus','pcarevisit-khusus_kdsubspesialis', 'pcarevisit-tglestrujuk'],
+                'placeholder'=>'Select...',
+                'url'=>Url::to(['rujukankhusus','id' => $model->id])
+            ]
+        ]);
+
+
+
+
+
+
+        ?>
         </div>
 
+
+
+</div>
+
+            <?php
+
+            $ref_tacc = [
+              "-1" => "Tanpa TACC",
+                "1" => "Time",
+                "2" => "Age",
+                "3" => "Complication",
+                "4" => "Comorbidity"
+
+            ];
+
+            ?>
     <?= $form->field($model, 'kdTacc')->textInput(['maxlength' => true]) ?>
 
     <?= $form->field($model, 'alasanTacc')->textarea(['rows' => 6]) ?>

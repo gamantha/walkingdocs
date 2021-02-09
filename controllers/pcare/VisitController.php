@@ -2,11 +2,13 @@
 
 namespace app\controllers\pcare;
 
+use app\models\Consid;
 use app\models\pcare\PcareRegistration;
 use Yii;
 use app\models\pcare\PcareVisit;
 use app\models\pcare\PcareVisitSearch;
 use yii\helpers\ArrayHelper;
+use yii\httpclient\Client;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -65,6 +67,12 @@ $visit = PcareVisit::find()->andWhere(['pendaftaranId' => $id])->One();
 //
 //}
 
+    if (is_null($visit)) {
+        $visit = new PcareVisit();
+        $visit->pendaftaranId = $id;
+        $visit->save();
+    }
+
         return $this->render('view', [
             'model' => $visit,
         ]);
@@ -108,6 +116,7 @@ $visit = PcareVisit::find()->andWhere(['pendaftaranId' => $id])->One();
         }
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
+//            $model->subSpesialis_nmSubSpesialis1 = $_POST['PcareVisit']['subSpesialis_']
             if ($registrationModel->load(Yii::$app->request->post()) && $registrationModel->save()) {
                 return $this->redirect(['view', 'id' => $model->pendaftaranId]);
             }
@@ -151,7 +160,18 @@ $visit = PcareVisit::find()->andWhere(['pendaftaranId' => $id])->One();
 
     public function actionTest()
     {
-        echo 'test';
+
+        $registration = PcareRegistration::findOne('95');
+//        $registration->setWdId('wdid2');
+        $kesadaran = $registration->getStatuspulang('95');
+        $json = json_decode($kesadaran);
+        $options = [];
+//        foreach ($json->response->list as $i)
+//        {
+//            $options[$i->kdStatusPulang] = $i->kdStatusPulang . ' : ' . $i->nmStatusPulang;
+//        }
+
+        return $json;
     }
 
     public function actionSubmit($id)
@@ -313,7 +333,7 @@ $visit = PcareVisit::find()->andWhere(['pendaftaranId' => $id])->One();
         }
         return $options;
     }
-    public function getSarana($pendaftaranId)
+        public function getSarana($pendaftaranId)
     {
         $registration = PcareVisit::find()->andWhere(['pendaftaranId' => $pendaftaranId])->One();
         $kesadaran = $registration->getSarana();
@@ -333,7 +353,152 @@ $visit = PcareVisit::find()->andWhere(['pendaftaranId' => $id])->One();
         return $options;
     }
 
+    public function getSubspesialisksdjakljdlajdlajldajldjalsdjaldjal($keyword)
+    {
 
+        $clinic = Consid::find()->andWhere(['wd_id' => 'wdid2'])->One();
+        $bpjs_user = self::getUsercreds($clinic->cons_id);
+
+        try {
+            $client = new Client(['baseUrl' => 'https://dvlp.bpjs-kesehatan.go.id:9081/pcare-rest-v3.0/spesialis/'.$keyword.'/subspesialis']);
+            $request = $client->createRequest()
+
+                ->setHeaders(['X-cons-id' => $bpjs_user['cons_id']])
+                ->addHeaders(['content-type' => 'application/json'])
+                ->addHeaders(['X-Timestamp' => $bpjs_user['time']])
+                ->addHeaders(['X-Signature' => $bpjs_user['encoded_sig']])
+                ->addHeaders(['X-Authorization' => $bpjs_user['encoded_auth_string']]);
+
+            $response = $request->send();
+            return $response->content;
+        } catch (\yii\base\Exception $exception) {
+
+            Yii::warning("ERROR GETTING RESPONSE FROM BPJS.");
+        }
+
+
+//        return [['id' => 'contoh', 'text' => $keyword, 'kdPoliRujuk' => 'contoh']];
+    }
+
+    public function actionTest2()
+    {
+        $visit = PcareVisit::findOne('33');
+        $noKartu = '0001113569638';
+        $response = $visit->getRujukanKhusus($kdkhusus, $kdsubspesialis, $tglrujuk, $noKartu);
+
+        echo '<pre>';
+        print_r($response);
+    }
+public function actionRujukankhusus($id)
+{
+    Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+    $out = ['results' => [['id' => '', 'name' => '']]];
+
+    $noKartu = '0001113569638';
+    if (isset($_POST['depdrop_parents'])) {
+        $parents = $_POST['depdrop_parents'];
+        if ($parents != null) {
+            $kdkhusus = $parents[0];
+            $kdsubspesialis = empty($parents[1]) ? null : $parents[1];
+            $tglrujuk = empty($parents[2]) ? null : $parents[2];
+
+            $out = ['results' => [['id' => $kdkhusus, 'name' => $tglrujuk, 'sarana' => $kdsubspesialis]]];
+
+            $visit = PcareVisit::findOne($id);
+
+            $response = $visit->getRujukanKhusus($kdkhusus, $kdsubspesialis, $tglrujuk, $noKartu);
+
+            $jsonval = json_decode($response);
+            if (isset($jsonval->response)) {
+
+                foreach ($jsonval->response->list as $item) {
+                    $temp = ['id' => $item->kdppk, 'name' => $item->nmppk, 'alamatPpk' => $item->alamatPpk];
+                    array_push($out['results'], $temp);
+                }
+                array_shift($out['results']);
+            } else {
+                Yii::$app->session->addFlash('danger', 'get rujukan khusus - no pcare web service response');
+            }
+
+            return ['output'=>$out, 'selected'=>''];
+        }
+    }
+    return ['output'=>$out, 'selected'=>''];
+}
+
+    public function actionRujukanspesialis($id)
+    {
+        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        $out = ['results' => [['id' => '', 'name' => '']]];
+        if (isset($_POST['depdrop_parents'])) {
+            $parents = $_POST['depdrop_parents'];
+            if ($parents != null) {
+                $keyword = $parents[0];
+                $sarana = empty($parents[1]) ? null : $parents[1];
+                $tglrujuk = empty($parents[2]) ? null : $parents[2];
+
+                $out = ['results' => [['id' => $keyword, 'name' => $tglrujuk, 'sarana' => $sarana]]];
+
+                $visit = PcareVisit::findOne($id);
+
+                $response = $visit->getRujukanSpesialis($keyword, $sarana, $tglrujuk);
+
+                $jsonval = json_decode($response);
+                if (isset($jsonval->response)) {
+
+                    foreach ($jsonval->response->list as $item) {
+                        $temp = ['id' => $item->kdppk, 'name' => $item->nmppk . ' alamat : ' . $item->alamatPpk, 'alamatPpk' => $item->alamatPpk, 'telpPpk' => $item->telpPpk, 'kelas' => $item->kelas];
+                        array_push($out['results'], $temp);
+                    }
+                    array_shift($out['results']);
+                } else {
+                    Yii::$app->session->addFlash('danger', 'get rujukan spesialis - no pcare web service response');
+                }
+
+                return ['output'=>$out, 'selected'=>''];
+            }
+        }
+        return ['output'=>$out, 'selected'=>''];
+    }
+
+
+    public function actionSubspesialis($id)
+    {
+        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        $out = ['results' => [['id' => '', 'name' => '']]];
+        if (isset($_POST['depdrop_parents'])) {
+            $parents = $_POST['depdrop_parents'];
+            if ($parents != null) {
+                $keyword = $parents[0];
+
+                $visit = PcareVisit::findOne($id);
+
+                $response = $visit->getReferensiSubspesialis($keyword);
+
+                $jsonval = json_decode($response);
+                if (isset($jsonval->response)) {
+
+                    foreach ($jsonval->response->list as $item) {
+                        $temp = ['id' => $item->kdSubSpesialis, 'name' => $item->nmSubSpesialis, 'kdPoliRujuk' => $item->kdPoliRujuk];
+                        array_push($out['results'], $temp);
+                    }
+                    array_shift($out['results']);
+                } else {
+                    Yii::$app->session->addFlash('danger', 'get subspesialis kd - no pcare web service response');
+                }
+
+
+//                // the getSubCatList function will query the database based on the
+//                // cat_id and return an array like below:
+//                // [
+//                //    ['id'=>'<sub-cat-id-1>', 'name'=>'<sub-cat-name1>'],
+//                //    ['id'=>'<sub-cat_id_2>', 'name'=>'<sub-cat-name2>']
+//                // ]
+                return ['output'=>$out, 'selected'=>''];
+            }
+        }
+        return ['output'=>'', 'selected'=>''];
+    }
 
     public function actionDiagnosecode($q = null, $id)
     {
@@ -401,6 +566,5 @@ $visit = PcareVisit::find()->andWhere(['pendaftaranId' => $id])->One();
 
         return $out;
     }
-
 
 }

@@ -15,8 +15,8 @@ use yii\widgets\ActiveForm;
 <div class="pcare-registration-form">
 
     <?php $form = ActiveForm::begin(); ?>
-    <?= $form->field($model, 'cons_id')->textInput(['maxlength' => true, 'readonly' => true, 'id' => 'pcareregistration-cons_id']) ?>
-    <?= $form->field($model, 'kdProviderPeserta')->textInput(['maxlength' => true, 'readonly' => true]) ?>
+    <?= $form->field($model, 'cons_id')->textInput(['maxlength' => true, 'readonly' => false, 'id' => 'pcareregistration-cons_id']) ?>
+    <?= $form->field($model, 'kdProviderPeserta')->textInput(['maxlength' => true, 'readonly' => false]) ?>
 
 
     <?php
@@ -24,10 +24,6 @@ use yii\widgets\ActiveForm;
     echo DatePicker::widget([
         'model' => $model,
         'attribute' => 'tglDaftar',
-//'convertFormat' => true,
-//        'value' => Date('d-m-Y', strtotime($model->tglDaftar)),
-//        'value' => '31-Dec-2010',
-        //'language' => 'ru',
             'pluginOptions' => [
                 'todayHighlight' => true,
                 'todayBtn' => true,
@@ -54,23 +50,10 @@ use yii\widgets\ActiveForm;
 
     $url = \yii\helpers\Url::to(['getpolicodes']);
 
-//    ech   o $form->field($model, 'kdPoli')->widget(DepDrop::classname(), [
-//        'options'=>['id'=>'subcat-id'],
-//        'data' => [$model->kdPoli],
-//        'pluginOptions'=>[
-//            'depends'=>['pcareregistration-cons_id'],
-//            'placeholder'=>'Select...',
-//            'url'=>$url
-//        ]
-//    ]);
 
     echo $form->field($model, 'kdPoli')->dropDownList(
         $refPoli,
         ['prompt'=>'Select...']);
-
-//echo '<pre>';
-//print_r($refPoli);
-
 
     ?>
 

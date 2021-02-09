@@ -49,6 +49,15 @@ class RegistrationController extends Controller
         $searchModel = new PcareRegistrationSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
+        $dataProvider->setSort([
+            'attributes' => [
+
+            ],
+            'defaultOrder' => [
+                'id' => SORT_DESC
+            ]
+        ]);
+
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
@@ -114,29 +123,36 @@ class RegistrationController extends Controller
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
 
 
-            $response = $model->Cekpeserta();
+//                if ((!empty($model->noKartu)) || (!empty($model->nik)))
+            if (!empty($model->cons_id))
+            {
+                $response = $model->Cekpeserta();
 
-            $jsonval = json_decode($response);
+                $jsonval = json_decode($response);
 
-            if (isset($jsonval->metaData->code) && ($jsonval->metaData->code == 200)) {
-                if ($jsonval->response->aktif)
-                {
+                if (isset($jsonval->metaData->code) && ($jsonval->metaData->code == 200)) {
+                    if ($jsonval->response->aktif)
+                    {
 
-                    $model->kdProviderPeserta = $jsonval->response->kdProviderPst->kdProvider;
-                    $model->status = 'ready';
-                    $model->save();
-                    Yii::$app->session->addFlash('success', "Peserta aktif");
+                        $model->kdProviderPeserta = $jsonval->response->kdProviderPst->kdProvider;
+                        $model->status = 'ready';
+                        $model->save();
+                        Yii::$app->session->addFlash('success', "Peserta aktif");
 
 
-                } else {
-                    Yii::$app->session->setFlash('danger', "nomor peserta tidak aktif");
+                    } else {
+                        Yii::$app->session->setFlash('danger', "nomor peserta tidak aktif");
 //                return ' nomor peserta tidak valid';
 
+                    }
+                } else {
+                    Yii::$app->session->setFlash('danger', "cek peserta failed");
+//            return 'cek peserta failed';
                 }
             } else {
-                Yii::$app->session->setFlash('danger', "cek peserta failed");
-//            return 'cek peserta failed';
+                Yii::$app->session->setFlash('danger', "data klinik / consID empty");
             }
+
 
             $pcarevisit = new PcareVisit();
             $pcarevisit->pendaftaranId = $model->id;
@@ -173,40 +189,44 @@ class RegistrationController extends Controller
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             $model->status = 'not ready';
-            $response = $model->Cekpeserta();
+            if (!empty($model->cons_id))
+            {
+                $response = $model->Cekpeserta();
 
-            $jsonval = json_decode($response);
+                $jsonval = json_decode($response);
 
 //            Yii::$app->session->setFlash('danger', json_encode($jsonval ));
 
-            if (isset($jsonval->metaData->code) && ($jsonval->metaData->code == 200)) {
-                if ($jsonval->response->aktif)
-                {
+                if (isset($jsonval->metaData->code) && ($jsonval->metaData->code == 200)) {
+                    if ($jsonval->response->aktif)
+                    {
 
-                    $model->kdProviderPeserta = $jsonval->response->kdProviderPst->kdProvider;
-                    $model->noKartu = $jsonval->response->noKartu;
-                    $model->nik = $jsonval->response->noKTP;
-                    $model->status = 'ready';
+                        $model->kdProviderPeserta = $jsonval->response->kdProviderPst->kdProvider;
+                        $model->noKartu = $jsonval->response->noKartu;
+                        $model->nik = $jsonval->response->noKTP;
+                        $model->status = 'ready';
 
-                    Yii::$app->session->addFlash('success', "Peserta aktif");
-                    Yii::$app->session->addFlash('success', $model->tglDaftar);
+                        Yii::$app->session->addFlash('success', "Peserta aktif");
+                        Yii::$app->session->addFlash('success', $model->tglDaftar);
 
 
-                } else {
-                    $model->kdProviderPeserta = '';
-                    Yii::$app->session->setFlash('danger', "nomor peserta tidak aktif");
+                    } else {
+                        $model->kdProviderPeserta = '';
+                        Yii::$app->session->setFlash('danger', "nomor peserta tidak aktif");
 //                return ' nomor peserta tidak valid';
 
-                }
-            } else {
-                $model->kdProviderPeserta = '';
-                if (isset($jsonval->response)) {
-                    Yii::$app->session->setFlash('danger', json_encode($jsonval->response)   );
+                    }
                 } else {
-                    Yii::$app->session->setFlash('danger', 'cek peserta failed 2'   );
-                }
+                    $model->kdProviderPeserta = '';
+                    if (isset($jsonval->response)) {
+                        Yii::$app->session->setFlash('danger', json_encode($jsonval->response)   );
+                    } else {
+                        Yii::$app->session->setFlash('danger', 'cek peserta failed 2'   );
+                    }
 
 //            return 'cek peserta failed';
+                }
+
             }
 
             $model->save();
@@ -299,18 +319,26 @@ class RegistrationController extends Controller
 
                 $registerresp = $registration->register($id); //actual register to pcare
                 $jsonresp = json_decode($registerresp);
-                if($jsonresp->metaData->message == 'CREATED') {
-                    if(strpos($jsonresp->response->message, "null") ) {
-                        Yii::$app->session->setFlash('danger', $registerresp);
-                    } else {
-                        $registration->no_urut = $jsonresp->response->message;
-                        $registration->status = 'registered';
-                        Yii::$app->session->setFlash('success', 'no urut created ' . $jsonresp->response->message);
-                    }
-                                    $registration->save();
-                } else {
-                    Yii::$app->session->setFlash('danger', $registerresp);
 
+//                if (isset($jsonresp->metaData->message) && ($jsonresp->metaData->message == 'CREATED')) {
+                if (isset($jsonresp->metaData->message))
+                {
+                    if($jsonresp->metaData->message == 'CREATED') {
+                        if(strpos($jsonresp->response->message, "null") ) {
+                            Yii::$app->session->setFlash('danger', $registerresp);
+                        } else {
+                            $registration->no_urut = $jsonresp->response->message;
+                            $registration->status = 'registered';
+                            Yii::$app->session->setFlash('success', 'no urut created ' . $jsonresp->response->message);
+                        }
+                        $registration->save();
+                    } else {
+                        Yii::$app->session->setFlash('danger', $registerresp);
+
+                    }
+
+                } else {
+                    Yii::$app->session->setFlash('danger', json_encode($jsonresp));
                 }
 
 
