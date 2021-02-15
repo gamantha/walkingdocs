@@ -483,7 +483,7 @@ if ($json->metaData->code == 200) {
 
     public function actionVerify($wdid, $noKartu, $nik)
     {
-
+$success = 0;
         $this->layout = '@app/views/layouts/verify';
 //        $noKartu ='';
 //        $nik='';
