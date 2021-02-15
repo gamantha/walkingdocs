@@ -484,6 +484,7 @@ if ($json->metaData->code == 200) {
     public function actionVerify($wdid, $noKartu, $nik)
     {
 
+        $this->layout = '@app/views/layouts/verify';
 //        $noKartu ='';
 //        $nik='';
         $clinic = Consid::find()->andWHere(['wd_id' => $wdid])->One();
