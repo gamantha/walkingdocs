@@ -47,9 +47,27 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'Verify');
         'model' => $model,
         'attributes' => [
 //                'noKartu','nik',
+//        'ketAktif',
+        [
+                'label' => 'STATUS',
+            'format' => 'raw',
+            'value' => function($data){
+        $textcolor = 'white';
+        if ($data['aktif']) {
+            $backgroundcolor = 'green';
+        } else {
+            $backgroundcolor = 'red';
+        }
+
+        $returnedtext = '<span style="color: '.$textcolor.'; background-color: '.$backgroundcolor.';"><strong>' .$data['ketAktif'] . '</strong></span>';
+        return $returnedtext;
+//        return json_encode($data);
+            }
+        ],
+        'noKTP',
 'nama','hubunganKeluarga','tglLahir','sex','golDarah','tglMulaiAktif', 'tglAkhirBerlaku',
             'noHP',
-            'jnsPeserta_kode','jnsPeserta_nama','aktif','ketAktif'
+            'jnsPeserta_kode','jnsPeserta_nama','aktif'
         ],
     ]) ?>
 </div>

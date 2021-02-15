@@ -481,24 +481,24 @@ if ($json->metaData->code == 200) {
 
 
 
-    public function actionVerify($wdid)
+    public function actionVerify($wdid, $noKartu, $nik)
     {
 
-        $noKartu ='';
-        $nik='';
+//        $noKartu ='';
+//        $nik='';
         $clinic = Consid::find()->andWHere(['wd_id' => $wdid])->One();
-        $model = ['noKartu'=>'','nik' =>'','nama' => 'reno','sex'=>'L'];
- if ($_POST) {
+        $model = ['noKartu'=>'','nik' =>'','nama' => '','sex'=>''];
+ if ($_REQUEST) {
 
      $pcareregistrationmodel = new PcareRegistration();
      $bpjs_user = $pcareregistrationmodel->getUsercreds($clinic->cons_id);
-     $noKartu =$_POST['noKartu'];
-     $nik=$_POST['nik'];
-     if (!empty($_POST['noKartu'])) {
-         $model['noKartu'] = $_POST['noKartu'];
+     $noKartu =$_REQUEST['noKartu'];
+     $nik=$_REQUEST['nik'];
+     if (!empty($_REQUEST['noKartu'])) {
+         $model['noKartu'] = $_REQUEST['noKartu'];
          try {
 
-             $client = new Client(['baseUrl' => 'https://dvlp.bpjs-kesehatan.go.id:9081/pcare-rest-v3.0/peserta/' . $_POST['noKartu']]);
+             $client = new Client(['baseUrl' => 'https://dvlp.bpjs-kesehatan.go.id:9081/pcare-rest-v3.0/peserta/' . $_REQUEST['noKartu']]);
              $request = $client->createRequest()
                  ->setHeaders(['X-cons-id' => $bpjs_user['cons_id']])
                  ->addHeaders(['content-type' => 'application/json'])
@@ -513,11 +513,11 @@ if ($json->metaData->code == 200) {
 
              Yii::warning("ERROR GETTING RESPONSE FROM BPJS.");
          }
-     } else if (!empty($_POST['nik'])){
-         $model['nik'] = $_POST['nik'];
+     } else if (!empty($_REQUEST['nik'])){
+         $model['nik'] = $_REQUEST['nik'];
          try {
 
-             $client2 = new Client(['baseUrl' => 'https://dvlp.bpjs-kesehatan.go.id:9081/pcare-rest-v3.0/peserta/nik/' . $_POST['nik']]);
+             $client2 = new Client(['baseUrl' => 'https://dvlp.bpjs-kesehatan.go.id:9081/pcare-rest-v3.0/peserta/nik/' . $_REQUEST['nik']]);
              $request2 = $client2->createRequest()
                  ->setHeaders(['X-cons-id' => $bpjs_user['cons_id']])
                  ->addHeaders(['content-type' => 'application/json'])
@@ -534,10 +534,10 @@ if ($json->metaData->code == 200) {
          }
 
      } else {
-         $model['noKartu'] = $_POST['noKartu'];
+         $model['noKartu'] = $_REQUEST['noKartu'];
          try {
 
-             $client = new Client(['baseUrl' => 'https://dvlp.bpjs-kesehatan.go.id:9081/pcare-rest-v3.0/peserta/' . $_POST['noKartu']]);
+             $client = new Client(['baseUrl' => 'https://dvlp.bpjs-kesehatan.go.id:9081/pcare-rest-v3.0/peserta/' . $_REQUEST['noKartu']]);
              $request = $client->createRequest()
                  ->setHeaders(['X-cons-id' => $bpjs_user['cons_id']])
                  ->addHeaders(['content-type' => 'application/json'])
@@ -557,6 +557,7 @@ if ($json->metaData->code == 200) {
         $jsonresponse = json_decode($response->content);
         (isset($jsonresponse->response->nama))? $model['nama'] = $jsonresponse->response->nama :'';
         (isset($jsonresponse->response->nama))? $model['hubunganKeluarga'] = $jsonresponse->response->hubunganKeluarga : $model['hubunganKeluarga']='';
+        (isset($jsonresponse->response->noKTP))? $model['noKTP'] = $jsonresponse->response->noKTP : $model['noKTP']='';
         (isset($jsonresponse->response->nama))? $model['sex'] = $jsonresponse->response->sex : $model['sex'] = '';
         (isset($jsonresponse->response->nama))? $model['tglLahir'] = $jsonresponse->response->tglLahir : $model['tglLahir'] = '';
         (isset($jsonresponse->response->nama))? $model['tglMulaiAktif'] = $jsonresponse->response->tglMulaiAktif : $model['tglMulaiAktif'] = '';
