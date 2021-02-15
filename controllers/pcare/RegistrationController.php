@@ -512,7 +512,7 @@ $success = 0;
 //             return $response->content;
          } catch (\yii\base\Exception $exception) {
 
-             Yii::warning("ERROR GETTING RESPONSE FROM BPJS.");
+             Yii::$app->session->addFlash('danger',"ERROR GETTING RESPONSE FROM BPJS.");
          }
      } else if (!empty($_REQUEST['nik'])){
          $model['nik'] = $_REQUEST['nik'];
@@ -531,7 +531,7 @@ $success = 0;
 //             return $response->content;
          } catch (\yii\base\Exception $exception) {
 
-             Yii::warning("ERROR GETTING RESPONSE FROM BPJS.");
+             Yii::$app->session->addFlash('danger',"ERROR GETTING RESPONSE FROM BPJS.");
          }
 
      } else {
@@ -551,7 +551,7 @@ $success = 0;
 //             return $response->content;
          } catch (\yii\base\Exception $exception) {
 
-             Yii::warning("ERROR GETTING RESPONSE FROM BPJS.");
+             Yii::$app->session->addFlash('danger',"ERROR GETTING RESPONSE FROM BPJS.");
          }
      }
     if($success == 1) {

@@ -53,13 +53,24 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'Verify');
             'format' => 'raw',
             'value' => function($data){
         $textcolor = 'white';
-        if ($data['aktif']) {
-            $backgroundcolor = 'green';
-        } else {
-            $backgroundcolor = 'red';
+        $backgroundcolor = 'white';
+
+        $ketaktif = '';
+
+        if (isset($data['ketAKtif'])) {
+            $ketaktif = $data['ketAktif'];
+        }
+        if (isset($date['aktif'])) {
+
+
+            if ($data['aktif']) {
+                $backgroundcolor = 'green';
+            } else {
+                $backgroundcolor = 'red';
+            }
         }
 
-        $returnedtext = '<span style="color: '.$textcolor.'; background-color: '.$backgroundcolor.';"><strong>' .$data['ketAktif'] . '</strong></span>';
+        $returnedtext = '<span style="color: '.$textcolor.'; background-color: '.$backgroundcolor.';"><strong>' .$ketaktif. '</strong></span>';
         return $returnedtext;
 //        return json_encode($data);
             }
