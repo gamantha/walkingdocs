@@ -557,24 +557,29 @@ $success = 0;
     if($success == 1) {
         $jsonresponse = json_decode($response->content);
         (isset($jsonresponse->response->nama))? $model['nama'] = $jsonresponse->response->nama :'';
-        (isset($jsonresponse->response->nama))? $model['hubunganKeluarga'] = $jsonresponse->response->hubunganKeluarga : $model['hubunganKeluarga']='';
+        (isset($jsonresponse->response->hubunganKeluarga))? $model['hubunganKeluarga'] = $jsonresponse->response->hubunganKeluarga : $model['hubunganKeluarga']='';
         (isset($jsonresponse->response->noKTP))? $model['noKTP'] = $jsonresponse->response->noKTP : $model['noKTP']='';
-        (isset($jsonresponse->response->nama))? $model['sex'] = $jsonresponse->response->sex : $model['sex'] = '';
-        (isset($jsonresponse->response->nama))? $model['tglLahir'] = $jsonresponse->response->tglLahir : $model['tglLahir'] = '';
-        (isset($jsonresponse->response->nama))? $model['tglMulaiAktif'] = $jsonresponse->response->tglMulaiAktif : $model['tglMulaiAktif'] = '';
+        (isset($jsonresponse->response->sex))? $model['sex'] = $jsonresponse->response->sex : $model['sex'] = '';
+        (isset($jsonresponse->response->tglLahir))? $model['tglLahir'] = $jsonresponse->response->tglLahir : $model['tglLahir'] = '';
+        (isset($jsonresponse->response->tglMulaiAktif))? $model['tglMulaiAktif'] = $jsonresponse->response->tglMulaiAktif : $model['tglMulaiAktif'] = '';
 
-        (isset($jsonresponse->response->nama))? $model['tglAkhirBerlaku'] = $jsonresponse->response->tglAkhirBerlaku : $model['tglAkhirBerlaku'] = '';
-        (isset($jsonresponse->response->nama))? $model['golDarah'] = $jsonresponse->response->golDarah : $model['golDarah'] = '';
-        (isset($jsonresponse->response->nama))? $model['noHP'] = $jsonresponse->response->noHP : $model['noHP'] = '';
+        (isset($jsonresponse->response->tglAkhirBerlaku))? $model['tglAkhirBerlaku'] = $jsonresponse->response->tglAkhirBerlaku : $model['tglAkhirBerlaku'] = '';
+        (isset($jsonresponse->response->golDarah))? $model['golDarah'] = $jsonresponse->response->golDarah : $model['golDarah'] = '';
+        (isset($jsonresponse->response->noHP))? $model['noHP'] = $jsonresponse->response->noHP : $model['noHP'] = '';
 
-        (isset($jsonresponse->response->nama))? $model['jnsKelas_nama'] = $jsonresponse->response->jnsKelas->nama : $model['jnsKelas_nama'] = '';
-        (isset($jsonresponse->response->nama))? $model['jnsKelas_kode'] = $jsonresponse->response->jnsKelas->kode : $model['jnsKelas_kode'] = '';
+        (isset($jsonresponse->response->jnsKelas->nama))? $model['jnsKelas_nama'] = $jsonresponse->response->jnsKelas->nama : $model['jnsKelas_nama'] = '';
+        (isset($jsonresponse->response->jnsKelas->kode))? $model['jnsKelas_kode'] = $jsonresponse->response->jnsKelas->kode : $model['jnsKelas_kode'] = '';
 
-        (isset($jsonresponse->response->nama))? $model['jnsPeserta_nama'] = $jsonresponse->response->jnsPeserta->nama : $model['jnsPeserta_nama'] = '';
-        (isset($jsonresponse->response->nama))? $model['jnsPeserta_kode'] = $jsonresponse->response->jnsPeserta->kode : $model['jnsPeserta_kode'] = '';
+        (isset($jsonresponse->response->jnsPeserta->nama))? $model['jnsPeserta_nama'] = $jsonresponse->response->jnsPeserta->nama : $model['jnsPeserta_nama'] = '';
+        (isset($jsonresponse->response->jnsPeserta->kode))? $model['jnsPeserta_kode'] = $jsonresponse->response->jnsPeserta->kode : $model['jnsPeserta_kode'] = '';
 
-        (isset($jsonresponse->response->nama))? $model['aktif'] = $jsonresponse->response->aktif : $model['aktif'] = '';
-        (isset($jsonresponse->response->nama))? $model['ketAktif'] = $jsonresponse->response->ketAktif : $model['ketAktif'] = '';
+        (isset($jsonresponse->response->kdProviderPst->kdProvider))? $model['providerPeserta_kode'] = $jsonresponse->response->kdProviderPst->kdProvider : $model['providerPeserta_kode'] = '';
+        (isset($jsonresponse->response->kdProviderPst->nmProvider))? $model['providerPeserta_nama'] = $jsonresponse->response->kdProviderPst->nmProvider : $model['providerPeserta_nama'] = '';
+
+        (isset($jsonresponse->response->jnsKelas->nama))? $model['jnsKelas_nama'] = $jsonresponse->response->jnsKelas->nama : $model['jnsKelas_nama'] = '';
+
+        (isset($jsonresponse->response->aktif))? $model['aktif'] = $jsonresponse->response->aktif : $model['aktif'] = '';
+        (isset($jsonresponse->response->ketAktif))? $model['ketAktif'] = $jsonresponse->response->ketAktif : $model['ketAktif'] = '';
 
 
         if(strtolower($model['aktif']) == '1') {

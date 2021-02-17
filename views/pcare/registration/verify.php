@@ -57,10 +57,10 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'Verify');
 
         $ketaktif = '';
 
-        if (isset($data['ketAKtif'])) {
+        if (isset($data['ketAktif'])) {
             $ketaktif = $data['ketAktif'];
         }
-        if (isset($date['aktif'])) {
+        if (isset($data['aktif'])) {
 
 
             if ($data['aktif']) {
@@ -76,9 +76,39 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'Verify');
             }
         ],
         'noKTP',
-'nama','hubunganKeluarga','tglLahir','sex','golDarah','tglMulaiAktif', 'tglAkhirBerlaku',
-            'noHP',
-            'jnsPeserta_kode','jnsPeserta_nama','aktif'
+'nama','hubunganKeluarga',
+            'tglLahir',
+            //'sex',
+            'golDarah',
+            //'tglMulaiAktif', 'tglAkhirBerlaku',
+          //      'noHP',
+            //'jnsPeserta_kode',
+
+            [
+                    'label' => 'Jenis peserta',
+                'value' => function($data) {
+        return $data['jnsPeserta_nama'];
+                }
+            ],
+
+            [
+                'label' => 'Kelas',
+                'value' => function($data) {
+                    return $data['jnsKelas_nama'];
+                }
+            ],
+
+            [
+                'label' => 'Provider',
+                'value' => function($data) {
+                    return $data['providerPeserta_nama'];
+                }
+            ],
+
+//            'jnsPeserta_nama',
+            //'providerPeserta_kode',
+//             'providerPeserta_nama',
+            //'aktif'
         ],
     ]) ?>
 </div>
