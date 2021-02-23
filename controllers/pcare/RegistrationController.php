@@ -484,6 +484,8 @@ if ($json->metaData->code == 200) {
     public function actionVerify($wdid, $noKartu, $nik)
     {
 $success = 0;
+$success2 = 0;
+$nikflag = 0;
         $this->layout = '@app/views/layouts/verify';
 //        $noKartu ='';
 //        $nik='';
@@ -509,12 +511,15 @@ $success = 0;
 
              $response = $request->send();
              $success = 1;
+//             Yii::$app->session->addFlash('success',$response->getStatusCode());
 //             return $response->content;
          } catch (\yii\base\Exception $exception) {
 
-             Yii::$app->session->addFlash('danger',"ERROR GETTING RESPONSE FROM BPJS.");
+             Yii::$app->session->addFlash('danger',"No Kartu - ERROR GETTING RESPONSE FROM BPJS.");
          }
-     } else if (!empty($_REQUEST['nik'])){
+     }
+
+     if (!empty($_REQUEST['nik'])){
          $model['nik'] = $_REQUEST['nik'];
          try {
 
@@ -526,39 +531,24 @@ $success = 0;
                  ->addHeaders(['X-Signature' => $bpjs_user['encoded_sig']])
                  ->addHeaders(['X-Authorization' => $bpjs_user['encoded_auth_string']]);
 
-             $response = $request2->send();
-             $success = 1;
+             $response2 = $request2->send();
+             $success2 = 1;
+//                 Yii::$app->session->addFlash('success',"ADA NIK " . $response->getStatusCode());
 //             return $response->content;
          } catch (\yii\base\Exception $exception) {
 
-             Yii::$app->session->addFlash('danger',"ERROR GETTING RESPONSE FROM BPJS.");
+             Yii::$app->session->addFlash('danger',"NIK - ERROR GETTING RESPONSE FROM BPJS.");
          }
 
-     } else {
-         $model['noKartu'] = $_REQUEST['noKartu'];
-         try {
-
-             $client = new Client(['baseUrl' => 'https://dvlp.bpjs-kesehatan.go.id:9081/pcare-rest-v3.0/peserta/' . $_REQUEST['noKartu']]);
-             $request = $client->createRequest()
-                 ->setHeaders(['X-cons-id' => $bpjs_user['cons_id']])
-                 ->addHeaders(['content-type' => 'application/json'])
-                 ->addHeaders(['X-Timestamp' => $bpjs_user['time']])
-                 ->addHeaders(['X-Signature' => $bpjs_user['encoded_sig']])
-                 ->addHeaders(['X-Authorization' => $bpjs_user['encoded_auth_string']]);
-
-             $response = $request->send();
-             $success = 1;
-//             return $response->content;
-         } catch (\yii\base\Exception $exception) {
-
-             Yii::$app->session->addFlash('danger',"ERROR GETTING RESPONSE FROM BPJS.");
-         }
      }
-    if($success == 1) {
+
+
+     if (($success == 1) && ($nikflag ==0)) {
         $jsonresponse = json_decode($response->content);
         (isset($jsonresponse->response->nama))? $model['nama'] = $jsonresponse->response->nama :'';
         (isset($jsonresponse->response->hubunganKeluarga))? $model['hubunganKeluarga'] = $jsonresponse->response->hubunganKeluarga : $model['hubunganKeluarga']='';
         (isset($jsonresponse->response->noKTP))? $model['noKTP'] = $jsonresponse->response->noKTP : $model['noKTP']='';
+         (isset($jsonresponse->response->noKartu))? $model['noKartu'] = $jsonresponse->response->noKartu : $model['noKartu']='';
         (isset($jsonresponse->response->sex))? $model['sex'] = $jsonresponse->response->sex : $model['sex'] = '';
         (isset($jsonresponse->response->tglLahir))? $model['tglLahir'] = $jsonresponse->response->tglLahir : $model['tglLahir'] = '';
         (isset($jsonresponse->response->tglMulaiAktif))? $model['tglMulaiAktif'] = $jsonresponse->response->tglMulaiAktif : $model['tglMulaiAktif'] = '';
@@ -585,24 +575,68 @@ $success = 0;
         if(strtolower($model['aktif']) == '1') {
                     Yii::$app->session->addFlash('success', $model['ketAktif']);
         } else {
-            if(isset($jsonresponse->response->aktif)) {
-                Yii::$app->session->addFlash('danger', $model['ketAktif']);
-            } else {
-                Yii::$app->session->addFlash('danger', $response->content);
+            if($nikflag == 0) {
+//                Yii::$app->session->addFlash('danger', 'no kartu ' . $model['ketAktif'] . '. coba dengan NIK');
+                $nikflag = 1;
             }
 
         }
 
-    } else {
-
     }
 
+     if (($nikflag == 1) && (empty($_REQUEST['nik']) ))
+     {
+
+Yii::$app->session->addFlash('danger', 'no kartu ' . $model['ketAktif'] . '. coba dengan NIK');
+
+     }
+
+    if (($success2 == 1) && ($nikflag ==1)) {
+        $jsonresponse = json_decode($response2->content);
+        (isset($jsonresponse->response->nama))? $model['nama'] = $jsonresponse->response->nama :'';
+        (isset($jsonresponse->response->hubunganKeluarga))? $model['hubunganKeluarga'] = $jsonresponse->response->hubunganKeluarga : $model['hubunganKeluarga']='';
+        (isset($jsonresponse->response->noKTP))? $model['noKTP'] = $jsonresponse->response->noKTP : $model['noKTP']='';
+        (isset($jsonresponse->response->noKartu))? $model['noKartu'] = $jsonresponse->response->noKartu : $model['noKartu']='';
+        (isset($jsonresponse->response->sex))? $model['sex'] = $jsonresponse->response->sex : $model['sex'] = '';
+        (isset($jsonresponse->response->tglLahir))? $model['tglLahir'] = $jsonresponse->response->tglLahir : $model['tglLahir'] = '';
+        (isset($jsonresponse->response->tglMulaiAktif))? $model['tglMulaiAktif'] = $jsonresponse->response->tglMulaiAktif : $model['tglMulaiAktif'] = '';
+
+        (isset($jsonresponse->response->tglAkhirBerlaku))? $model['tglAkhirBerlaku'] = $jsonresponse->response->tglAkhirBerlaku : $model['tglAkhirBerlaku'] = '';
+        (isset($jsonresponse->response->golDarah))? $model['golDarah'] = $jsonresponse->response->golDarah : $model['golDarah'] = '';
+        (isset($jsonresponse->response->noHP))? $model['noHP'] = $jsonresponse->response->noHP : $model['noHP'] = '';
+
+        (isset($jsonresponse->response->jnsKelas->nama))? $model['jnsKelas_nama'] = $jsonresponse->response->jnsKelas->nama : $model['jnsKelas_nama'] = '';
+        (isset($jsonresponse->response->jnsKelas->kode))? $model['jnsKelas_kode'] = $jsonresponse->response->jnsKelas->kode : $model['jnsKelas_kode'] = '';
+
+        (isset($jsonresponse->response->jnsPeserta->nama))? $model['jnsPeserta_nama'] = $jsonresponse->response->jnsPeserta->nama : $model['jnsPeserta_nama'] = '';
+        (isset($jsonresponse->response->jnsPeserta->kode))? $model['jnsPeserta_kode'] = $jsonresponse->response->jnsPeserta->kode : $model['jnsPeserta_kode'] = '';
+
+        (isset($jsonresponse->response->kdProviderPst->kdProvider))? $model['providerPeserta_kode'] = $jsonresponse->response->kdProviderPst->kdProvider : $model['providerPeserta_kode'] = '';
+        (isset($jsonresponse->response->kdProviderPst->nmProvider))? $model['providerPeserta_nama'] = $jsonresponse->response->kdProviderPst->nmProvider : $model['providerPeserta_nama'] = '';
+
+        (isset($jsonresponse->response->jnsKelas->nama))? $model['jnsKelas_nama'] = $jsonresponse->response->jnsKelas->nama : $model['jnsKelas_nama'] = '';
+
+        (isset($jsonresponse->response->aktif))? $model['aktif'] = $jsonresponse->response->aktif : $model['aktif'] = '';
+        (isset($jsonresponse->response->ketAktif))? $model['ketAktif'] = $jsonresponse->response->ketAktif : $model['ketAktif'] = '';
+
+
+        if(strtolower($model['aktif']) == '1') {
+            Yii::$app->session->addFlash('success', $model['ketAktif']);
+        } else {
+
+                Yii::$app->session->addFlash('danger', 'NIK ' . $model['ketAktif'] . '. coba ulang');
+
+
+
+        }
+    }
  }
 
         return $this->render('verify', [
             'model' => $model,
             'noKartu' => $noKartu,
-            'nik' => $nik
+            'nik' => $nik,
+            'nikflag' => $nikflag
         ]);
 
 

@@ -20,11 +20,11 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'Verify');
         <?php $form = ActiveForm::begin(); ?>
 
     <h1><?= Html::encode($this->title) ?></h1>
-<div class="form-group">
+<div <?= $nikflag?"hidden" : ""?> class="form-group">
     <label class="control-label">No Kartu</label>
         <?= Html::input('text', 'noKartu', $noKartu, ['class' => 'form-control']) ?>
 </div>
-        <div class="form-group">
+        <div <?= $nikflag?"" : "hidden"?> class="form-group">
             <label class="control-label">NIK</label>
         <?= Html::input('text', 'nik', $nik, ['class' => 'form-control']) ?>
         </div>
@@ -75,6 +75,7 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'Verify');
 //        return json_encode($data);
             }
         ],
+            'noKartu',
         'noKTP',
 'nama','hubunganKeluarga',
             'tglLahir',
