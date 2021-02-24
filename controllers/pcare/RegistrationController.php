@@ -490,7 +490,29 @@ $nikflag = 0;
 //        $noKartu ='';
 //        $nik='';
         $clinic = Consid::find()->andWHere(['wd_id' => $wdid])->One();
-        $model = ['noKartu'=>'','nik' =>'','nama' => '','sex'=>''];
+        $model = ['noKartu'=>'',
+            'nik' =>'',
+            'nama' => '',
+            'sex'=>'',
+            'noKTP' =>'',
+            'jnsKelas_nama'=>'',
+            'jnsKelas_kode' =>'',
+            'jnsPeserta_nama' => '',
+            'jnsPeserta_kode' => '',
+            'providerPeserta_kode' => '',
+            'providerPeserta_nama' => ''
+
+
+
+
+
+
+            ];
+
+
+
+
+
  if ($_REQUEST) {
 
      $pcareregistrationmodel = new PcareRegistration();
@@ -566,7 +588,6 @@ $nikflag = 0;
         (isset($jsonresponse->response->kdProviderPst->kdProvider))? $model['providerPeserta_kode'] = $jsonresponse->response->kdProviderPst->kdProvider : $model['providerPeserta_kode'] = '';
         (isset($jsonresponse->response->kdProviderPst->nmProvider))? $model['providerPeserta_nama'] = $jsonresponse->response->kdProviderPst->nmProvider : $model['providerPeserta_nama'] = '';
 
-        (isset($jsonresponse->response->jnsKelas->nama))? $model['jnsKelas_nama'] = $jsonresponse->response->jnsKelas->nama : $model['jnsKelas_nama'] = '';
 
         (isset($jsonresponse->response->aktif))? $model['aktif'] = $jsonresponse->response->aktif : $model['aktif'] = '';
         (isset($jsonresponse->response->ketAktif))? $model['ketAktif'] = $jsonresponse->response->ketAktif : $model['ketAktif'] = '';
@@ -613,8 +634,6 @@ Yii::$app->session->addFlash('danger', 'no kartu ' . $model['ketAktif'] . '. cob
 
         (isset($jsonresponse->response->kdProviderPst->kdProvider))? $model['providerPeserta_kode'] = $jsonresponse->response->kdProviderPst->kdProvider : $model['providerPeserta_kode'] = '';
         (isset($jsonresponse->response->kdProviderPst->nmProvider))? $model['providerPeserta_nama'] = $jsonresponse->response->kdProviderPst->nmProvider : $model['providerPeserta_nama'] = '';
-
-        (isset($jsonresponse->response->jnsKelas->nama))? $model['jnsKelas_nama'] = $jsonresponse->response->jnsKelas->nama : $model['jnsKelas_nama'] = '';
 
         (isset($jsonresponse->response->aktif))? $model['aktif'] = $jsonresponse->response->aktif : $model['aktif'] = '';
         (isset($jsonresponse->response->ketAktif))? $model['ketAktif'] = $jsonresponse->response->ketAktif : $model['ketAktif'] = '';
