@@ -88,8 +88,8 @@ class RegistrationController extends Controller
         $request = Yii::$app->request;
         $params = $request->bodyParams;
 
-        if (isset($params['location'])) {
-            $considmodel = Consid::find()->andWhere(['wd_id' => $params['location']])->One();
+        if (isset($params['clinicId'])) {
+            $considmodel = Consid::find()->andWhere(['wd_id' => $params['clinicId']])->One();
             if (isset($considmodel->cons_id)) {
                 $model->cons_id = $considmodel->cons_id;
             } else {
