@@ -502,14 +502,7 @@ $nikflag = 0;
             'providerPeserta_kode' => '',
             'providerPeserta_nama' => ''
 
-
-
-
-
-
             ];
-
-
 
 
 
@@ -688,11 +681,14 @@ Yii::$app->session->addFlash('danger', 'no kartu ' . $model['ketAktif'] . '. cob
 
     }
 
-
+public function actionTest()
+{
+    echo 'test';
+}
 
 public function actionTestpost()
 {
-
+echo 'test postyii se';
     $payload = '{
     "clinicId" : "wdid2",
   "tglDaftar": "02-11-2020",
@@ -734,7 +730,7 @@ public function actionTestpost()
 //echo '<pre>';
     try {
 
-        $client = new Client(['baseUrl' => 'http://localhost/walkingdocs/web/index.php/pcare/registration/create']);
+        $client = new Client(['baseUrl' => 'http://localhost:8080/index.php/pcare/registration/create']);
         $request = $client->createRequest()
 //            ->setData($payload)
 //            ->setData(['name' => 'John Doe', 'email' => 'johndoe@domain.com'])
@@ -747,8 +743,9 @@ public function actionTestpost()
         ob_clean();
 
         echo $response->content;
+        echo 'done';
     } catch (\yii\base\Exception $exception) {
-//print_r($exception);
+print_r($exception);
         Yii::warning("ERROR GETTING RESPONSE FROM BPJS.");
        // return $exception;
     }
