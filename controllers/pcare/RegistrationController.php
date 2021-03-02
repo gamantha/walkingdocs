@@ -688,7 +688,7 @@ public function actionTest()
 
 public function actionTestpost()
 {
-echo 'test postyii se';
+//echo 'test postyii se';
     $payload = '{
     "clinicId" : "wdid2",
   "tglDaftar": "02-11-2020",
@@ -730,7 +730,7 @@ echo 'test postyii se';
 //echo '<pre>';
     try {
 
-        $client = new Client(['baseUrl' => 'http://localhost:8080/index.php/pcare/registration/create']);
+        $client = new Client(['baseUrl' => 'http://localhost/walkingdocs/web/index.php/pcare/registration/create']);
         $request = $client->createRequest()
 //            ->setData($payload)
 //            ->setData(['name' => 'John Doe', 'email' => 'johndoe@domain.com'])
@@ -743,7 +743,7 @@ echo 'test postyii se';
         ob_clean();
 
         echo $response->content;
-        echo 'done';
+//        echo 'done';
     } catch (\yii\base\Exception $exception) {
 print_r($exception);
         Yii::warning("ERROR GETTING RESPONSE FROM BPJS.");

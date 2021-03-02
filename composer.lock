@@ -51,16 +51,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.173.14",
+            "version": "3.173.19",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "ff2b3623adc6781da48ee017e7042a363cd65955"
+                "reference": "63c6feca49bf4083f33bf250401c0c286759e101"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/ff2b3623adc6781da48ee017e7042a363cd65955",
-                "reference": "ff2b3623adc6781da48ee017e7042a363cd65955",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/63c6feca49bf4083f33bf250401c0c286759e101",
+                "reference": "63c6feca49bf4083f33bf250401c0c286759e101",
                 "shasum": ""
             },
             "require": {
@@ -135,16 +135,16 @@
             "support": {
                 "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.173.14"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.173.19"
             },
-            "time": "2021-02-22T19:22:33+00:00"
+            "time": "2021-03-01T19:15:59+00:00"
         },
         {
             "name": "bower-asset/bootstrap",
             "version": "v3.4.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/twbs/bootstrap.git",
+                "url": "git@github.com:twbs/bootstrap.git",
                 "reference": "68b0d231a13201eb14acd3dc84e51543d16e5f7e"
             },
             "dist": {
@@ -165,7 +165,7 @@
             "version": "3.3.11",
             "source": {
                 "type": "git",
-                "url": "git@github.com:RobinHerbots/Inputmask.git",
+                "url": "https://github.com/RobinHerbots/Inputmask.git",
                 "reference": "5e670ad62f50c738388d4dcec78d2888505ad77b"
             },
             "dist": {
@@ -186,7 +186,7 @@
             "version": "3.5.1",
             "source": {
                 "type": "git",
-                "url": "git@github.com:jquery/jquery-dist.git",
+                "url": "https://github.com/jquery/jquery-dist.git",
                 "reference": "4c0e4becb8263bb5b3e6dadc448d8e7305ef8215"
             },
             "dist": {
@@ -3297,16 +3297,16 @@
         },
         {
             "name": "nahid/jsonq",
-            "version": "v5.2.4",
+            "version": "v5.2.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nahid/jsonq.git",
-                "reference": "8b38ceaa05c6d92355637e300dec15dcdab21474"
+                "reference": "4cee981a475a07d2c3b8074b1399f041c00f8c21"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nahid/jsonq/zipball/8b38ceaa05c6d92355637e300dec15dcdab21474",
-                "reference": "8b38ceaa05c6d92355637e300dec15dcdab21474",
+                "url": "https://api.github.com/repos/nahid/jsonq/zipball/4cee981a475a07d2c3b8074b1399f041c00f8c21",
+                "reference": "4cee981a475a07d2c3b8074b1399f041c00f8c21",
                 "shasum": ""
             },
             "require": {
@@ -3342,9 +3342,19 @@
             ],
             "support": {
                 "issues": "https://github.com/nahid/jsonq/issues",
-                "source": "https://github.com/nahid/jsonq/tree/v5.2.4"
+                "source": "https://github.com/nahid/jsonq/tree/v5.2.5"
             },
-            "time": "2019-10-17T18:53:33+00:00"
+            "funding": [
+                {
+                    "url": "https://beerpay.io/nahid/jsonq",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/me-shaon",
+                    "type": "github"
+                }
+            ],
+            "time": "2021-02-23T09:47:36+00:00"
         },
         {
             "name": "npm-asset/bootstrap",
