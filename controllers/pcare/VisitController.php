@@ -508,7 +508,7 @@ public function actionRujukankhusus($id)
 
             $visit = PcareVisit::findOne($id);
 
-//            $visit->setWdId('wdid2');
+            $visit->setWdId('wdid2');
             $response = $visit->getDiagnosecodes($q);
 
             $jsonval = json_decode($response);

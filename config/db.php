@@ -2,7 +2,7 @@
 
 return [
     'class' => 'yii\db\Connection',
-    'dsn' => 'mysql:host=aws.gamantha.com;dbname=STAGING_bpjsintegration',
+    'dsn' => 'mysql:host=aws.gamantha.com;dbname=walkingdocs_bpjsintegration',
     'username' => 'wduser',
     'password' => 'walkingdocs2021',
     'charset' => 'utf8',

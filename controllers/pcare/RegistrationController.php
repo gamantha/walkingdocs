@@ -85,6 +85,7 @@ class RegistrationController extends Controller
     public function actionCreate()
     {
         $model = new PcareRegistration();
+        $model->noKartu = '10';
         $request = Yii::$app->request;
         $params = $request->bodyParams;
 
@@ -96,10 +97,24 @@ class RegistrationController extends Controller
                 Yii::$app->session->addFlash('danger', "NO ConsID data!!!");
             }
 
-                $model->kdPoli = $params['kdPoli'];
-                $model->noKartu = $params['noKartu'];
-                $model->kunjSakit = $params['kunjSakit'];
+            if (empty($params['kdTkp'])) {
+                $model->kdTkp = '10';
+            } else {
                 $model->kdTkp = $params['kdTkp'];
+            }
+
+
+
+            if (empty($params['kdPoli'])) {
+                $model->kdPoli = '001';
+            } else {
+                $model->kdPoli = $params['kdPoli'];
+            }
+
+
+            $model->noKartu = $params['noKartu'];
+                $model->kunjSakit = $params['kunjSakit'];
+//                $model->kdTkp = $params['kdTkp'];
                 $model->kdProviderPeserta = $params['kdProviderPeserta'];
                 $model->tglDaftar = $params['tglDaftar'];
                 // optional
@@ -114,7 +129,7 @@ class RegistrationController extends Controller
 
 
         } else {
-            Yii::$app->session->addFlash('warning', "NO POST data");
+           // Yii::$app->session->addFlash('warning', "NO POST data");
 
 
 
@@ -715,8 +730,8 @@ public function actionTestpost()
 //    $model->respRate = $params['respRate'];
 //    $model->heartRate = $params['heartRate'];
 
-    $payload = 'clinicId=5e87a22effe0dc06b2f87964&kdPoli=004&kdTkp=10&tglDaftar=02-11-2020' .
-        '&noKartu=0001113569638&kunjSakit=true' .
+    $payload = 'clinicId=59cedfba9ae80d05757f54e9.5e87a22effe0dc06b2f87964&kdPoli=&kdTkp=&tglDaftar=02-11-2020' .
+        '&noKartu=&kunjSakit=true' .
         '&kdProviderPeserta=' .
         '&no_urut=' .
     '&keluhan=' .

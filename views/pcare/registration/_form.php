@@ -15,8 +15,12 @@ use yii\widgets\ActiveForm;
 <div class="pcare-registration-form">
 
     <?php $form = ActiveForm::begin(); ?>
-    <?= $form->field($model, 'cons_id')->textInput(['maxlength' => true, 'readonly' => false, 'id' => 'pcareregistration-cons_id']) ?>
-    <?= $form->field($model, 'kdProviderPeserta')->textInput(['maxlength' => true, 'readonly' => false]) ?>
+    <?= $form->field($model, 'cons_id')->textInput(['maxlength' => true, 'readonly' => true, 'id' => 'pcareregistration-cons_id']) ?>
+    <?php
+
+    //echo $form->field($model, 'kdProviderPeserta')->textInput(['maxlength' => true, 'readonly' => false])
+
+    ?>
 
 
     <?php
