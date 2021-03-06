@@ -85,7 +85,7 @@ class RegistrationController extends Controller
     public function actionCreate()
     {
         $model = new PcareRegistration();
-        $model->noKartu = '10';
+//        $model->noKartu = '10';
         $request = Yii::$app->request;
         $params = $request->bodyParams;
 
@@ -445,13 +445,19 @@ $provider = new ArrayDataProvider();
         $options = [];
 
             $json = json_decode($response);
-if ($json->metaData->code == 200) {
-            foreach ($json->response->list as $i)
-            {
-                $options[$i->kdPoli] = $i->kdPoli . ' : ' . $i->nmPoli;
+
+        if (isset($json->metaData->code)) {
+            if ($json->metaData->code == 200) {
+                foreach ($json->response->list as $i)
+                {
+                    $options[$i->kdPoli] = $i->kdPoli . ' : ' . $i->nmPoli;
+                }
+            } else {
+                Yii::$app->session->setFlash('danger', "BPJS Error : " . $json->metaData->message);
             }
+
         } else {
-            Yii::$app->session->setFlash('danger', "BPJS Error : " . $json->metaData->message);
+            Yii::$app->session->setFlash('danger', "BPJS no response");
         }
 
 
@@ -703,32 +709,6 @@ public function actionTest()
 
 public function actionTestpost()
 {
-//echo 'test postyii se';
-    $payload = '{
-    "clinicId" : "wdid2",
-  "tglDaftar": "02-11-2020",
-  "noKartu": "0001113569638",
-  "kdPoli": "001",
-  "kunjSakit": true,
-  "kdTkp": "10",
-    
-  "no_urut" : "",
-  "keluhan" : "",
-  "sistole" : "",
-  "diastole" : "",
-  "beratBadan" : "",
-  "tinggiBadan" : "",
-  "respRate" : "",
-  "heartRate" : ""
-      }';
-//    $model->no_urut = $params['no_urut'];
-//    $model->keluhan = $params['keluhan'];
-//    $model->sistole = $params['sistole'];
-//    $model->diastole = $params['diastole'];
-//    $model->beratBadan = $params['beratBadan'];
-//    $model->tinggiBadan = $params['tinggiBadan'];
-//    $model->respRate = $params['respRate'];
-//    $model->heartRate = $params['heartRate'];
 
     $payload = 'clinicId=59cedfba9ae80d05757f54e9.5e87a22effe0dc06b2f87964&kdPoli=&kdTkp=&tglDaftar=02-11-2020' .
         '&noKartu=&kunjSakit=true' .
