@@ -85,7 +85,16 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'keluhan')->textArea(['maxlength' => true]) ?>
     <?= $form->field($model, 'sistole')->textArea(['maxlength' => true]) ?>
     <?= $form->field($model, 'diastole')->textArea(['maxlength' => true]) ?>
-
+    <div class="well">
+    <h3>Visit Data (will be hidden)</h3>
+        
+        <?= $form->field($visitmodel, 'kdDokter')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($visitmodel, 'kdSadar')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($visitmodel, 'kdDiag1')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($visitmodel, 'kdDiag2')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($visitmodel, 'kdDiag3')->textInput(['maxlength' => true]) ?>
+        <?= $form->field($visitmodel, 'kdDiag3')->terapi(['maxlength' => true]) ?>
+</div       >
 
 
     <div class="form-group">

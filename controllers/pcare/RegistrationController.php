@@ -85,6 +85,8 @@ class RegistrationController extends Controller
     public function actionCreate()
     {
         $model = new PcareRegistration();
+
+        $pcarevisit = new PcareVisit();
 //        $model->noKartu = '10';
         $request = Yii::$app->request;
         $params = $request->bodyParams;
@@ -169,7 +171,7 @@ class RegistrationController extends Controller
             }
 
 
-            $pcarevisit = new PcareVisit();
+
             $pcarevisit->pendaftaranId = $model->id;
             $pcarevisit->status = 'new';
             $pcarevisit->save();
@@ -182,6 +184,7 @@ class RegistrationController extends Controller
 
         return $this->render('create', [
             'model' => $model,
+            'visitmodel' => $pcarevisit
         ]);
     }
 
@@ -457,7 +460,7 @@ $provider = new ArrayDataProvider();
             }
 
         } else {
-            Yii::$app->session->setFlash('danger', "BPJS no response");
+            Yii::$app->session->setFlash('danger', "BPJS no response    ");
         }
 
 
