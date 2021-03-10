@@ -2,9 +2,9 @@
 
 return [
     'class' => 'yii\db\Connection',
-    'dsn' => 'mysql:host=localhost;dbname=walkingdocs_learning',
-    'username' => 'root',
-    'password' => '',
+    'dsn' => 'mysql:host=aws.gamantha.com;dbname=walkingdocs_learning',
+    'username' => 'wduser',
+    'password' => 'walkingdocs2021',
     'charset' => 'utf8',
 
     // Schema cache options (for production environment)

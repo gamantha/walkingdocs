@@ -94,7 +94,7 @@ use yii\widgets\ActiveForm;
     <?= $form->field($visitmodel, 'kdDiag2')->textInput(['maxlength' => true]) ?>
     <?= $form->field($visitmodel, 'kdDiag3')->textInput(['maxlength' => true]) ?>
         <?= $form->field($visitmodel, 'kdDiag3')->terapi(['maxlength' => true]) ?>
-</div       >
+</div>
 
 
     <div class="form-group">
