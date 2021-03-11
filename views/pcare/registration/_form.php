@@ -87,20 +87,61 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'diastole')->textArea(['maxlength' => true]) ?>
     <div class="well">
     <h3>Visit Data</h3>
-        
-        <?= $form->field($visitmodel, 'kdDokter')->textInput(['maxlength' => true]) ?>
-    <?= $form->field($visitmodel, 'kdSadar')->textInput(['maxlength' => true]) ?>
-    <?= $form->field($visitmodel, 'kdDiag1')->textInput(['maxlength' => true]) ?>
-    <?= $form->field($visitmodel, 'kdDiag2')->textInput(['maxlength' => true]) ?>
-    <?= $form->field($visitmodel, 'kdDiag3')->textInput(['maxlength' => true]) ?>
-        <?= $form->field($visitmodel, 'kdDiag3')->textInput(['maxlength' => true]) ?>
+
+
+
 
         <?php
 
+        $listData2 = [];
+        $refKesadaran = [];
 
-        echo $form->field($wdmodel, 'checklistNames')->textInput(['maxlength' => true,'readonly' => true]);
-        echo $form->field($wdmodel, 'manualDiagnoses')->textInput(['maxlength' => true,'readonly' => true]);
+
+
+        $listData2 = $this->context->getDokter($model);
+        $refKesadaran = $this->context->getKesadaran($model);
+
         echo $form->field($wdmodel, 'doctor')->textInput(['maxlength' => true,'readonly' => true]);
+        echo $form->field($visitmodel, 'kdDokter')->dropDownList(
+            $listData2,
+            ['prompt'=>'Select...']);
+        echo '<hr/>';
+        echo $form->field($visitmodel, 'kdSadar')->dropDownList(
+            $refKesadaran,
+            ['prompt'=>'Select...']);
+
+        echo $form->field($wdmodel, 'checklistNames')->textInput(['maxlength' => true,'readonly' => true])
+            //->label("Diagnose")
+        ;
+
+//echo $form->field($visitmodel, 'kdDiag1')->textInput(['maxlength' => true]);
+        $url = \yii\helpers\Url::to(['/visit/diagnosecode']);
+        echo $form->field($visitmodel, 'kdDiag1')->widget(Select2::classname(), [
+            'options' => ['placeholder' => 'Search for diagnose...'],
+            'pluginOptions' => [
+                'allowClear' => true,
+                'minimumInputLength' => 3,
+                'language' => [
+                    'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                ],
+                'ajax' => [
+                    'url' => $url,
+                    'dataType' => 'json',
+                    'data' => new JsExpression('function(params) { return {q:params.term, id:'.$model->id.'}; }')
+                ],
+                'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                'templateResult' => new JsExpression('function(city) { return (city.id + " : " + city.text + " : " + city.nonspesialis); }'),
+                'templateSelection' => new JsExpression('function (city) { return (city.id + " : " + city.text + " : " + city.nonspesialis); }'),
+            ],
+        ]);
+
+
+        echo $form->field($visitmodel, 'kdDiag2')->textInput(['maxlength' => true]);
+        echo $form->field($visitmodel, 'kdDiag3')->textInput(['maxlength' => true]);
+echo '<hr/>';
+        echo $form->field($wdmodel, 'manualDiagnoses')->textInput(['maxlength' => true,'readonly' => true]);
+
+
         ?>
 </div>
 

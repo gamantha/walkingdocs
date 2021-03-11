@@ -88,6 +88,7 @@ class RegistrationController extends Controller
         $model = new PcareRegistration();
 
         $pcarevisit = new PcareVisit();
+        $pcarevisit->kdSadar = "01";
 
         $wdmodel = new WdPassedValues();
         $request = Yii::$app->request;
@@ -181,7 +182,6 @@ class RegistrationController extends Controller
             $pcarevisit->save();
             return $this->redirect(['view', 'id' => $model->id]);
         }
-//        $model->save();
 
 
 
@@ -717,6 +717,60 @@ public function actionTest()
     echo 'test';
 }
 
+
+
+    public function getKesadaran($model)
+    {
+
+        $kesadaran = $model->getKesadaran();
+        $json = json_decode($kesadaran);
+
+        $options = [];
+        if (isset($json->response)) {
+            if ($json->metaData->code == 200) {
+                foreach ($json->response->list as $i) {
+                    $options[$i->kdSadar] = $i->kdSadar . ' : ' . $i->nmSadar;
+                }
+
+                return $options;
+            } else {
+                Yii::$app->session->addFlash('danger', 'cek peserta failed');
+                return $options;
+            }
+        } else {
+            Yii::$app->session->addFlash('danger', 'no pcare web service response');
+            return $options;
+        }
+
+    }
+
+
+    public function getDokter($consid)
+    {
+//        $registration = PcareRegistration::findOne($pendaftaranId);
+//        $registration = new PcareRegistration();
+//        $registration->cons_id = $consid;
+        $kesadaran = $consid->getDokter();
+
+
+        $json = json_decode($kesadaran);
+        $options = [];
+        if (isset($json->response)) {
+
+
+            foreach ($json->response->list as $i)
+            {
+                $options[$i->kdDokter] = $i->kdDokter . ' : ' . $i->nmDokter;
+            }
+        } else {
+            Yii::$app->session->addFlash('danger', 'get dokter - no pcare web service response');
+        }
+
+        return $options;
+    }
+
+
+
 public function actionTestpost()
 {
 
@@ -730,7 +784,10 @@ public function actionTestpost()
     '&beratBadan=' .
     '&tinggiBadan=' .
     '&respRate=' .
-    '&heartRate=';
+    '&heartRate=' .
+        '&doctor=' .
+        '&manualDiagnoses=' .
+        '&checklistNames=';
 
 //echo '<pre>';
     try {
