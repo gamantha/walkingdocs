@@ -122,6 +122,24 @@ $visit = PcareVisit::find()->andWhere(['pendaftaranId' => $id])->One();
             }
         }
 
+
+        if ($model->kdSadar == null)
+        {
+$model->kdSadar = "01";
+//            Yii::$app->session->addFlash('danger', "NULL");
+        }
+
+
+if ($model->kdStatusPulang == null)
+{
+    if ($registrationModel->kdTkp == 10) {
+$model->kdStatusPulang=3;
+    } else if ($registrationModel->kdTkp == 20) {
+        $model->kdStatusPulang=0;
+    }
+//    Yii::$app->session->addFlash('danger', "NULL");
+}
+//        Yii::$app->session->addFlash('danger', $model->kdStatusPulang);
         return $this->render('update', [
             'model' => $model,
             'registrationModel' => $registrationModel
@@ -508,7 +526,7 @@ public function actionRujukankhusus($id)
 
             $visit = PcareVisit::findOne($id);
 
-            $visit->setWdId('wdid2');
+//            $visit->setWdId('59cedfba9ae80d05757f54e9.5e87a22effe0dc06b2f87964');
             $response = $visit->getDiagnosecodes($q);
 
             $jsonval = json_decode($response);
@@ -543,7 +561,7 @@ public function actionRujukankhusus($id)
 
             $visit = new PcareVisit();
 
-            $visit->setWdId('wdid2');
+//            $visit->setWdId('wdid2');
             $response = $visit->getKhusussubspesialis($q);
 
             $jsonval = json_decode($response);

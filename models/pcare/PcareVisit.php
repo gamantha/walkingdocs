@@ -304,8 +304,9 @@ class PcareVisit extends \yii\db\ActiveRecord
 
     public function getDiagnosecodes($keyword)
     {
-        $clinic = Consid::find()->andWhere(['wd_id' => 'wdid2'])->One();
-        $bpjs_user = self::getUsercreds($clinic->cons_id);
+//        $bpjs_user = self::getUsercreds($this->pendaftaran->cons_id);
+//        $clinic = Consid::find()->andWhere(['wd_id' => 'wdid2'])->One();
+        $bpjs_user = self::getUsercreds($this->pendaftaran->cons_id);
 //        $bpjs_user = self::getUsercreds($this->pendaftaran->cons_id);
         try {
 

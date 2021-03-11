@@ -5,6 +5,7 @@ namespace app\controllers\pcare;
 
 use app\models\Consid;
 use app\models\pcare\PcareVisit;
+use app\models\pcare\WdPassedValues;
 use Yii;
 use app\models\pcare\PcareRegistration;
 use app\models\pcare\PcareRegistrationSearch;
@@ -87,7 +88,8 @@ class RegistrationController extends Controller
         $model = new PcareRegistration();
 
         $pcarevisit = new PcareVisit();
-//        $model->noKartu = '10';
+
+        $wdmodel = new WdPassedValues();
         $request = Yii::$app->request;
         $params = $request->bodyParams;
 
@@ -133,8 +135,6 @@ class RegistrationController extends Controller
         } else {
            // Yii::$app->session->addFlash('warning', "NO POST data");
 
-
-
         }
         $model->status = 'not ready';
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
@@ -177,14 +177,15 @@ class RegistrationController extends Controller
             $pcarevisit->save();
             return $this->redirect(['view', 'id' => $model->id]);
         }
-        $model->save();
+//        $model->save();
 
 
 
 
         return $this->render('create', [
             'model' => $model,
-            'visitmodel' => $pcarevisit
+            'visitmodel' => $pcarevisit,
+            'wdmodel' => $wdmodel
         ]);
     }
 
@@ -251,8 +252,10 @@ class RegistrationController extends Controller
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
+//        $pcarevisit = PcareVisit::findOne(['pendaftaranId' => $model->id]);
         return $this->render('update', [
             'model' => $model,
+            'visitmodel' => $model->pcareVisits[0]
         ]);
     }
 

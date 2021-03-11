@@ -86,15 +86,23 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'sistole')->textArea(['maxlength' => true]) ?>
     <?= $form->field($model, 'diastole')->textArea(['maxlength' => true]) ?>
     <div class="well">
-    <h3>Visit Data (will be hidden)</h3>
+    <h3>Visit Data</h3>
         
         <?= $form->field($visitmodel, 'kdDokter')->textInput(['maxlength' => true]) ?>
     <?= $form->field($visitmodel, 'kdSadar')->textInput(['maxlength' => true]) ?>
     <?= $form->field($visitmodel, 'kdDiag1')->textInput(['maxlength' => true]) ?>
     <?= $form->field($visitmodel, 'kdDiag2')->textInput(['maxlength' => true]) ?>
     <?= $form->field($visitmodel, 'kdDiag3')->textInput(['maxlength' => true]) ?>
-        <?= $form->field($visitmodel, 'kdDiag3')->terapi(['maxlength' => true]) ?>
-</div       >
+        <?= $form->field($visitmodel, 'kdDiag3')->textInput(['maxlength' => true]) ?>
+
+        <?php
+
+
+        echo $form->field($wdmodel, 'checklistNames')->textInput(['maxlength' => true,'readonly' => true]);
+        echo $form->field($wdmodel, 'manualDiagnoses')->textInput(['maxlength' => true,'readonly' => true]);
+        echo $form->field($wdmodel, 'doctor')->textInput(['maxlength' => true,'readonly' => true]);
+        ?>
+</div>
 
 
     <div class="form-group">
