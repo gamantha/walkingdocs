@@ -136,6 +136,10 @@ class RegistrationController extends Controller
            // Yii::$app->session->addFlash('warning', "NO POST data");
 
         }
+
+        $wdmodel->checklistNames = $params['checklistNames'];
+        $wdmodel->manualDiagnoses = $params['manualDiagnoses'];
+        $wdmodel->doctor = $params['doctor'];
         $model->status = 'not ready';
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
 
