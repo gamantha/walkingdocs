@@ -115,7 +115,7 @@ use yii\widgets\ActiveForm;
         ;
 
 //echo $form->field($visitmodel, 'kdDiag1')->textInput(['maxlength' => true]);
-        $url = \yii\helpers\Url::to(['/visit/diagnosecode']);
+        $url = \yii\helpers\Url::to(['diagnosecode']);
         echo $form->field($visitmodel, 'kdDiag1')->widget(Select2::classname(), [
             'options' => ['placeholder' => 'Search for diagnose...'],
             'pluginOptions' => [
@@ -127,7 +127,7 @@ use yii\widgets\ActiveForm;
                 'ajax' => [
                     'url' => $url,
                     'dataType' => 'json',
-                    'data' => new JsExpression('function(params) { return {q:params.term, id:'.$model->id.'}; }')
+                    'data' => new JsExpression('function(params) { return {q:params.term, id:'.$model->cons_id.'}; }')
                 ],
                 'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
                 'templateResult' => new JsExpression('function(city) { return (city.id + " : " + city.text + " : " + city.nonspesialis); }'),
@@ -135,9 +135,44 @@ use yii\widgets\ActiveForm;
             ],
         ]);
 
+        echo $form->field($visitmodel, 'kdDiag2')->widget(Select2::classname(), [
+            'options' => ['placeholder' => 'Search for diagnose...'],
+            'pluginOptions' => [
+                'allowClear' => true,
+                'minimumInputLength' => 3,
+                'language' => [
+                    'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                ],
+                'ajax' => [
+                    'url' => $url,
+                    'dataType' => 'json',
+                    'data' => new JsExpression('function(params) { return {q:params.term, id:'.$model->cons_id.'}; }')
+                ],
+                'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                'templateResult' => new JsExpression('function(city) { return (city.id + " : " + city.text + " : " + city.nonspesialis); }'),
+                'templateSelection' => new JsExpression('function (city) { return (city.id + " : " + city.text + " : " + city.nonspesialis); }'),
+            ],
+        ]);
 
-        echo $form->field($visitmodel, 'kdDiag2')->textInput(['maxlength' => true]);
-        echo $form->field($visitmodel, 'kdDiag3')->textInput(['maxlength' => true]);
+        echo $form->field($visitmodel, 'kdDiag3')->widget(Select2::classname(), [
+            'options' => ['placeholder' => 'Search for diagnose...'],
+            'pluginOptions' => [
+                'allowClear' => true,
+                'minimumInputLength' => 3,
+                'language' => [
+                    'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                ],
+                'ajax' => [
+                    'url' => $url,
+                    'dataType' => 'json',
+                    'data' => new JsExpression('function(params) { return {q:params.term, id:'.$model->cons_id.'}; }')
+                ],
+                'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                'templateResult' => new JsExpression('function(city) { return (city.id + " : " + city.text + " : " + city.nonspesialis); }'),
+                'templateSelection' => new JsExpression('function (city) { return (city.id + " : " + city.text + " : " + city.nonspesialis); }'),
+            ],
+        ]);
+
 echo '<hr/>';
         echo $form->field($wdmodel, 'manualDiagnoses')->textInput(['maxlength' => true,'readonly' => true]);
 

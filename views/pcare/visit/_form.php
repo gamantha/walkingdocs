@@ -216,8 +216,8 @@ use yii\web\JsExpression;
                 'data' => new JsExpression('function(params) { return {q:params.term, id:'.$model->id.'}; }')
             ],
             'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
-            'templateResult' => new JsExpression('function(city) { return (city.id + " : " + city.text + " : " + city.nonspesialis); }'),
-            'templateSelection' => new JsExpression('function (city) { return (city.id + " : " + city.text + " : " + city.nonspesialis); }'),
+            'templateResult' => new JsExpression('function(city) { return (city.id + " : " + city.text); }'),
+            'templateSelection' => new JsExpression('function (city) { return (city.id + " : " + city.text); }'),
         ],
     ]);
     echo $form->field($model, 'kdDiag2')->widget(Select2::classname(), [
@@ -234,8 +234,8 @@ use yii\web\JsExpression;
                 'data' => new JsExpression('function(params) { return {q:params.term, id:'.$model->id.'}; }')
             ],
             'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
-            'templateResult' => new JsExpression('function(city) { return (city.id + " : " + city.text + " : " + city.nonspesialis); }'),
-            'templateSelection' => new JsExpression('function (city) { return (city.id + " : " + city.text + " : " + city.nonspesialis); }'),
+            'templateResult' => new JsExpression('function(city) { return (city.id + " : " + city.text); }'),
+            'templateSelection' => new JsExpression('function (city) { return (city.id + " : " + city.text); }'),
         ],
     ]);
 
@@ -253,8 +253,8 @@ use yii\web\JsExpression;
                 'data' => new JsExpression('function(params) { return {q:params.term, id:'.$model->id.'}; }')
             ],
             'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
-            'templateResult' => new JsExpression('function(city) { return (city.id + " : " + city.text + " : " + city.nonspesialis); }'),
-            'templateSelection' => new JsExpression('function (city) { return (city.id + " : " + city.text + " : " + city.nonspesialis); }'),
+            'templateResult' => new JsExpression('function(city) { return (city.id + " : " + city.text); }'),
+            'templateSelection' => new JsExpression('function (city) { return (city.id + " : " + city.text); }'),
         ],
     ]);
 

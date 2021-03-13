@@ -486,6 +486,31 @@ class PcareRegistration extends \yii\db\ActiveRecord
         return true;
     }
 
+    public function getDiagnosecodes($keyword)
+    {
+//        $bpjs_user = self::getUsercreds($this->pendaftaran->cons_id);
+//        $clinic = Consid::find()->andWhere(['wd_id' => 'wdid2'])->One();
+        $bpjs_user = self::getUsercreds($this->cons_id);
+//        $bpjs_user = self::getUsercreds($this->pendaftaran->cons_id);
+        try {
+
+            $client = new Client(['baseUrl' => 'https://dvlp.bpjs-kesehatan.go.id:9081/pcare-rest-v3.0/diagnosa/'.$keyword.'/0/1000']);
+            $request = $client->createRequest()
+//                ->setContent($payload)->setMethod('POST')
+                ->setHeaders(['X-cons-id' => $bpjs_user['cons_id']])
+                ->addHeaders(['content-type' => 'application/json'])
+                ->addHeaders(['X-Timestamp' => $bpjs_user['time']])
+                ->addHeaders(['X-Signature' => $bpjs_user['encoded_sig']])
+                ->addHeaders(['X-Authorization' => $bpjs_user['encoded_auth_string']]);
+
+            $response = $request->send();
+            return $response->content;
+        } catch (\yii\base\Exception $exception) {
+
+            Yii::warning("ERROR GETTING RESPONSE FROM BPJS.");
+        }
+    }
+
 
 }
 

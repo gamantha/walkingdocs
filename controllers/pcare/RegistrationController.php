@@ -132,16 +132,18 @@ class RegistrationController extends Controller
                 $model->respRate = $params['respRate'];
                 $model->heartRate = $params['heartRate'];
 
+            $wdmodel->checklistNames = $params['checklistNames'];
+            $wdmodel->manualDiagnoses = $params['manualDiagnoses'];
+            $wdmodel->doctor = $params['doctor'];
+            $model->status = 'not ready';
+
 
         } else {
            // Yii::$app->session->addFlash('warning', "NO POST data");
 
         }
 
-        $wdmodel->checklistNames = $params['checklistNames'];
-        $wdmodel->manualDiagnoses = $params['manualDiagnoses'];
-        $wdmodel->doctor = $params['doctor'];
-        $model->status = 'not ready';
+
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
 
 
@@ -149,7 +151,6 @@ class RegistrationController extends Controller
             if (!empty($model->cons_id))
             {
                 $response = $model->Cekpeserta();
-
                 $jsonval = json_decode($response);
 
                 if (isset($jsonval->metaData->code) && ($jsonval->metaData->code == 200)) {
@@ -179,7 +180,11 @@ class RegistrationController extends Controller
 
             $pcarevisit->pendaftaranId = $model->id;
             $pcarevisit->status = 'new';
+            $pcarevisit->load(Yii::$app->request->post());
             $pcarevisit->save();
+
+            $wdmodel->load(Yii::$app->request->post());
+            $wdmodel->save();
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
@@ -770,8 +775,42 @@ public function actionTest()
     }
 
 
+    public function actionDiagnosecode($q = null, $id)
+    {
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        $out = ['results' => [['id' => '', 'text' => '']]];
+        if (!is_null($q)) {
 
-public function actionTestpost()
+//            $visit = PcareVisit::findOne($id);
+            $registration = new PcareRegistration();
+            $registration->setConsId($id);
+
+//            $visit->setWdId('59cedfba9ae80d05757f54e9.5e87a22effe0dc06b2f87964');
+            $response = $registration->getDiagnosecodes($q);
+
+            $jsonval = json_decode($response);
+            if (isset($jsonval->response)) {
+
+                foreach ($jsonval->response->list as $item) {
+                    $temp = ['id' => $item->kdDiag, 'text' => $item->nmDiag, 'nonspesialis' => var_export($item->nonSpesialis, true)];
+                    array_push($out['results'], $temp);
+                }
+                array_shift($out['results']);
+//            $out['results'] = ArrayHelper::map($jsonval->response->list, 'kdDiag', 'nmDiag');
+//            $out['results'] = ['id' => '1', 'text' => 'jakarta'];
+            } else {
+                Yii::$app->session->addFlash('danger', 'get diagnose code - no pcare web service response');
+            }
+
+        } else {
+
+        }
+
+        return $out;
+
+    }
+
+    public function actionTestpost()
 {
 
     $payload = 'clinicId=59cedfba9ae80d05757f54e9.5e87a22effe0dc06b2f87964&kdPoli=&kdTkp=&tglDaftar=02-11-2020' .

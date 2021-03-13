@@ -43,6 +43,10 @@ use kartik\select2\Select2;
  * @property string|null $alasanTacc
  * @property string|null $json
  * @property string|null $status
+ * @property string|null $nmDokter
+ * @property string|null $nmDiag1
+ * @property string|null $nmDiag2
+ * @property string|null $nmDiag3
  * @property string|null $created_at
  * @property string|null $modified_at
  *
@@ -69,8 +73,8 @@ class PcareVisit extends \yii\db\ActiveRecord
             [['pendaftaranId'], 'integer'],
             [['terapi', 'khusus_catatan', 'alasanTacc', 'json'], 'string'],
             [['tglPulang', 'tglEstRujuk', 'created_at', 'modified_at'], 'safe'],
-            [['noKunjungan', 'kdSadar', 'kdStatusPulang', 'kdDokter', 'kdDiag1', 'kdDiag2', 'kdDiag3', 'kdPoliRujukInternal', 'kdppk', 'kdppk_subSpesialis', 'nmppk', 'nmppk_subSpesialis', 'spesialis_type', 'subSpesialis_kdSpesialis', 'subSpesialis_nmSpesialis', 'subSpesialis_nmSubSpesialis1', 'subSpesialis_kdSubSpesialis1', 'subSpesialis_kdSarana', 'subSpesialis_nmSarana', 'khusus_kdKhusus', 'khusus_nmKhusus', 'khusus_kdSubSpesialis', 'khusus_nmSubSpesialis', 'kdTacc', 'status'], 'string', 'max' => 255],
-            [['pendaftaranId'], 'exist', 'skipOnError' => true, 'targetClass' => PcareRegistration::className(), 'targetAttribute' => ['pendaftaranId' => 'id']],
+
+            [['noKunjungan', 'kdSadar', 'kdStatusPulang', 'kdDokter', 'kdDiag1', 'kdDiag2', 'kdDiag3', 'kdPoliRujukInternal', 'kdppk', 'kdppk_subSpesialis', 'nmppk', 'nmppk_subSpesialis', 'spesialis_type', 'subSpesialis_kdSpesialis', 'subSpesialis_nmSpesialis', 'subSpesialis_nmSubSpesialis1', 'subSpesialis_kdSubSpesialis1', 'subSpesialis_kdSarana', 'subSpesialis_nmSarana', 'khusus_kdKhusus', 'khusus_nmKhusus', 'khusus_kdSubSpesialis', 'khusus_nmSubSpesialis', 'kdTacc', 'status', 'nmDokter', 'nmDiag1', 'nmDiag2', 'nmDiag3'], 'string', 'max' => 255],            [['pendaftaranId'], 'exist', 'skipOnError' => true, 'targetClass' => PcareRegistration::className(), 'targetAttribute' => ['pendaftaranId' => 'id']],
         ];
     }
 
@@ -113,6 +117,10 @@ class PcareVisit extends \yii\db\ActiveRecord
             'alasanTacc' => Yii::t('app', 'Alasan Tacc'),
             'json' => Yii::t('app', 'Json'),
             'status' => Yii::t('app', 'Status'),
+            'nmDokter' => Yii::t('app', 'Nm Dokter'),
+            'nmDiag1' => Yii::t('app', 'Nm Diag1'),
+            'nmDiag2' => Yii::t('app', 'Nm Diag2'),
+            'nmDiag3' => Yii::t('app', 'Nm Diag3'),
             'created_at' => Yii::t('app', 'Created At'),
             'modified_at' => Yii::t('app', 'Modified At'),
         ];
