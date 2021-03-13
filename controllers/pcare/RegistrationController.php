@@ -191,7 +191,7 @@ class RegistrationController extends Controller
 
 
 
-        return $this->render('create', [
+        return $this->render('testpost', [
             'model' => $model,
             'visitmodel' => $pcarevisit,
             'wdmodel' => $wdmodel
@@ -813,7 +813,7 @@ public function actionTest()
     public function actionTestpost()
 {
 
-    $payload = 'clinicId=59cedfba9ae80d05757f54e9.5e87a22effe0dc06b2f87964&kdPoli=&kdTkp=&tglDaftar=02-11-2020' .
+    $payload = 'clinicId=59cedfba9ae80d05757f54e9.5e87a22effe0dc06b2f87964&kdPoli=&kdTkp=&tglDaftar=2021-3-13' .
         '&noKartu=&kunjSakit=true' .
         '&kdProviderPeserta=' .
         '&no_urut=' .
