@@ -41,7 +41,7 @@ use yii\web\JsExpression;
         
         
 
-        
+
         
         $('input[name=\"PcareVisit[spesialis_type]\"]').on('change', function() { 
         if (this.value == 'khusus') {
@@ -80,7 +80,17 @@ use yii\web\JsExpression;
         }); 
         
                
+$('#pcarevisit-kddiag1').on('change', function() { 
+$('#pcarevisit-nmdiag1').val($('#pcarevisit-kddiag1 option:selected').text());
+}); 
 
+$('#pcarevisit-kddiag2').on('change', function() { 
+$('#pcarevisit-nmdiag2').val($('#pcarevisit-kddiag2 option:selected').text());
+}); 
+
+$('#pcarevisit-kddiag3').on('change', function() { 
+$('#pcarevisit-nmdiag3').val($('#pcarevisit-kddiag3 option:selected').text());
+}); 
         
         $('#pcarevisit-subspesialis_kdsubspesialis1').on('change', function() { 
         $('#pcarevisit-subspesialis_nmsubspesialis1').val($('#pcarevisit-subspesialis_kdsubspesialis1 option:selected').text());
@@ -103,7 +113,20 @@ use yii\web\JsExpression;
         } else {    
         $('#khusus').hide();
         $('#spesialis').show();
-        }                
+        }        
+                
+                
+
+    var newOption1 = new Option('".$model->nmDiag1."', '".$model->kdDiag1."', true, true);
+        var newOption2 = new Option('".$model->nmDiag2."', '".$model->kdDiag2."', true, true);
+            var newOption3 = new Option('".$model->nmDiag3."', '".$model->kdDiag3."', true, true);
+ 
+    $('#pcarevisit-kddiag1').append(newOption1).trigger('change');
+    $('#pcarevisit-kddiag2').append(newOption2).trigger('change');
+    $('#pcarevisit-kddiag3').append(newOption3).trigger('change');
+
+
+
         ",
         View::POS_READY,
         'my-button-handler'
@@ -261,20 +284,31 @@ use yii\web\JsExpression;
     ?>
 
 
+<?php
 
-    <?= $form->field($registrationModel, 'sistole')->textInput(['maxlength' => true]) ?>
+echo $form->field($model, 'nmDiag1')->hiddenInput(['maxlength' => true])->label(false);
+echo $form->field($model, 'nmDiag2')->hiddenInput(['maxlength' => true])->label(false);
+echo $form->field($model, 'nmDiag3')->hiddenInput(['maxlength' => true])->label(false);
 
-    <?= $form->field($registrationModel, 'diastole')->textInput(['maxlength' => true]) ?>
-
-    <?= $form->field($registrationModel, 'beratBadan')->textInput(['maxlength' => true]) ?>
-
-    <?= $form->field($registrationModel, 'tinggiBadan')->textInput(['maxlength' => true]) ?>
-
-
-    <?= $form->field($registrationModel, 'respRate')->textInput(['maxlength' => true]) ?>
+echo $form->field($registrationModel, 'sistole')->textInput(['maxlength' => true]);
+echo $form->field($registrationModel, 'diastole')->textInput(['maxlength' => true]);
 
 
-    <?= $form->field($registrationModel, 'heartRate')->textInput(['maxlength' => true]) ?>
+    echo $form->field($registrationModel, 'beratBadan')->textInput(['maxlength' => true]);
+
+    echo $form->field($registrationModel, 'tinggiBadan')->textInput(['maxlength' => true]);
+
+
+    echo $form->field($registrationModel, 'respRate')->textInput(['maxlength' => true]);
+
+
+    echo $form->field($registrationModel, 'heartRate')->textInput(['maxlength' => true]);
+
+?>
+
+
+
+
 
     HANYA KALAU PILIH RUJUK maka pilihan dibawah jadi nyala .Saat ini hanya ada rujukan vertikal (spesialis , khusus)
 

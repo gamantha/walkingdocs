@@ -24,9 +24,11 @@ use yii\widgets\ActiveForm;
     //echo $form->field($model, 'kdProviderPeserta')->textInput(['maxlength' => true, 'readonly' => false])
 
     ?>
-
+    <h2>Registration Data</h2>
+    <div class="well">
 
     <?php
+
     echo '<label class="control-label">Tanggal Daftar </label>';
     echo DatePicker::widget([
         'model' => $model,
@@ -96,8 +98,10 @@ use yii\widgets\ActiveForm;
     echo $form->field($model, 'heartRate')->textArea(['maxlength' => true]);
 
     ?>
+</div>
+    <h2>Visit Data</h2>
     <div class="well">
-    <h3>Visit Data</h3>
+
 
 
 
@@ -141,8 +145,8 @@ use yii\widgets\ActiveForm;
                     'data' => new JsExpression('function(params) { return {q:params.term, id:'.$model->cons_id.'}; }')
                 ],
                 'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
-                'templateResult' => new JsExpression('function(city) { return (city.id + " : " + city.text + " : " + city.nonspesialis); }'),
-                'templateSelection' => new JsExpression('function (city) { return (city.id + " : " + city.text + " : " + city.nonspesialis); }'),
+                'templateResult' => new JsExpression('function(city) { return (city.id + " : " + city.text); }'),
+                'templateSelection' => new JsExpression('function (city) { return (city.id + " : " + city.text); }'),
             ],
         ]);
 
@@ -160,8 +164,8 @@ use yii\widgets\ActiveForm;
                     'data' => new JsExpression('function(params) { return {q:params.term, id:'.$model->cons_id.'}; }')
                 ],
                 'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
-                'templateResult' => new JsExpression('function(city) { return (city.id + " : " + city.text + " : " + city.nonspesialis); }'),
-                'templateSelection' => new JsExpression('function (city) { return (city.id + " : " + city.text + " : " + city.nonspesialis); }'),
+                'templateResult' => new JsExpression('function(city) { return (city.id + " : " + city.text); }'),
+                'templateSelection' => new JsExpression('function (city) { return (city.id + " : " + city.text); }'),
             ],
         ]);
 
@@ -179,8 +183,8 @@ use yii\widgets\ActiveForm;
                     'data' => new JsExpression('function(params) { return {q:params.term, id:'.$model->cons_id.'}; }')
                 ],
                 'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
-                'templateResult' => new JsExpression('function(city) { return (city.id + " : " + city.text + " : " + city.nonspesialis); }'),
-                'templateSelection' => new JsExpression('function (city) { return (city.id + " : " + city.text + " : " + city.nonspesialis); }'),
+                'templateResult' => new JsExpression('function(city) { return (city.id + " : " + city.text); }'),
+                'templateSelection' => new JsExpression('function (city) { return (city.id + " : " + city.text); }'),
             ],
         ]);
 

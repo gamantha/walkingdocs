@@ -116,6 +116,7 @@ $visit = PcareVisit::find()->andWhere(['pendaftaranId' => $id])->One();
         }
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
+
 //            $model->subSpesialis_nmSubSpesialis1 = $_POST['PcareVisit']['subSpesialis_']
             if ($registrationModel->load(Yii::$app->request->post()) && $registrationModel->save()) {
                 return $this->redirect(['view', 'id' => $model->pendaftaranId]);
@@ -137,9 +138,28 @@ $model->kdStatusPulang=3;
     } else if ($registrationModel->kdTkp == 20) {
         $model->kdStatusPulang=0;
     }
-//    Yii::$app->session->addFlash('danger', "NULL");
 }
-//        Yii::$app->session->addFlash('danger', $model->kdStatusPulang);
+
+        if ($model->tglPulang == null) {
+            $today =  date("Y-m-d");
+            $model->tglPulang = $today;
+//                    Yii::$app->session->addFlash('danger', $today);
+        }
+
+        if ($model->tglEstRujuk == null) {
+            $today =  date("Y-m-d");
+            $model->tglEstRujuk = $today;
+//                    Yii::$app->session->addFlash('danger', $today);
+        }
+
+
+        if ($model->spesialis_type == null) {
+
+            $model->spesialis_type = "spesialis";
+//                    Yii::$app->session->addFlash('danger', $today);
+        }
+
+
         return $this->render('update', [
             'model' => $model,
             'registrationModel' => $registrationModel
@@ -520,13 +540,13 @@ public function actionRujukankhusus($id)
 
     public function actionDiagnosecode($q = null, $id)
     {
+//        Yii::$app->session->addFlash('sucess', 'get diagnose code - MSUK');
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
         $out = ['results' => [['id' => '', 'text' => '']]];
         if (!is_null($q)) {
 
             $visit = PcareVisit::findOne($id);
 
-//            $visit->setWdId('59cedfba9ae80d05757f54e9.5e87a22effe0dc06b2f87964');
             $response = $visit->getDiagnosecodes($q);
 
             $jsonval = json_decode($response);
@@ -540,11 +560,13 @@ public function actionRujukankhusus($id)
 //            $out['results'] = ArrayHelper::map($jsonval->response->list, 'kdDiag', 'nmDiag');
 //            $out['results'] = ['id' => '1', 'text' => 'jakarta'];
             } else {
-                Yii::$app->session->addFlash('danger', 'get diagnose code - no pcare web service response');
+//                Yii::$app->session->addFlash('danger', 'get diagnose code - no pcare web service response');
             }
 
         } else {
-
+//            $temp = ['id' => '99999', 'text' => 'reno', 'nonspesialis' => true];
+//            array_push($out['results'], $temp);
+//            array_shift($out['results']);
         }
 
 
