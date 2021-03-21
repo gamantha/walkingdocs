@@ -137,9 +137,9 @@ class RegistrationController extends Controller
             $wdmodel->doctor = $params['doctor'];
             $model->status = 'not ready';
 
-            $checklistnames = substr($params['checklistNames'],1,(strlen($params['checklistNames']) - 4));
+            $checklistnames = substr($params['checklistNames'],2,(strlen($params['checklistNames']) - 4));
             $wdmodel->checklistNames =$checklistnames;
-            $prescribed = substr($params['prescribed'],1, (strlen($params['prescribed']) - 4));
+            $prescribed = substr($params['prescribed'],2, (strlen($params['prescribed']) - 4));
             $pcarevisit->terapi = $prescribed;
 
 
