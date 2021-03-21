@@ -137,6 +137,8 @@ class RegistrationController extends Controller
             $wdmodel->doctor = $params['doctor'];
             $model->status = 'not ready';
 
+            $pcarevisit->terapi = $params['prescribed'];
+
 
         } else {
            // Yii::$app->session->addFlash('warning', "NO POST data");

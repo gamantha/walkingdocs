@@ -124,7 +124,7 @@ use yii\widgets\ActiveForm;
         echo $form->field($visitmodel, 'kdSadar')->dropDownList(
             $refKesadaran,
             ['prompt'=>'Select...']);
-
+        echo $form->field($visitmodel, 'terapi')->textInput(['maxlength' => true,'readonly' => true]);
         echo $form->field($wdmodel, 'checklistNames')->textInput(['maxlength' => true,'readonly' => true])
             //->label("Diagnose")
         ;
