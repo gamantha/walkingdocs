@@ -132,12 +132,15 @@ class RegistrationController extends Controller
                 $model->respRate = $params['respRate'];
                 $model->heartRate = $params['heartRate'];
 
-            $wdmodel->checklistNames = $params['checklistNames'];
+
             $wdmodel->manualDiagnoses = $params['manualDiagnoses'];
             $wdmodel->doctor = $params['doctor'];
             $model->status = 'not ready';
 
-            $pcarevisit->terapi = $params['prescribed'];
+            $checklistnames = substr($params['checklistNames'],1);
+            $wdmodel->checklistNames = substr($checklistnames,-1);
+            $prescribed = substr($params['prescribed'],1);
+            $pcarevisit->terapi = substr($prescribed,-1);
 
 
         } else {
