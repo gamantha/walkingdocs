@@ -124,8 +124,10 @@ use yii\widgets\ActiveForm;
         echo $form->field($visitmodel, 'kdSadar')->dropDownList(
             $refKesadaran,
             ['prompt'=>'Select...']);
-        echo $form->field($visitmodel, 'terapi')->textInput(['maxlength' => true,'readonly' => true]);
-        echo $form->field($wdmodel, 'checklistNames')->textInput(['maxlength' => true,'readonly' => true])
+        echo $form->field($visitmodel, 'terapi')->textArea(['maxlength' => true,'readonly' => false]);
+
+        echo $visitmodel->terapi;
+        echo $form->field($wdmodel, 'checklistNames')->textArea(['maxlength' => true,'readonly' => true])
             //->label("Diagnose")
         ;
 
@@ -193,6 +195,11 @@ echo '<hr/>';
 
 
         ?>
+
+        <div class="well">
+            <h3>Clinical Notes</h3>
+            <u>Checklist Used</u>
+        </div>
 </div>
 
 

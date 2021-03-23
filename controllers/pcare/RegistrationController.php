@@ -133,14 +133,14 @@ class RegistrationController extends Controller
                 $model->heartRate = $params['heartRate'];
 
 
-            $wdmodel->manualDiagnoses = $params['manualDiagnoses'];
+            $wdmodel->manualDiagnoses = substr($params['manualDiagnoses'],2,(strlen($params['manualDiagnoses']) - 4));
             $wdmodel->doctor = $params['doctor'];
             $model->status = 'not ready';
 
             $checklistnames = substr($params['checklistNames'],2,(strlen($params['checklistNames']) - 4));
             $wdmodel->checklistNames =$checklistnames;
             $prescribed = substr($params['prescribed'],2, (strlen($params['prescribed']) - 4));
-            $pcarevisit->terapi = $prescribed;
+            $pcarevisit->terapi = str_replace('\n', '<br/>',$prescribed);
 
 
         } else {
@@ -194,7 +194,7 @@ class RegistrationController extends Controller
         }
 
 
-
+//echo str_replace('\n', '<br/>',$prescribed);
 
         return $this->render('testpost', [
             'model' => $model,
@@ -830,8 +830,9 @@ public function actionTest()
     '&respRate=' .
     '&heartRate=' .
         '&doctor=' .
+        '&prescribed=["Parasetamol 500 mg\n#12 \n4 x 1 tablet. 3 Days","Ambroxol 30 mg\n#12 Tablet\n2 x 2 tablet. 3 Days"]' .
         '&manualDiagnoses=' .
-        '&checklistNames=';
+        '&checklistNames=["Upper respiratory tract infection [URI] / Common Cold (J06.9)"]';
 
 //echo '<pre>';
     try {
