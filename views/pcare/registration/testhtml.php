@@ -45,9 +45,18 @@ class MYPDF extends TCPDF {
         // disable auto-page-break
         $this->SetAutoPageBreak(false, 0);
         // set bacground image
-        $img_file = 'http://mbss.report.ppsdm.com/images/ppa_bg.png';
+        $img_file = 'http://walkingdocs.gamantha.com/img/logo-bpjs.png';
         // $img_file = K_PATH_IMAGES.'ppa_bg.png';
-        $this->Image($img_file, 0, 0, 210, 297, '', '', '', false, 300, '', false, false, 0);
+//        $this->Image($img_file, 0, 0, 210, 297, '', '', '', false, 300, '', false, false, 0);
+//        $pdf->Rect($x, $y, $w, $h, 'F', array(), array(128,255,128));
+
+        $x = 15;
+        $y = 35;
+        $w = 30;
+        $h = 30;
+
+        $fitbox = 'L';
+        $this->Image($img_file, $x, $y, $w, $h, 'JPG', '', '', false, 300, '', false, false, 0, $fitbox, false, false);
         // restore auto-page-break status
         $this->Cell(0, 15, '<< TCPDF Example 003sa >>', 0, false, 'C', 0, '', 0, false, 'M', 'M');
         $this->SetAutoPageBreak($auto_page_break, $bMargin);
@@ -67,8 +76,8 @@ $pdf->SetSubject('TCPDF Tutorial');
 $pdf->SetKeywords('TCPDF, PDF, example, test, guide');
 
 // set default header data
-$img_file = '../logo-bpjs.png';
-$pdf->SetHeaderData($img_file, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' 027sfsfsfs', PDF_HEADER_STRING);
+$img_file = 'http://walkingdocs.gamantha.com/img/logo-bpjs.png';
+//$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' 027sfsfsfs', PDF_HEADER_STRING);
 
 // set header and footer fonts
 $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
