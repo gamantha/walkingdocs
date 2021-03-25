@@ -120,16 +120,12 @@ use yii\widgets\ActiveForm;
         echo $form->field($visitmodel, 'kdDokter')->dropDownList(
             $listData2,
             ['prompt'=>'Select...']);
-        echo '<hr/>';
+//        echo '<hr/>';
         echo $form->field($visitmodel, 'kdSadar')->dropDownList(
             $refKesadaran,
             ['prompt'=>'Select...']);
-        echo $form->field($visitmodel, 'terapi')->textArea(['maxlength' => true,'readonly' => false]);
 
-        echo $visitmodel->terapi;
-        echo $form->field($wdmodel, 'checklistNames')->textArea(['maxlength' => true,'readonly' => true])
-            //->label("Diagnose")
-        ;
+
 
 //echo $form->field($visitmodel, 'kdDiag1')->textInput(['maxlength' => true]);
         $url = \yii\helpers\Url::to(['diagnosecode']);
@@ -190,15 +186,27 @@ use yii\widgets\ActiveForm;
             ],
         ]);
 
-echo '<hr/>';
-        echo $form->field($wdmodel, 'manualDiagnoses')->textInput(['maxlength' => true,'readonly' => true]);
+//echo '<hr/>';
+        echo $form->field($visitmodel, 'terapi')->textArea(['maxlength' => true,'readonly' => false]);
+
+        //        echo $visitmodel->terapi;
+
 
 
         ?>
-
+        <h2 style="color:blue">Clinical Notes</h2>
         <div class="well">
-            <h3>Clinical Notes</h3>
-            <u>Checklist Used</u>
+
+            <h3 style="color:blue"><u>Checklist Used</u></h3>
+            <?php
+            echo $form->field($wdmodel, 'checklistNames')->textArea(['maxlength' => true,'readonly' => true])
+                ->label(false)
+            ;
+            ?>
+            <h3 style="color:blue"><u>Manual Entries</u></h3>
+            <?php
+            echo $form->field($wdmodel, 'manualDiagnoses')->textInput(['maxlength' => true,'readonly' => true])->label(false);
+            ?>
         </div>
 </div>
 

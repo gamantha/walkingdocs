@@ -815,6 +815,47 @@ public function actionTest()
 
     }
 
+    public function actionPrintpdf()
+    {
+
+
+        return $this->render('testhtml', [
+//            'dataProvider' => $provider
+        ]);
+    }
+
+    public function actionProviders()
+    {
+        $registration = new PcareRegistration();
+        $registration->setConsId('16744');
+        $response = $registration->Getprovider();
+        $response_obj = json_decode($response);
+
+
+$array=[];
+        foreach($response_obj->response->list as $provider) {
+            array_push($array,['kdProvider' => $provider->kdProvider, 'nmProvider'=> $provider->nmProvider]);
+        }
+
+//
+//        echo '<pre>';
+//        print_r($array);
+
+
+        $provider = new ArrayDataProvider([
+            'allModels' => $array,
+            'pagination' => [
+                'pageSize' => 99,
+            ],
+            'sort' => [
+                'attributes' => ['kdProvider', 'nmProvider'],
+            ],
+        ]);
+
+        return $this->render('providers', [
+            'dataProvider' => $provider
+        ]);
+    }
     public function actionTestpost()
 {
 
