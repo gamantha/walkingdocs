@@ -137,10 +137,13 @@ class RegistrationController extends Controller
             $wdmodel->doctor = $params['doctor'];
             $model->status = 'not ready';
 
+            $checklist = json_encode($params['checklistNames']);
             $checklistnames = substr($params['checklistNames'],2,(strlen($params['checklistNames']) - 4));
-            $wdmodel->checklistNames =$checklistnames;
+            $wdmodel->checklistNames =str_replace('","', PHP_EOL,$checklistnames);
             $prescribed = substr($params['prescribed'],2, (strlen($params['prescribed']) - 4));
-            $pcarevisit->terapi = str_replace('\n', '<br/>',$prescribed);
+            $pcarevisit->terapi = str_replace('","', PHP_EOL,$prescribed);
+//            $pcarevisit->terapi = $prescribed;
+
 
 
         } else {
@@ -194,12 +197,16 @@ class RegistrationController extends Controller
         }
 
 
+//        $prescribedlist = json_deco
+        $prescribedlist = explode('","', $prescribed);
 //echo str_replace('\n', '<br/>',$prescribed);
 
+//        print_r($prescribedlist);
         return $this->render('testpost', [
             'model' => $model,
             'visitmodel' => $pcarevisit,
-            'wdmodel' => $wdmodel
+            'wdmodel' => $wdmodel,
+            'prescribed_list' => $prescribedlist
         ]);
     }
 
@@ -871,7 +878,7 @@ $array=[];
     '&respRate=' .
     '&heartRate=' .
         '&doctor=' .
-        '&prescribed=["Parasetamol 500 mg\n#12 \n4 x 1 tablet. 3 Days","Ambroxol 30 mg\n#12 Tablet\n2 x 2 tablet. 3 Days"]' .
+        '&prescribed=["Paracetamol 500 mg, #9 - Tablet 3 x 1 tablet - 3 Days","Ibuprofen 400 mg, #12 - Tablet 4 x 1 tablet - 3 Days","Ambroxol 30 mg, #12 - Tablet 2 x 2 tablet - 3 Days"]' .
         '&manualDiagnoses=' .
         '&checklistNames=["Upper respiratory tract infection [URI] / Common Cold (J06.9)"]';
 

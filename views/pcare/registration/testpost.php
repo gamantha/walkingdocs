@@ -187,25 +187,31 @@ use yii\widgets\ActiveForm;
         ]);
 
 //echo '<hr/>';
-        echo $form->field($visitmodel, 'terapi')->textArea(['maxlength' => true,'readonly' => false]);
+        echo $form->field($visitmodel, 'terapi')->textArea(['maxlength' => true,'readonly' => true,'rows' => '3']);
+
+//        foreach ($prescribed_list as $prescribed)
+//        {
+//            echo $prescribed;
+//            echo '<br/>';
+//        }
 
         //        echo $visitmodel->terapi;
 
 
 
         ?>
-        <h2 style="color:blue">Clinical Notes</h2>
+
         <div class="well">
 
-            <h3 style="color:blue"><u>Checklist Used</u></h3>
+            <label class="control-label" style="color:blue;font-size: 120%">Diagnosa Daftar Tilik</label>
             <?php
-            echo $form->field($wdmodel, 'checklistNames')->textArea(['maxlength' => true,'readonly' => true])
+            echo $form->field($wdmodel, 'checklistNames')->textArea(['maxlength' => true,'readonly' => true,'rows' => '3'])
                 ->label(false)
             ;
             ?>
-            <h3 style="color:blue"><u>Manual Entries</u></h3>
+            <label class="control-label" style="color:blue;font-size: 120%">Diagnosa Manual</label>
             <?php
-            echo $form->field($wdmodel, 'manualDiagnoses')->textInput(['maxlength' => true,'readonly' => true])->label(false);
+            echo $form->field($wdmodel, 'manualDiagnoses')->textInput(['maxlength' => true,'readonly' => true,'rows' => '6'])->label(false);
             ?>
         </div>
 </div>
