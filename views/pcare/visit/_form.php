@@ -102,9 +102,27 @@ $('#pcarevisit-nmdiag3').val($('#pcarevisit-kddiag3 option:selected').text());
         
                 $('#pcarevisit-kdppk_subspesialis').on('change', function() { 
         $('#pcarevisit-nmppk_subspesialis').val($('#pcarevisit-kdppk_subspesialis option:selected').text());
+
+       
         
+        var ajaxResults = $('#pcarevisit-kdppk_subspesialis').depdrop('getAjaxResults');
+//        alert(ajaxResults.output.results[0].id);
+         $('#pcarevisit-meta_rujukan').val(JSON.stringify(ajaxResults.output.results[0]));
 
         }); 
+        
+        $('#pcarevisit-kdppk_subspesialis').on('depdrop:beforeChange', function(event, id, value, jqXHR, textStatus) {
+
+//alert(value);
+});
+
+
+        $('#pcarevisit-kdppk_subspesialis').on('depdrop:change', function(event, id, value, count, textStatus, jqXHR) {
+    console.log(value);
+    console.log(count);
+});
+
+
         
         
   if($('input[name=\"PcareVisit[spesialis_type]\"]:checked').val() == 'khusus') {
@@ -125,8 +143,6 @@ $('#pcarevisit-nmdiag3').val($('#pcarevisit-kddiag3 option:selected').text());
     $('#pcarevisit-kddiag2').append(newOption2).trigger('change');
     $('#pcarevisit-kddiag3').append(newOption3).trigger('change');
 
-
-
         ",
         View::POS_READY,
         'my-button-handler'
@@ -138,12 +154,6 @@ $('#pcarevisit-nmdiag3').val($('#pcarevisit-kddiag3 option:selected').text());
     echo '</h3>';
     ?>
     <?php $form = ActiveForm::begin(); ?>
-
-
-
-
-
-
 
     <?php
 
@@ -171,20 +181,11 @@ $('#pcarevisit-nmdiag3').val($('#pcarevisit-kddiag3 option:selected').text());
     }
 
 
-
-
     echo $form->field($model, 'kdSadar')->dropDownList(
         $refKesadaran,
         ['prompt'=>'Select...']);
-
-
-
     ?>
-
     <?= $form->field($model, 'terapi')->textarea(['rows' => 6]) ?>
-
-
-
     <?php
 //    kdTkp
 //    10 -> rawat jalan
@@ -376,13 +377,15 @@ echo $form->field($registrationModel, 'diastole')->textInput(['maxlength' => tru
 
 
         echo Html::hiddenInput('PcareVisit[nmppk_subSpesialis]', $model->nmppk_subSpesialis, ['id' => 'pcarevisit-nmppk_subspesialis']);
+        echo Html::hiddenInput('PcareVisit[meta_rujukan]', $model->meta_rujukan, ['id' => 'pcarevisit-meta_rujukan']);
+//        echo Html::hiddenInput('PcareVisit[nmppk_subSpesialis]', $model->meta_rujukan, ['id' => 'pcarevisit-meta_rujukan']);
 
         echo $form->field($model, 'kdppk_subSpesialis')->widget(DepDrop::classname(), [
                 'data'=>[$model->kdppk_subSpesialis=>$model->nmppk_subSpesialis],
             'pluginOptions'=>[
                     'depends'=>['pcarevisit-subspesialis_kdsubspesialis1', 'pcarevisit-subspesialis_kdsarana', 'pcarevisit-tglestrujuk'],
                 'placeholder'=>'Select...',
-                'url'=>Url::to(['rujukanspesialis','id' => $model->id])
+                'url'=>Url::to(['rujukanspesialis','id' => $model->id]),
             ]
         ]);
 

@@ -121,6 +121,8 @@ $visit = PcareVisit::find()->andWhere(['pendaftaranId' => $id])->One();
             if ($registrationModel->load(Yii::$app->request->post()) && $registrationModel->save()) {
                 return $this->redirect(['view', 'id' => $model->pendaftaranId]);
             }
+        } else {
+//            Yii::$app->session->setFlash('danger', "save gagal " . json_encode($model->getErrors()));
         }
 
 
@@ -227,7 +229,7 @@ $model->kdStatusPulang=3;
             {
                 $registerresp = $visit->submitvisitdata($id); //actual register to pcare
                 $jsonresp = json_decode($registerresp);
-                if($jsonresp->metaData->message == 'CREATED') {
+                if((isset($jsonresp->metaData)) && ($jsonresp->metaData->message == 'CREATED')) {
                     if(strpos($jsonresp->response->message, "null") ) {
                         Yii::$app->session->setFlash('danger', $registerresp);
                     } else {
@@ -485,7 +487,11 @@ public function actionRujukankhusus($id)
                 if (isset($jsonval->response)) {
 
                     foreach ($jsonval->response->list as $item) {
-                        $temp = ['id' => $item->kdppk, 'name' => $item->nmppk . ' alamat : ' . $item->alamatPpk, 'alamatPpk' => $item->alamatPpk, 'telpPpk' => $item->telpPpk, 'kelas' => $item->kelas];
+                        $temp = ['id' => $item->kdppk, 'name' => $item->nmppk . ' alamat : ' . $item->alamatPpk, 'alamatPpk' => $item->alamatPpk, 'telpPpk' => $item->telpPpk,
+                            'kelas' => $item->kelas,'nmkc' => $item->nmkc, 'distance' => $item->distance, 'jadwal' => $item->jadwal,
+                            'jmlRujuk' => $item->jmlRujuk, 'kapasitas' => $item->kapasitas, 'persentase' => $item->persentase
+
+                            ];
                         array_push($out['results'], $temp);
                     }
                     array_shift($out['results']);

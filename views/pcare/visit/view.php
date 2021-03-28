@@ -41,6 +41,11 @@ $this->params['breadcrumbs'][] = $this->title;
         echo ' <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span> ';
 
         echo Html::button(Yii::t('app', 'Data Submitted'),['class' => 'btn btn-success', 'disabled' => 'true']);
+        if (($model->kdStatusPulang == '3') || ($model->kdStatusPulang == '4')) {
+            echo ' <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span> ';
+            echo Html::a(Yii::t('app', 'Print Surat Rujukan'), ['pcare/registration/printpdf', 'id' => $model->pendaftaran->id], ['class' => 'btn btn-primary']);
+        }
+
     }
 
     ?>
@@ -140,6 +145,7 @@ echo '<p>';
             'khusus_kdKhusus',
             'khusus_kdSubSpesialis',
             'khusus_catatan:ntext',
+            'meta_rujukan',
             'kdTacc',
             'alasanTacc:ntext',
 //            'json:ntext',

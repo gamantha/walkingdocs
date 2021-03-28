@@ -140,9 +140,10 @@ class RegistrationController extends Controller
             $checklist = json_encode($params['checklistNames']);
             $checklistnames = substr($params['checklistNames'],2,(strlen($params['checklistNames']) - 4));
             $wdmodel->checklistNames =str_replace('","', PHP_EOL,$checklistnames);
+            $wdmodel->checklistNames = $checklistnames;
             $prescribed = substr($params['prescribed'],2, (strlen($params['prescribed']) - 4));
-            $pcarevisit->terapi = str_replace('","', PHP_EOL,$prescribed);
-//            $pcarevisit->terapi = $prescribed;
+            $pcarevisit->terapi = str_replace('","', "\n",$prescribed);
+//            $pcarevisit->terapi = html_entity_decode($prescribed);
 
 
 
@@ -822,12 +823,35 @@ public function actionTest()
 
     }
 
-    public function actionPrintpdf()
+    public function actionPrintpdf($id)
     {
 
+$registration = PcareRegistration::findOne($id);
+$visit = $registration->pcareVisits[0];
 
+//echo '<pre>';
+//print_r($visit);
+
+///no kunjungan
+/// kdppk / kdppk_subspesialis
+///
+
+        $doctors = $registration->getDokter();
+        $pesertaresp = $registration->Cekpeserta();
+        $dokters = json_decode($doctors)->response->list;
+        $dokter = [];
+        foreach ($dokters as $dokter1) {
+            if ($dokter1->kdDokter == $visit->kdDokter) {
+                $dokter =  $dokter1;
+            }
+        }
+
+        $peserta = json_decode($pesertaresp)->response;
         return $this->render('testhtml', [
 //            'dataProvider' => $provider
+        'visitModel' => $visit,
+        'dokter' => $dokter,
+        'peserta' => $peserta
         ]);
     }
 

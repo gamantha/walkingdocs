@@ -47,6 +47,7 @@ use kartik\select2\Select2;
  * @property string|null $nmDiag1
  * @property string|null $nmDiag2
  * @property string|null $nmDiag3
+ * @property string|null $meta_rujukan
  * @property string|null $created_at
  * @property string|null $modified_at
  *
@@ -71,11 +72,11 @@ class PcareVisit extends \yii\db\ActiveRecord
     {
         return [
             [['pendaftaranId'], 'integer'],
-            [['terapi', 'khusus_catatan', 'alasanTacc', 'json'], 'string'],
+            [['terapi', 'khusus_catatan', 'alasanTacc', 'json', 'meta_rujukan'], 'string'],
             [['tglPulang', 'tglEstRujuk', 'created_at', 'modified_at'], 'safe'],
-
-            [['noKunjungan', 'kdSadar', 'kdStatusPulang', 'kdDokter', 'kdDiag1', 'kdDiag2', 'kdDiag3', 'kdPoliRujukInternal', 'kdppk', 'kdppk_subSpesialis', 'nmppk', 'nmppk_subSpesialis', 'spesialis_type', 'subSpesialis_kdSpesialis', 'subSpesialis_nmSpesialis', 'subSpesialis_nmSubSpesialis1', 'subSpesialis_kdSubSpesialis1', 'subSpesialis_kdSarana', 'subSpesialis_nmSarana', 'khusus_kdKhusus', 'khusus_nmKhusus', 'khusus_kdSubSpesialis', 'khusus_nmSubSpesialis', 'kdTacc', 'status', 'nmDokter', 'nmDiag1', 'nmDiag2', 'nmDiag3'], 'string', 'max' => 255],            [['pendaftaranId'], 'exist', 'skipOnError' => true, 'targetClass' => PcareRegistration::className(), 'targetAttribute' => ['pendaftaranId' => 'id']],
-        ];
+            [['noKunjungan', 'kdSadar', 'kdStatusPulang', 'kdDokter', 'kdDiag1', 'kdDiag2', 'kdDiag3', 'kdPoliRujukInternal', 'kdppk', 'kdppk_subSpesialis', 'nmppk', 'nmppk_subSpesialis', 'spesialis_type', 'subSpesialis_kdSpesialis', 'subSpesialis_nmSpesialis', 'subSpesialis_nmSubSpesialis1', 'subSpesialis_kdSubSpesialis1', 'subSpesialis_kdSarana', 'subSpesialis_nmSarana', 'khusus_kdKhusus', 'khusus_nmKhusus', 'khusus_kdSubSpesialis', 'khusus_nmSubSpesialis', 'kdTacc', 'status', 'nmDokter', 'nmDiag1', 'nmDiag2', 'nmDiag3'], 'string', 'max' => 255],
+            [['pendaftaranId'], 'exist', 'skipOnError' => true, 'targetClass' => PcareRegistration::className(), 'targetAttribute' => ['pendaftaranId' => 'id']],
+            ];
     }
 
     /**
@@ -121,6 +122,7 @@ class PcareVisit extends \yii\db\ActiveRecord
             'nmDiag1' => Yii::t('app', 'Nm Diag1'),
             'nmDiag2' => Yii::t('app', 'Nm Diag2'),
             'nmDiag3' => Yii::t('app', 'Nm Diag3'),
+            'meta_rujukan' => Yii::t('app', 'Meta Rujukan'),
             'created_at' => Yii::t('app', 'Created At'),
             'modified_at' => Yii::t('app', 'Modified At'),
         ];
@@ -151,41 +153,7 @@ class PcareVisit extends \yii\db\ActiveRecord
         $visitModel = PcareVisit::find()->andWhere(['pendaftaranId' => $id])->One();
         $registrationModel = PcareRegistration::findOne($visitModel->pendaftaranId);
 
-//        {
-//            "noKunjungan": null,
-//  "noKartu": "0001113569638",
-//  "tglDaftar": "13-11-2020",
-//  "kdPoli": "004",
-//  "keluhan": "keluhan",
-//  "kdSadar": "01",
-//  "sistole": 1,
-//  "diastole": 1,
-//  "beratBadan": 1.0,
-//  "tinggiBadan": 1,
-//  "respRate": 1.0,
-//  "heartRate": 1.0,
-//  "terapi": "catatan",
 
-//  "kdStatusPulang": "4",
-//  "tglPulang": "19-11-2020",
-//  "kdDokter": "293717",
-//  "kdDiag1": "A01.0",
-//  "kdDiag2": null,
-//  "kdDiag3": null,
-//  "kdPoliRujukInternal": null,
-//  "rujukLanjut": {
-//            "tglEstRujuk":"04-11-2020",
-//    "kdppk": "0116R028",
-//    "subSpesialis": null,
-//    "khusus": {
-//                "kdKhusus": "HDL",
-//      "kdSubSpesialis": null,
-//      "catatan": "peserta sudah biasa hemodialisa"
-//    }
-//  },
-//  "kdTacc": 0,
-//  "alasanTacc": null
-//}
 
 
         $subspesialis_payload = 'null';
@@ -202,6 +170,8 @@ class PcareVisit extends \yii\db\ActiveRecord
         } else {
             $ppk_payload = $visitModel->kdppk;
         }
+        $terapi = str_replace(array("\n", "\r"), '', $visitModel->terapi);
+//        $terapi = str_replace("\n",',',$visitModel->terapi);
         $payload = '{
          "noKunjungan": "'.$visitModel->noKunjungan.'",
         "tglDaftar": "'.date("d-m-Y" , strtotime($registrationModel->tglDaftar)).'", 
@@ -218,7 +188,7 @@ class PcareVisit extends \yii\db\ActiveRecord
         "heartRate": "'.$registrationModel->heartRate.'",
 
 
-          "terapi": "'.$visitModel->terapi.'",
+          "terapi": "'.$terapi.'",
      "kdStatusPulang": "'.$visitModel->kdStatusPulang.'",
 
      "tglPulang": "'.date("d-m-Y" , strtotime($visitModel->tglPulang)).'", 
