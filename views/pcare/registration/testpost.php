@@ -203,13 +203,13 @@ use yii\widgets\ActiveForm;
 
         <div class="well">
 
-            <label class="control-label" style="color:blue;font-size: 120%">Diagnosa Daftar Tilik</label>
+            <label class="control-label" style="color:blue;font-size: 100%">Diagnosa Daftar Tilik</label>
             <?php
             echo $form->field($wdmodel, 'checklistNames')->textArea(['maxlength' => true,'readonly' => true,'rows' => '3'])
                 ->label(false)
             ;
             ?>
-            <label class="control-label" style="color:blue;font-size: 120%">Diagnosa Manual</label>
+            <label class="control-label" style="color:blue;font-size: 100%">Diagnosa Manual</label>
             <?php
             echo $form->field($wdmodel, 'manualDiagnoses')->textInput(['maxlength' => true,'readonly' => true,'rows' => '6'])->label(false);
             ?>

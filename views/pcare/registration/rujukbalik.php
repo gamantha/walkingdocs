@@ -188,8 +188,8 @@ $subtable3 = '<table border="0" cellspacing="0" cellpadding="4">
 <tr><td colspan="1">Diagnosa</td><td colspan="2">: '.$diagnose1.
     $diagnose2 . $diagnose3 .
 
-'</td></tr>
-<tr><td colspan="1">Telah diberikan</td><td colspan="2">: </td></tr>
+    '</td></tr>
+<tr><td height="50px" colspan="1">Telah diberikan</td><td colspan="2">: </td></tr>
 </table>';
 
 $subtable4 = '<table border="0" cellspacing="0" cellpadding="4">
@@ -210,6 +210,23 @@ $subtable6 = '<table border="0" cellspacing="2" cellpadding="4">
 <tr><td></td></tr>
 <tr><td></td></tr>
 <tr><td>'.$dokter->nmDokter.'</td></tr>
+</table>';
+
+
+$subtableA = '<table border="0" cellspacing="2" cellpadding="4">
+<tr><td colspan="1"><div border="1" style=""></div></td><td colspan="7">Pengobatan dengan obat-obatan :</td></tr>
+<tr><td colspan="1"></td><td colspan="8">...........................................................................</td></tr>
+<tr><td colspan="1"><div border="1" style=""></div></td><td colspan="4">Kontrol kembali ke RS tanggal :</td><td colspan="3">....................</td></tr>
+<tr><td colspan="1"><div border="1" style=""></div></td><td colspan="2">Lain-lain :</td><td colspan="5">................................................</td></tr>
+
+</table>';
+
+$subtableB = '<table border="0" cellspacing="2" cellpadding="4">
+<tr><td colspan="1"><div border="1" style=""></div></td><td colspan="7">Perlu Rawat Inap</td></tr>
+<tr><td colspan="1"><div border="1" style=""></div></td><td colspan="7">Konsultasi Selesai</td></tr>
+<tr><td colspan="4">...................................................</td><td colspan="5">tgl   .............................................</td></tr>
+<tr align="center"><td rowspan="1" colspan="5" height="60px"></td><td colspan="4">Dokter RS,</td> </tr>
+<tr><td colspan="5"></td><td colspan="4">(....................................)</td> </tr>
 </table>';
 
 
@@ -236,7 +253,7 @@ $html = '
 }
 
 </style>
-<div style="text-align: center;"><h1>SURAT RUJUKAN FKTP</h1></div>
+<div style="text-align: center; font-size: 150%;"><span>SURAT RUJUKAN FKTP</span></div>
 <div border="1">
 <table border="0" cellspacing="0" cellpadding="4">
 <tr>
@@ -264,7 +281,36 @@ $html = '
 <td colspan="2">'.$subtable6.'</td>
 </tr>
 
-</table></div>';
+</table>
+</div>
+<div border="1" >
+<div style="text-align: center;font-size: 150%;"><span>SURAT RUJUKAN BALIK</span></div>
+<table border="0" cellspacing="0" cellpadding="4">
+<tr>
+<td colspan="8">Teman sejawat Yth.</td>
+</tr>
+<tr>
+<td colspan="8">Mohon kontrol selanjutnya penderita :</td>
+</tr>
+<tr>
+<td colspan="1"></td><td colspan="1">Nama</td><td>: '.$peserta->nama.'</td>
+</tr>
+<tr>
+<td colspan="1"></td><td colspan="1">Diagnosa</td><td>: </td>
+</tr>
+<tr>
+<td colspan="1"></td><td colspan="1">Terapi</td><td>: </td>
+</tr>
+<tr>
+<td colspan="8">Tindak lanjut yang dianjurkan</td>
+</tr>
+<tr>
+<td colspan="4">'.$subtableA.'</td>
+<td colspan="4">'.$subtableB .'</td>
+</tr>
+</table>
+
+</div>';
 
 // output the HTML content
 $pdf->SetFont('times', '', 14);

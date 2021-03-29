@@ -823,6 +823,30 @@ public function actionTest()
 
     }
 
+
+    public function actionPrintrujukbalik($id)
+    {
+        $registration = PcareRegistration::findOne($id);
+        $visit = $registration->pcareVisits[0];
+
+        $doctors = $registration->getDokter();
+        $pesertaresp = $registration->Cekpeserta();
+        $dokters = json_decode($doctors)->response->list;
+        $dokter = [];
+        foreach ($dokters as $dokter1) {
+            if ($dokter1->kdDokter == $visit->kdDokter) {
+                $dokter =  $dokter1;
+            }
+        }
+
+        $peserta = json_decode($pesertaresp)->response;
+        return $this->render('rujukbalik', [
+//            'dataProvider' => $provider
+            'visitModel' => $visit,
+            'dokter' => $dokter,
+            'peserta' => $peserta
+        ]);
+    }
     public function actionPrintpdf($id)
     {
 
