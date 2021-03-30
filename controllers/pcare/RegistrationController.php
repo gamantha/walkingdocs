@@ -135,6 +135,8 @@ class RegistrationController extends Controller
 
             $wdmodel->manualDiagnoses = substr($params['manualDiagnoses'],2,(strlen($params['manualDiagnoses']) - 4));
             $wdmodel->doctor = $params['doctor'];
+            $wdmodel->wdVisitId = $params['visitId'];
+            $wdmodel->clinicId = $params['clinicId'];
             $model->status = 'not ready';
 
             $checklist = json_encode($params['checklistNames']);
