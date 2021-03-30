@@ -205,6 +205,7 @@ class RegistrationController extends Controller
             $pcarevisit->save();
 
             $wdmodel->load(Yii::$app->request->post());
+            $wdmodel->registration = $model->id;
             $wdmodel->save();
             return $this->redirect(['view', 'id' => $model->id]);
         }
