@@ -95,6 +95,16 @@ class RegistrationController extends Controller
         $params = $request->bodyParams;
 
         if (isset($params['clinicId'])) {
+
+
+            $wdmodel->wdVisitId = $params['visitId'];
+            $wdmodel->clinicId = $params['clinicId'];
+
+            $wdmodel_exist = WdPassedValues::find()->andWhere(['wdVisitId' => $wdmodel->wdVisitId])->andWhere(['clinicId' => $wdmodel->clinicId])->One();
+            if ($wdmodel_exist)
+            {
+                Yii::$app->session->addFlash('warning', "EXISTED");
+            }
             $considmodel = Consid::find()->andWhere(['wd_id' => $params['clinicId']])->One();
             if (isset($considmodel->cons_id)) {
                 $model->cons_id = $considmodel->cons_id;
