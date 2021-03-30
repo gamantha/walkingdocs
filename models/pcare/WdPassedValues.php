@@ -9,6 +9,8 @@ use Yii;
  *
  * @property int $id
  * @property int|null $registrationId
+ * @property string|null $wdVisitId
+ * @property int|null $clinicId
  * @property string|null $doctor
  * @property string|null $checklistNames
  * @property string|null $manualDiagnoses
@@ -34,9 +36,9 @@ class WdPassedValues extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['registrationId'], 'integer'],
+            [['registrationId', 'clinicId'], 'integer'],
             [['checklistNames', 'manualDiagnoses', 'others'], 'string'],
-            [['doctor', 'disposition', 'statusAssessment'], 'string', 'max' => 255],
+            [['wdVisitId', 'doctor', 'disposition', 'statusAssessment'], 'string', 'max' => 255],
             [['registrationId'], 'exist', 'skipOnError' => true, 'targetClass' => PcareRegistration::className(), 'targetAttribute' => ['registrationId' => 'id']],
         ];
     }
@@ -49,6 +51,8 @@ class WdPassedValues extends \yii\db\ActiveRecord
         return [
             'id' => Yii::t('app', 'ID'),
             'registrationId' => Yii::t('app', 'Registration ID'),
+            'wdVisitId' => Yii::t('app', 'Wd Visit ID'),
+            'clinicId' => Yii::t('app', 'Clinic ID'),
             'doctor' => Yii::t('app', 'Doctor'),
             'checklistNames' => Yii::t('app', 'Checklist Names'),
             'manualDiagnoses' => Yii::t('app', 'Manual Diagnoses'),

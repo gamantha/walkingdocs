@@ -213,6 +213,14 @@ use yii\widgets\ActiveForm;
             <?php
             echo $form->field($wdmodel, 'manualDiagnoses')->textInput(['maxlength' => true,'readonly' => true,'rows' => '6'])->label(false);
             ?>
+
+            <?php
+            echo $form->field($wdmodel, 'clinicId')->textArea(['maxlength' => true,'readonly' => true,'rows' => '3']);
+
+            echo $form->field($wdmodel, 'visitId')->textArea(['maxlength' => true, 'readonly' => true, 'rows' => '3']);
+            ?>
+
+
         </div>
 </div>
 
