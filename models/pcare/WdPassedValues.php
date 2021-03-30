@@ -10,7 +10,7 @@ use Yii;
  * @property int $id
  * @property int|null $registrationId
  * @property string|null $wdVisitId
- * @property int|null $clinicId
+ * @property string|null $clinicId
  * @property string|null $doctor
  * @property string|null $checklistNames
  * @property string|null $manualDiagnoses
@@ -36,9 +36,9 @@ class WdPassedValues extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['registrationId', 'clinicId'], 'integer'],
+            [['registrationId'], 'integer'],
             [['checklistNames', 'manualDiagnoses', 'others'], 'string'],
-            [['wdVisitId', 'doctor', 'disposition', 'statusAssessment'], 'string', 'max' => 255],
+            [['wdVisitId', 'clinicId', 'doctor', 'disposition', 'statusAssessment'], 'string', 'max' => 255],
             [['registrationId'], 'exist', 'skipOnError' => true, 'targetClass' => PcareRegistration::className(), 'targetAttribute' => ['registrationId' => 'id']],
         ];
     }
