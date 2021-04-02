@@ -208,16 +208,23 @@ use yii\widgets\ActiveForm;
             echo $form->field($wdmodel, 'checklistNames')->textArea(['maxlength' => true,'readonly' => true,'rows' => '3'])
                 ->label(false)
             ;
-            ?>
-            <label class="control-label" style="color:blue;font-size: 100%">Diagnosa Manual</label>
-            <?php
-            echo $form->field($wdmodel, 'manualDiagnoses')->textInput(['maxlength' => true,'readonly' => true,'rows' => '6'])->label(false);
-            ?>
 
-            <?php
-            echo $form->field($wdmodel, 'clinicId')->textArea(['maxlength' => true,'readonly' => true,'rows' => '3']);
+//            echo Html::label('Diagnosa Manual', 'treatment', ['class' => 'control-label','style'=>'color:blue;font-size: 100%']);
+//            echo '<br />';
 
-            echo $form->field($wdmodel, 'wdVisitId')->textArea(['maxlength' => true, 'readonly' => true, 'rows' => '3']);
+            $diagnoses = json_decode($wdmodel->manualDiagnoses);
+//            echo $diagnoses->treatment;
+//            echo $form->field($wdmodel, 'manualDiagnoses')->textInput(['maxlength' => true,'readonly' => true,'rows' => '6'])->label(false);
+            echo Html::label('Diagnosa Manual', 'description', ['class' => 'control-label','style'=>'color:blue;font-size: 100%']);
+            echo Html::input('text', 'description', $diagnoses->description, ['class' =>'form-control', 'readonly' => true]);
+            echo Html::label('Treatment', 'treatment', ['class' => 'control-label','style'=>'color:blue;font-size: 100%']);
+            echo Html::input('text', 'treatment', $diagnoses->treatment, ['class' =>'form-control', 'readonly' => true]);
+
+
+
+            echo $form->field($wdmodel, 'clinicId')->hiddenInput(['maxlength' => true,'readonly' => true,'rows' => '3'])->label(false);
+
+            echo $form->field($wdmodel, 'wdVisitId')->hiddenInput(['maxlength' => true, 'readonly' => true, 'rows' => '3'])->label(false);
             ?>
 
 
