@@ -930,6 +930,7 @@ $array=[];
 {
 
     $payload = 'clinicId=59cedfba9ae80d05757f54e9.5e87a22effe0dc06b2f87964&kdPoli=&kdTkp=&tglDaftar=2021-3-13' .
+        '&visitId=1233' .
         '&noKartu=&kunjSakit=true' .
         '&kdProviderPeserta=' .
         '&no_urut=' .
