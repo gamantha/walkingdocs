@@ -2,9 +2,11 @@
 
 namespace app\controllers\pcare;
 
+use app\models\pcare\ClinicSchedule;
 use Yii;
 use app\models\Consid;
 use app\models\ConsidSearch;
+use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -75,6 +77,43 @@ class ClinicController extends Controller
         ]);
     }
 
+    public function actionCreateschedule($id)
+    {
+        $model = new ClinicSchedule();
+        $model->clinicId = $id;
+
+        if ($model->load(Yii::$app->request->post())) {
+            $start=date_create($model->starttime);
+            $start2= date_format($start,"H:i:s");
+
+            $end=date_create($model->endtime);
+            $end2= date_format($end,"H:i:s");
+
+
+//            $schedules = ClinicSchedule::find()->andWhere(['clinicId' => $id])
+//                ->andWhere(['dayofweek' => $model->dayofweek])
+//                ->andWhere(['starttime' => $start2])
+//                ->andWhere(['endtime' => $end2])->All();
+
+if($model->validate())
+{
+//    Yii::$app->session->addFlash('success', json_encode($model->errors));
+    $model->save();
+    return $this->redirect(['schedule', 'id' => $id]);
+//    return $this->redirect(Yii::$app->request->referrer);
+} else {
+    Yii::$app->session->addFlash('warning', json_encode($model->errors));
+}
+//
+        }
+
+        return $this->render('createschedule', [
+            'model' => $model,
+        ]);
+    }
+
+
+
     /**
      * Updates an existing Consid model.
      * If update is successful, the browser will be redirected to the 'view' page.
@@ -108,6 +147,39 @@ class ClinicController extends Controller
 
         return $this->redirect(['index']);
     }
+
+    public function actionSchedule($id)
+    {
+
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => ClinicSchedule::find()->andWhere(['clinicId' => $id]),
+            'pagination' => [
+                'pageSize' => 20,
+            ],
+        ]);
+
+
+        return $this->render('schedule', [
+            'dataProvider' => $dataProvider,
+            'id' => $id,
+        ]);
+    }
+
+    public function actionDeleteschedule($clinicId,$dayofweek, $starttime, $endtime)
+    {
+            $schedule = ClinicSchedule::find()->andWhere(['clinicId' => $clinicId])
+                ->andWhere(['dayofweek' => $dayofweek])
+                ->andWhere(['starttime' => $starttime])
+                ->andWhere(['endtime' => $endtime])->One();
+
+        Yii::$app->session->addFlash('success', 'Deleted');
+$schedule->delete();
+
+        return $this->redirect(Yii::$app->request->referrer);
+    }
+
+
 
     /**
      * Finds the Consid model based on its primary key value.

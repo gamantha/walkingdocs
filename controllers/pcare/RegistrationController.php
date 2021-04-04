@@ -145,7 +145,7 @@ class RegistrationController extends Controller
                 $model->heartRate = $params['heartRate'];
 
 
-            $wdmodel->manualDiagnoses = substr($params['manualDiagnoses'],2,(strlen($params['manualDiagnoses']) - 4));
+            $wdmodel->manualDiagnoses = substr($params['manualDiagnoses'],1,(strlen($params['manualDiagnoses']) - 2));
             $wdmodel->doctor = $params['doctor'];
             $wdmodel->wdVisitId = $params['visitId'];
             $wdmodel->clinicId = $params['clinicId'];
@@ -930,7 +930,7 @@ $array=[];
 {
 
     $payload = 'clinicId=59cedfba9ae80d05757f54e9.5e87a22effe0dc06b2f87964&kdPoli=&kdTkp=&tglDaftar=2021-3-13' .
-        '&visitId=1233' .
+        '&visitId=12345' .
         '&noKartu=&kunjSakit=true' .
         '&kdProviderPeserta=' .
         '&no_urut=' .
@@ -943,7 +943,7 @@ $array=[];
     '&heartRate=' .
         '&doctor=' .
         '&prescribed=["Paracetamol 500 mg, #9 - Tablet 3 x 1 tablet - 3 Days","Ibuprofen 400 mg, #12 - Tablet 4 x 1 tablet - 3 Days","Ambroxol 30 mg, #12 - Tablet 2 x 2 tablet - 3 Days"]' .
-        '&manualDiagnoses=' .
+        '&manualDiagnoses=[{"treatment":"captoril","description":"hypertension"}]' .
         '&checklistNames=["Upper respiratory tract infection [URI] / Common Cold (J06.9)"]';
 
 //echo '<pre>';

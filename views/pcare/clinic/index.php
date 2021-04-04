@@ -2,12 +2,13 @@
 
 use yii\helpers\Html;
 use yii\grid\GridView;
+use yii\helpers\Url;
 use yii\widgets\Pjax;
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\ConsidSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = Yii::t('app', 'Consids');
+$this->title = Yii::t('app', 'Clinics');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="consid-index">
@@ -15,7 +16,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a(Yii::t('app', 'Create Consid'), ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a(Yii::t('app', 'Create Clinic'), ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
     <?php Pjax::begin(); ?>
@@ -33,6 +34,13 @@ $this->params['breadcrumbs'][] = $this->title;
             'password',
             'secretkey',
             //'kdaplikasi',
+            [
+                'label'=>'Schedule',
+                'format'=>'raw',
+                'value' => function($data){
+                    return Html::a('Schedule', ['schedule', 'id' => $data->wd_id], ['class' => 'profile-link']);
+                }
+            ],
 
             ['class' => 'yii\grid\ActionColumn'],
         ],
