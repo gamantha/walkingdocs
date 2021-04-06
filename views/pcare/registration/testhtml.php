@@ -2,7 +2,9 @@
 
 //use app\models\Adjustment;
 
-require __DIR__ . '/../../../reno/tcpdf/tcpdf.php';;
+require __DIR__ . '/../../../reno/tcpdf/tcpdf.php';
+
+require __DIR__ . '/../../../reno/tcpdf/tcpdf_barcodes_1d.php';
 
 define('K_PATH_IMAGES_2', '/../../../reno/');
 //K_PATH_IMAGES
@@ -175,16 +177,28 @@ if (null != $visitModel->kdDiag3) {
     $diagnose3 = ', '. $visitModel->nmDiag3 . '('.$visitModel->kdDiag3 . ')';
 }
 
-$subtable = '<div border="1"><table border="0" cellspacing="0" cellpadding="4"><tr><td colspan="1">No Rujukan</td><td colspan="2">: '.$visitModel->noKunjungan.'</td></tr>
-<tr><td colspan="1">FKTP</td><td colspan="2">: '.json_decode($visitModel->meta_rujukan)->name.'</td></tr>
-<tr><td colspan="1">Kabupaten/Kota</td><td colspan="2">: '.json_decode($visitModel->meta_rujukan)->nmkc.'</td></tr></table></div>';
+
+$namafktp = isset(json_decode($visitModel->meta_rujukan)->name) ? json_decode($visitModel->meta_rujukan)->name : "";
+$nmkc = isset(json_decode($visitModel->meta_rujukan)->nmkc) ? json_decode($visitModel->meta_rujukan)->nmkc : "";
+$di = "";
+$pesertanama = isset($peserta->nama) ? $peserta->nama : "";
+$pesertakartu = isset($peserta->noKartu) ? $peserta->noKartu : "";
+$nokunjungan = isset($visitModel->noKunjungan) ? $visitModel->noKunjungan : "";
+$pesertasex = isset($peserta->sex) ? $peserta->sex : "";
+$tglrujuk = isset($visitModel->tglEstRujuk) ? $visitModel->tglEstRujuk : "";
+$jadwal = isset(json_decode($visitModel->meta_rujukan)->jadwal)? json_decode($visitModel->meta_rujukan)->jadwal : "";
+$namadokter = isset($dokter->nmDokter) ? $dokter->nmDokter : "";
+
+$subtable = '<div border="1"><table border="0" cellspacing="0" cellpadding="4"><tr><td colspan="1">No Rujukan</td><td colspan="2">: '.$nokunjungan.'</td></tr>
+<tr><td colspan="1">FKTP</td><td colspan="2">: '.$namafktp.'</td></tr>
+<tr><td colspan="1">Kabupaten/Kota</td><td colspan="2">: '.$nmkc.'</td></tr></table></div>';
 $subtable2 = '<table border="0" cellspacing="2" cellpadding="4">
 <tr><td colspan="1">Kepada Yth. TS Dokter</td><td colspan="2">: </td></tr>
-<tr><td colspan="1">Di</td><td colspan="2">: '.json_decode($visitModel->meta_rujukan)->name.'</td></tr>
+<tr><td colspan="1">Di</td><td colspan="2">: '.$di.'</td></tr>
 </table>';
 $subtable3 = '<table border="0" cellspacing="0" cellpadding="4">
-<tr><td colspan="1">Nama</td><td colspan="2">: '.$peserta->nama.'</td></tr>
-<tr><td colspan="1">No Kartu BPJS</td><td colspan="2">: '.$peserta->noKartu.'</td></tr>
+<tr><td colspan="1">Nama</td><td colspan="2">: '.$pesertanama.'</td></tr>
+<tr><td colspan="1">No Kartu BPJS</td><td colspan="2">: '.$pesertakartu.'</td></tr>
 <tr><td colspan="1">Diagnosa</td><td colspan="2">: '.$diagnose1.
     $diagnose2 . $diagnose3 .
 
@@ -194,13 +208,13 @@ $subtable3 = '<table border="0" cellspacing="0" cellpadding="4">
 
 $subtable4 = '<table border="0" cellspacing="0" cellpadding="4">
 <tr><td colspan="2">Umur</td><td colspan="2">: '.intval(substr(date('Ymd') - date('Ymd', strtotime($peserta->tglLahir)), 0, -4)).'</td><td colspan="1">Tahun</td><td colspan="3">: '.date_format(date_create($peserta->tglLahir),"d-M-Y").'</td></tr>
-<tr><td colspan="2">Status</td><td colspan="1">: ?</td><td colspan="3">Utama/tanggungan</td><td colspan="1">'.$peserta->sex.'</td><td colspan="1">(L/P)</td></tr>
+<tr><td colspan="2">Status</td><td colspan="1">: ?</td><td colspan="3">Utama/tanggungan</td><td colspan="1">'.$pesertasex.'</td><td colspan="1">(L/P)</td></tr>
 <tr><td colspan="2">Catatan</td><td>: </td></tr>
 </table>';
 
 $subtable5 = '<table border="0" cellspacing="0" cellpadding="4">
-<tr><td>Tgl. Rencana Berkunjung</td><td>: '.$visitModel->tglEstRujuk.'</td></tr>
-<tr><td>Jadwal Praktek</td><td>: '.json_decode($visitModel->meta_rujukan)->jadwal.'</td></tr>
+<tr><td>Tgl. Rencana Berkunjung</td><td>: '.$tglrujuk.'</td></tr>
+<tr><td>Jadwal Praktek</td><td>: '.$jadwal.'</td></tr>
 <tr><td>Surat rujukan berlaku 1[satu] kali kunjungan, berlaku sampai dengan</td><td>: </td></tr>
 </table>';
 
@@ -209,10 +223,13 @@ $subtable6 = '<table border="0" cellspacing="2" cellpadding="4">
 <tr><td rowspan="1">Salam Sejawat,</td></tr>
 <tr><td></td></tr>
 <tr><td></td></tr>
-<tr><td>'.$dokter->nmDokter.'</td></tr>
+<tr><td>'.$namadokter.'</td></tr>
 </table>';
 
-
+$params = $pdf->serializeTCPDFtagParameters(array('CODE 39', 'C39', '', '', 80, 30, 0.4, array('position'=>'S', 'border'=>true, 'padding'=>4, 'fgcolor'=>array(0,0,0), 'bgcolor'=>array(255,255,255), 'text'=>true, 'font'=>'helvetica', 'fontsize'=>8, 'stretchtext'=>4), 'N'));
+$htmlbarcode = '<tcpdf method="write1DBarcode" params="'.$params.'" />';
+$barcodeobj = new TCPDFBarcode('123456', 'C128');
+$barcode = $barcodeobj->getBarcodeHTML(2, 30, 'black');
 $html = '
 
 <style>
@@ -241,7 +258,10 @@ $html = '
 <table border="0" cellspacing="0" cellpadding="4">
 <tr>
 <td colspan="3">'.$subtable.'</td>
-<td colspan="3"></td>
+<td colspan="3">';
+
+$html .= $barcode;
+$html .='</td>
 </tr>
 <tr>
 <td colspan="3">'.$subtable2.'</td>
@@ -273,6 +293,15 @@ $pdf->SetFont('times', '', 14);
 $pdf->SetFont('dejavusans', '', 7, '', true);
 $pdf->writeHTML($html, true, false, true, false, '');
 
+// PRINT VARIOUS 1D BARCODES
+
+// CODE 39 - ANSI MH10.8M-1983 - USD-3 - 3 of 9.
+//$pdf->Cell(0, 0, 'CODE 39 - ANSI MH10.8M-1983 - USD-3 - 3 of 9', 0, 1);
+//$pdf->write1DBarcode('CODE 39', 'C39', '', '', '', 18, 0.4, $style, 'N');
+
+//$pdf->Ln();
+
+//$pdf->writeHTML($html2, true, false, true, false, '');
 // Print some HTML Cells
 
 $html = '<span color="red">red</span> <span color="green">green</span> <span color="blue">blue</span><br /><span color="red">red</span> <span color="green">green</span> <span color="blue">blue</span>';
