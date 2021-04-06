@@ -216,9 +216,12 @@ use yii\widgets\ActiveForm;
 //            echo $diagnoses->treatment;
 //            echo $form->field($wdmodel, 'manualDiagnoses')->textInput(['maxlength' => true,'readonly' => true,'rows' => '6'])->label(false);
             echo Html::label('Diagnosa Manual', 'description', ['class' => 'control-label','style'=>'color:blue;font-size: 100%']);
-            echo Html::input('text', 'description', $diagnoses->description, ['class' =>'form-control', 'readonly' => true]);
+
+            $description = isset($diagnoses->description)? $diagnoses->description : "";
+            $treatment = isset($diagnoses->treatment)? $diagnoses->treatment : "";
+            echo Html::input('text', 'description', $description, ['class' =>'form-control', 'readonly' => true]);
             echo Html::label('Treatment', 'treatment', ['class' => 'control-label','style'=>'color:blue;font-size: 100%']);
-            echo Html::input('text', 'treatment', $diagnoses->treatment, ['class' =>'form-control', 'readonly' => true]);
+            echo Html::input('text', 'treatment', $treatment, ['class' =>'form-control', 'readonly' => true]);
 
 
 
