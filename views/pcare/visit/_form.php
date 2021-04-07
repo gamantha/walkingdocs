@@ -106,7 +106,8 @@ $('#pcarevisit-nmdiag3').val($('#pcarevisit-kddiag3 option:selected').text());
        
         
         var ajaxResults = $('#pcarevisit-kdppk_subspesialis').depdrop('getAjaxResults');
-//        alert(ajaxResults.output.results[0].id);
+        $('#schedule').val(ajaxResults.output.results[0].jadwal);
+//        alert('ajax resluts : ' + ajaxResults.output.results[0].jadwal);
          $('#pcarevisit-meta_rujukan').val(JSON.stringify(ajaxResults.output.results[0]));
 
         }); 
@@ -118,8 +119,9 @@ $('#pcarevisit-nmdiag3').val($('#pcarevisit-kddiag3 option:selected').text());
 
 
         $('#pcarevisit-kdppk_subspesialis').on('depdrop:change', function(event, id, value, count, textStatus, jqXHR) {
-    console.log(value);
-    console.log(count);
+//        alert(value);
+//    console.log(value);
+//    console.log(count);
 });
 
 
@@ -171,7 +173,7 @@ $('#pcarevisit-nmdiag3').val($('#pcarevisit-kddiag3 option:selected').text());
 
     $listData2 = $this->context->getDokter($model->pendaftaranId);
     if (!empty($listData2)) {
-        $refsarana = $this->context->getSarana($model->pendaftaranId);
+//        $refsarana = $this->context->getSarana($model->pendaftaranId);
         $refspesialis = $this->context->getReferensiSpesialis($model->pendaftaranId);
         $refkhususdata = $this->context->getReferensiKhusus($model->pendaftaranId);
         $refStatuspulang = $this->context->getStatuspulang($model->pendaftaranId);
@@ -371,9 +373,21 @@ echo $form->field($registrationModel, 'diastole')->textInput(['maxlength' => tru
             ]
         ]);
 
-        echo $form->field($model, 'subSpesialis_kdSarana')->dropDownList(
-            $refsarana,
-            ['id'=>'pcarevisit-subspesialis_kdsarana','prompt'=>'Select...']);
+        echo $form->field($model, 'subSpesialis_kdSarana')->widget(DepDrop::classname(), [
+//            'options'=>['id'=>'subspesialis-id'],
+            'data'=>[$model->subSpesialis_kdSarana =>$model->subSpesialis_nmSarana],
+            'pluginOptions'=>[
+                'depends'=>['pcarevisit-subspesialis_kdsubspesialis1'],
+                'placeholder'=>'Select...',
+                'url'=>Url::to(['subspesialiskdsarana','id' => $model->id])
+            ]
+        ]);
+
+
+
+//        echo $form->field($model, 'subSpesialis_kdSarana')->dropDownList(
+//            $refsarana,
+//            ['id'=>'pcarevisit-subspesialis_kdsarana','prompt'=>'Select...']);
 
 
         echo Html::hiddenInput('PcareVisit[nmppk_subSpesialis]', $model->nmppk_subSpesialis, ['id' => 'pcarevisit-nmppk_subspesialis']);
@@ -383,12 +397,13 @@ echo $form->field($registrationModel, 'diastole')->textInput(['maxlength' => tru
         echo $form->field($model, 'kdppk_subSpesialis')->widget(DepDrop::classname(), [
                 'data'=>[$model->kdppk_subSpesialis=>$model->nmppk_subSpesialis],
             'pluginOptions'=>[
-                    'depends'=>['pcarevisit-subspesialis_kdsubspesialis1', 'pcarevisit-subspesialis_kdsarana', 'pcarevisit-tglestrujuk'],
+                    'depends'=>['pcarevisit-subspesialis_kdsubspesialis1','pcarevisit-subspesialis_kdsarana', 'pcarevisit-tglestrujuk'],
                 'placeholder'=>'Select...',
                 'url'=>Url::to(['rujukanspesialis','id' => $model->id]),
             ]
         ]);
 
+        echo Html::textArea('schedule',"",['id'=>'schedule', 'class' => 'form-control']);
         ?>
     </div>
 
@@ -461,8 +476,16 @@ echo $form->field($registrationModel, 'diastole')->textInput(['maxlength' => tru
                 'depends'=>['pcarevisit-khusus_kdkhusus','pcarevisit-khusus_kdsubspesialis', 'pcarevisit-tglestrujuk'],
                 'placeholder'=>'Select...',
                 'url'=>Url::to(['rujukankhusus','id' => $model->id])
+            ],
+            'pluginEvents' => [
+                'depdrop:afterChange'=>'function(event, id, value) { 
+                alert("");
+                }',
             ]
         ]);
+
+
+
 
 
 
@@ -487,6 +510,8 @@ echo $form->field($registrationModel, 'diastole')->textInput(['maxlength' => tru
 
             ];
 
+
+
             ?>
     <?= $form->field($model, 'kdTacc')->textInput(['maxlength' => true]) ?>
 
@@ -495,7 +520,7 @@ echo $form->field($registrationModel, 'diastole')->textInput(['maxlength' => tru
         </div>
 
     <div class="form-group">
-        <?= Html::submitButton(Yii::t('app', 'Save'), ['class' => 'btn btn-success']) ?>
+        <?= Html::submitButton(Yii::t('app', 'Submit data to BPJS'), ['class' => 'btn btn-success']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>

@@ -53,17 +53,17 @@ $this->params['breadcrumbs'][] = $this->title;
     </p>
     <hr/>
 
-    <p>
-    <ul class="nav nav-tabs">
-        <li role="presentation" class=""><a href="<?php
-            echo Url::toRoute(['pcare/registration/view', 'id' => $model->pendaftaranId]);
-            ?>">Registration Data</a></li>
-        <li role="presentation" class="active"><a href="<?php
-            echo Url::toRoute(['pcare/visit/view', 'id' => $model->pendaftaranId]);
-            ?>">Visit Data</a></li>
-
-    </ul>
-</p>
+<!--    <p>-->
+<!--    <ul class="nav nav-tabs">-->
+<!--        <li role="presentation" class=""><a href="--><?php
+//            echo Url::toRoute(['pcare/registration/view', 'id' => $model->pendaftaranId]);
+//            ?><!--">Registration Data</a></li>-->
+<!--        <li role="presentation" class="active"><a href="--><?php
+//            echo Url::toRoute(['pcare/visit/view', 'id' => $model->pendaftaranId]);
+//            ?><!--">Visit Data</a></li>-->
+<!---->
+<!--    </ul>-->
+<!--</p>-->
 <p>
     <?php
 
@@ -121,38 +121,41 @@ echo '<p>';
         ?>
     </p>
 
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
-//            'id',
-//            'pendaftaranId',
-//            'status',
-            'noKunjungan',
-            'kdSadar',
-            'terapi:ntext',
-            'kdStatusPulang',
-            'tglPulang',
-            'kdDokter',
-            'kdDiag1',
-            'kdDiag2',
-            'kdDiag3',
-            'kdPoliRujukInternal',
-            'tglEstRujuk',
-            'kdppk',
-            'subSpesialis_kdSpesialis',
-            'subSpesialis_kdSubSpesialis1',
-            'subSpesialis_kdSarana',
-            'khusus_kdKhusus',
-            'khusus_kdSubSpesialis',
-            'khusus_catatan:ntext',
-            'meta_rujukan',
-            'kdTacc',
-            'alasanTacc:ntext',
-//            'json:ntext',
+<?php
+//echo DetailView::widget([
+//        'model' => $model,
+//        'attributes' => [
+////            'id',
+////            'pendaftaranId',
+////            'status',
+//            'noKunjungan',
+//            'kdSadar',
+//            'terapi:ntext',
+//            'kdStatusPulang',
+//            'tglPulang',
+//            'kdDokter',
+//            'kdDiag1',
+//            'kdDiag2',
+//            'kdDiag3',
+//            'kdPoliRujukInternal',
+//            'tglEstRujuk',
+//            'kdppk',
+//            'subSpesialis_kdSpesialis',
+//            'subSpesialis_kdSubSpesialis1',
+//            'subSpesialis_kdSarana',
+//            'khusus_kdKhusus',
+//            'khusus_kdSubSpesialis',
+//            'khusus_catatan:ntext',
+//            'meta_rujukan',
+//            'kdTacc',
+//            'alasanTacc:ntext',
+////            'json:ntext',
+//
+////            'created_at',
+////            'modified_at',
+//        ],
+//    ]);
 
-//            'created_at',
-//            'modified_at',
-        ],
-    ]) ?>
+?>
 
 </div>

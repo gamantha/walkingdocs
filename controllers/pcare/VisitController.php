@@ -115,11 +115,134 @@ $visit = PcareVisit::find()->andWhere(['pendaftaranId' => $id])->One();
             $model->pendaftaranId = $id;
         }
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        if ($model->load(Yii::$app->request->post())
+//            && $model->save()
+        ) {
 
-//            $model->subSpesialis_nmSubSpesialis1 = $_POST['PcareVisit']['subSpesialis_']
-            if ($registrationModel->load(Yii::$app->request->post()) && $registrationModel->save()) {
-                return $this->redirect(['view', 'id' => $model->pendaftaranId]);
+            if ($registrationModel->load(Yii::$app->request->post())
+//                && $registrationModel->save()
+            ) {
+
+
+##############################
+
+                $subspesialis_payload = 'null';
+                $khusus_payload = 'null';
+
+                if ($model->spesialis_type == 'spesialis')
+                {
+                    $subspesialis_payload = '{
+       "kdSubSpesialis1": "'.$model->subSpesialis_kdSubSpesialis1.'",
+      "kdSarana": "'.$model->subSpesialis_kdSarana .'"
+            }';
+
+                    $ppk_payload = $model->kdppk_subSpesialis;
+                } else {
+                    $ppk_payload = $model->kdppk;
+                }
+                $terapi = str_replace(array("\n", "\r"), '', $model->terapi);
+//        $terapi = str_replace("\n",',',$visitModel->terapi);
+                $payload = '{
+         "noKunjungan": "'.$model->noKunjungan.'",
+        "tglDaftar": "'.date("d-m-Y" , strtotime($registrationModel->tglDaftar)).'", 
+        "noKartu": "'.$registrationModel->noKartu.'",
+        "kdPoli": "'.$registrationModel->kdPoli.'",
+        "keluhan": "'.$registrationModel->keluhan.'",
+  "kdSadar": "'.$model->kdSadar.'",
+  
+          "sistole": "'.$registrationModel->sistole.'",
+        "diastole": "'.$registrationModel->diastole.'",
+        "beratBadan": "'.$registrationModel->beratBadan.'",
+        "tinggiBadan": "'.$registrationModel->tinggiBadan.'",
+        "respRate": "'.$registrationModel->respRate.'",
+        "heartRate": "'.$registrationModel->heartRate.'",
+
+
+          "terapi": "'.$terapi.'",
+     "kdStatusPulang": "'.$model->kdStatusPulang.'",
+
+     "tglPulang": "'.date("d-m-Y" , strtotime($model->tglPulang)).'", 
+     "kdDokter": "'.$model->kdDokter.'",
+     "kdDiag1": "'.$model->kdDiag1.'",
+     "kdDiag2": "'.$model->kdDiag2.'",
+     "kdDiag3": "'.$model->kdDiag3.'",
+     "kdPoliRujukInternal": "'.$model->kdPoliRujukInternal.'",
+  "rujukLanjut": {	
+  	"tglEstRujuk": "'.date("d-m-Y" , strtotime($model->tglEstRujuk)).'", 
+    "kdppk": "'.$ppk_payload.'",
+    "subSpesialis": '.$subspesialis_payload.',
+    "khusus":  '.$khusus_payload.'
+  },
+          "kdTacc": "'.$model->kdTacc.'",
+               "alasanTacc": "'.$model->alasanTacc.'"
+
+     
+      }';
+
+                $bpjs_user = $registrationModel->getUsercreds($registrationModel->cons_id);
+
+                try {
+
+                    $client = new Client(['baseUrl' => 'https://dvlp.bpjs-kesehatan.go.id:9081/pcare-rest-v3.0/kunjungan']);
+                    $request = $client->createRequest()
+                        ->setContent($payload)->setMethod('POST')
+                        ->setHeaders(['X-cons-id' => $bpjs_user['cons_id']])
+                        ->addHeaders(['content-type' => 'application/json'])
+                        ->addHeaders(['X-Timestamp' => $bpjs_user['time']])
+                        ->addHeaders(['X-Signature' => $bpjs_user['encoded_sig']])
+                        ->addHeaders(['X-Authorization' => $bpjs_user['encoded_auth_string']]);
+
+                    $vresponse = $request->send();
+//            return $payload;
+                    $visitresp = $vresponse->content;
+                } catch (\yii\base\Exception $exception) {
+
+                    Yii::warning("ERROR GETTING RESPONSE FROM BPJS.");
+                }
+
+
+
+
+                $jsonresp = json_decode($visitresp);
+                if((isset($jsonresp->metaData)) && ($jsonresp->metaData->message == 'CREATED')) {
+                    if(strpos($jsonresp->response->message, "null") ) {
+                        Yii::$app->session->setFlash('danger', $visitresp);
+                    } else {
+//                        echo 'no urut created ' . $jsonresp->response->message;
+                        $model->noKunjungan = $jsonresp->response->message;
+                        $model->status = 'submitted';
+                        $registrationModel->status = 'submitted';
+                        Yii::$app->session->setFlash('success', 'no kunjungan received ' . $jsonresp->response->message);
+
+                        $model->save();
+                        $registrationModel->save();
+
+                        return $this->redirect(['view', 'id' => $model->pendaftaranId]);
+
+                    }
+
+                } else {
+                    Yii::$app->session->setFlash('danger', $visitresp);
+
+                }
+
+
+
+
+
+
+
+                ######################
+
+
+
+
+
+
+
+
+
+
             }
         } else {
 //            Yii::$app->session->setFlash('danger', "save gagal " . json_encode($model->getErrors()));
@@ -228,6 +351,31 @@ $model->kdStatusPulang=3;
             if ($jsonval->response->aktif)
             {
                 $registerresp = $visit->submitvisitdata($id); //actual register to pcare
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                 $jsonresp = json_decode($registerresp);
                 if((isset($jsonresp->metaData)) && ($jsonresp->metaData->message == 'CREATED')) {
                     if(strpos($jsonresp->response->message, "null") ) {
@@ -434,7 +582,7 @@ public function actionRujukankhusus($id)
     Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
     $out = ['results' => [['id' => '', 'name' => '']]];
 
-    $noKartu = '0001113569638';
+//    $noKartu = '0001113569638';
     if (isset($_POST['depdrop_parents'])) {
         $parents = $_POST['depdrop_parents'];
         if ($parents != null) {
@@ -452,12 +600,12 @@ public function actionRujukankhusus($id)
             if (isset($jsonval->response)) {
 
                 foreach ($jsonval->response->list as $item) {
-                    $temp = ['id' => $item->kdppk, 'name' => $item->nmppk, 'alamatPpk' => $item->alamatPpk];
+                    $temp = ['id' => $item->kdppk, 'name' => $item->nmppk, 'alamatPpk' => $item->alamatPpk, 'jadwal' => $item->jadwal, 'nmkc' => $item->nmkc];
                     array_push($out['results'], $temp);
                 }
                 array_shift($out['results']);
             } else {
-                Yii::$app->session->addFlash('danger', 'get rujukan khusus - no pcare web service response');
+//                Yii::$app->session->addFlash('danger', 'get rujukan khusus - no pcare web service response');
             }
 
             return ['output'=>$out, 'selected'=>''];
@@ -487,7 +635,7 @@ public function actionRujukankhusus($id)
                 if (isset($jsonval->response)) {
 
                     foreach ($jsonval->response->list as $item) {
-                        $temp = ['id' => $item->kdppk, 'name' => $item->nmppk . ' alamat : ' . $item->alamatPpk, 'alamatPpk' => $item->alamatPpk, 'telpPpk' => $item->telpPpk,
+                        $temp = ['id' => $item->kdppk, 'name' => $item->nmppk . ' alamat : ' . $item->alamatPpk . ', ' . $item->nmkc, 'alamatPpk' => $item->alamatPpk, 'telpPpk' => $item->telpPpk,
                             'kelas' => $item->kelas,'nmkc' => $item->nmkc, 'distance' => $item->distance, 'jadwal' => $item->jadwal,
                             'jmlRujuk' => $item->jmlRujuk, 'kapasitas' => $item->kapasitas, 'persentase' => $item->persentase
 
@@ -505,7 +653,46 @@ public function actionRujukankhusus($id)
         return ['output'=>$out, 'selected'=>''];
     }
 
+public function actionSubspesialiskdsarana($id)
+{
 
+    Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+    $out = ['results' => [['id' => '', 'name' => '']]];
+    if (isset($_POST['depdrop_parents'])) {
+        $parents = $_POST['depdrop_parents'];
+        if ($parents != null) {
+            $keyword = $parents[0];
+
+            $visit = PcareVisit::findOne($id);
+
+            $response = $visit->getSarana();
+
+            $jsonval = json_decode($response);
+            if (isset($jsonval->response)) {
+
+                foreach ($jsonval->response->list as $item) {
+                    $temp = ['id' => $item->kdSarana, 'name' => $item->nmSarana];
+                    array_push($out['results'], $temp);
+                }
+                array_shift($out['results']);
+            } else {
+                Yii::$app->session->addFlash('danger', 'get subspesialis kd sarana - no pcare web service response');
+            }
+
+
+//                // the getSubCatList function will query the database based on the
+//                // cat_id and return an array like below:
+//                // [
+//                //    ['id'=>'<sub-cat-id-1>', 'name'=>'<sub-cat-name1>'],
+//                //    ['id'=>'<sub-cat_id_2>', 'name'=>'<sub-cat-name2>']
+//                // ]
+            return ['output'=>$out, 'selected'=>''];
+        }
+    }
+    return ['output'=>'', 'selected'=>''];
+
+
+}
     public function actionSubspesialis($id)
     {
         Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
