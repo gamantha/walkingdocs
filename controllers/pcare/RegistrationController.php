@@ -186,6 +186,17 @@ class RegistrationController extends Controller
                         Yii::$app->session->addFlash('success', "Peserta aktif");
 
 
+                        $pcarevisit->pendaftaranId = $model->id;
+                        $pcarevisit->status = 'new';
+                        $pcarevisit->load(Yii::$app->request->post());
+                        $pcarevisit->save();
+
+                        $wdmodel->load(Yii::$app->request->post());
+                        $wdmodel->registrationId = $model->id;
+                        $wdmodel->save();
+                        Yii::$app->session->addFlash('success', "skip to regsiter");
+                        return $this->redirect(['register', 'id' => $model->id]);
+
                     } else {
                         Yii::$app->session->setFlash('danger', "nomor peserta tidak aktif");
 //                return ' nomor peserta tidak valid';
@@ -201,20 +212,11 @@ class RegistrationController extends Controller
 
 
 
-            $pcarevisit->pendaftaranId = $model->id;
-            $pcarevisit->status = 'new';
-            $pcarevisit->load(Yii::$app->request->post());
-            $pcarevisit->save();
-
-            $wdmodel->load(Yii::$app->request->post());
-            $wdmodel->registrationId = $model->id;
-            $wdmodel->save();
-            return $this->redirect(['view', 'id' => $model->id]);
         }
 
 
 //        $prescribedlist = json_deco
-        $prescribedlist = explode('","', $prescribed);
+//        $prescribedlist = explode('","', $prescribed);
 //echo str_replace('\n', '<br/>',$prescribed);
 
 //        print_r($prescribedlist);
@@ -222,7 +224,7 @@ class RegistrationController extends Controller
             'model' => $model,
             'visitmodel' => $pcarevisit,
             'wdmodel' => $wdmodel,
-            'prescribed_list' => $prescribedlist
+//            'prescribed_list' => $prescribedlist
         ]);
     }
 
@@ -962,6 +964,9 @@ $array=[];
         ob_clean();
 
         echo $response->content;
+
+//        return $this->redirect(['create', 'id' => $request->content, 'payload' =>$payload]);
+
 //        echo 'done';
     } catch (\yii\base\Exception $exception) {
 print_r($exception);

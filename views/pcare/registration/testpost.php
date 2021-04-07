@@ -62,7 +62,7 @@ use yii\widgets\ActiveForm;
 
     echo $form->field($model, 'kdPoli')->dropDownList(
         $refPoli,
-        ['prompt'=>'Select...']);
+        ['prompt'=>'Select...'])->label("this needs to be dependent dropdown");
 
     ?>
 
@@ -70,10 +70,10 @@ use yii\widgets\ActiveForm;
 
     <?php
 
-    $listData = ['true' => 'true', 'false' => 'false'];
+    $listData = ['true' => 'Kunjungan Sakit', 'false' => 'Kunjungan Sehat'];
     echo $form->field($model, 'kunjSakit')->dropDownList(
         $listData,
-        ['prompt'=>'Select...']);
+        ['prompt'=>'Select...'])->label("Jenis Kunjungan");
 
     ?>
 
@@ -236,7 +236,7 @@ use yii\widgets\ActiveForm;
 
 
     <div class="form-group">
-        <?= Html::submitButton(Yii::t('app', 'Save'), ['class' => 'btn btn-success']) ?>
+        <?= Html::submitButton(Yii::t('app', 'Register to Pcare'), ['class' => 'btn btn-success']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>
