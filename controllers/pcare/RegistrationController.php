@@ -89,7 +89,7 @@ class RegistrationController extends Controller
 
         $pcarevisit = new PcareVisit();
         $pcarevisit->kdSadar = "01";
-
+        $prescribed = '';
         $wdmodel = new WdPassedValues();
         $request = Yii::$app->request;
         $params = $request->bodyParams;
@@ -1024,7 +1024,8 @@ $array=[];
     '&respRate=' .
     '&heartRate=' .
         '&doctor=' .
-        '&prescribed=["Paracetamol 500 mg, #9 - Tablet 3 x 1 tablet - 3 Days","Ibuprofen 400 mg, #12 - Tablet 4 x 1 tablet - 3 Days","Ambroxol 30 mg, #12 - Tablet 2 x 2 tablet - 3 Days"]' .
+        '&prescribed=["Parasetamol 500 mg, #18 -  3 x 2 tablet - 3 Days","Azithromycin 250 mg, #9 - Tablet 3 x 1 tablet - 3 Days","Captopril 12.5 mg, #29 -  1 x 0.96 tablet - 30 Days"]' .
+//        '&prescribed=["Paracetamol 500 mg, #9 - Tablet 3 x 1 tablet - 3 Days","Ibuprofen 400 mg, #12 - Tablet 4 x 1 tablet - 3 Days","Ambroxol 30 mg, #12 - Tablet 2 x 2 tablet - 3 Days"]' .
         '&manualDiagnoses=[{"treatment":"captoril","description":"hypertension"}]' .
         '&checklistNames=["Upper respiratory tract infection [URI] / Common Cold (J06.9)"]';
 
