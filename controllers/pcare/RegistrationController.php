@@ -195,16 +195,14 @@ class RegistrationController extends Controller
                         $wdmodel->registrationId = $model->id;
                         $wdmodel->save();
                         Yii::$app->session->addFlash('success', "skip to regsiter");
-                        return $this->redirect(['register', 'id' => $model->id]);
+                        $this->redirect(['register', 'id' => $model->id]);
 
                     } else {
                         Yii::$app->session->setFlash('danger', "nomor peserta tidak aktif");
-//                return ' nomor peserta tidak valid';
 
                     }
                 } else {
                     Yii::$app->session->setFlash('danger', "cek peserta failed");
-//            return 'cek peserta failed';
                 }
             } else {
                 Yii::$app->session->setFlash('danger', "data klinik / consID empty");
@@ -217,9 +215,7 @@ class RegistrationController extends Controller
 
 //        $prescribedlist = json_deco
 //        $prescribedlist = explode('","', $prescribed);
-//echo str_replace('\n', '<br/>',$prescribed);
 
-//        print_r($prescribedlist);
         return $this->render('testpost', [
             'model' => $model,
             'visitmodel' => $pcarevisit,
