@@ -7,18 +7,19 @@ use yii\widgets\DetailView;
 /* @var $this yii\web\View */
 /* @var $model app\models\pcare\PcareVisit */
 
-$this->title = "Registration : " . $model->pendaftaranId;
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Pcare Registrations'), 'url' => ['pcare/registration/index']];
+//$this->title = "Registration : " . $model->pendaftaranId;
+$this->title = "";
+//$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Pcare Registrations'), 'url' => ['pcare/registration/index']];
 //$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Kunjungan'), 'url' => ['pcare/registration/index']];
-$this->params['breadcrumbs'][] = ['label' => $model->pendaftaranId, 'url' => ['pcare/registration/view', 'id' => $model->pendaftaranId]];
-$this->params['breadcrumbs'][] = $this->title;
+//$this->params['breadcrumbs'][] = ['label' => $model->pendaftaranId, 'url' => ['pcare/registration/view', 'id' => $model->pendaftaranId]];
+//$this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
 <div class="pcare-visit-view">
     <h1><?= Html::encode($this->title) ?></h1>
     <hr/>
     <p>
-    <h3>Process tracker</h3>
+    <h3>Data telah terkirim</h3>
     <?php
 
     $statusoptions2 = ['ready'];
@@ -41,7 +42,7 @@ $this->params['breadcrumbs'][] = $this->title;
         echo ' <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span> ';
 
         echo Html::button(Yii::t('app', 'Data Submitted'),['class' => 'btn btn-success', 'disabled' => 'true']);
-        if (($model->kdStatusPulang == '3') || ($model->kdStatusPulang == '4')) {
+        if (($model->kdStatusPulang == '4') || ($model->kdStatusPulang == '4')) {
             echo ' <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span> ';
             echo Html::a(Yii::t('app', 'Print Surat Rujukan'), ['pcare/registration/printpdf', 'id' => $model->pendaftaran->id], ['class' => 'btn btn-primary']);
         }

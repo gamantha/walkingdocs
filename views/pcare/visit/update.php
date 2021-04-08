@@ -9,9 +9,9 @@ $this->title = Yii::t('app', 'Update Pcare Visit: {name}', [
     'name' => $model->id,
 ]);
 
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Kunjungan'), 'url' => ['pcare/registration/index']];
+//$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Kunjungan'), 'url' => ['pcare/registration/index']];
 //$this->params['breadcrumbs'][] = ['label' => 'go back', 'url' => ['view', 'id' => $model->id]];
-$this->params['breadcrumbs'][] = $this->title;
+//$this->params['breadcrumbs'][] = $this->title;
 
 
 
@@ -20,7 +20,7 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="pcare-visit-update">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+    <h1>Data Kunjungan</h1>
 
     <?= $this->render('_form', [
         'model' => $model,

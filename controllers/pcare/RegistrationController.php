@@ -85,6 +85,7 @@ class RegistrationController extends Controller
      */
     public function actionCreate()
     {
+        $this->layout = '@app/views/layouts/popuplayout';
         $model = new PcareRegistration();
 
         $pcarevisit = new PcareVisit();

@@ -58,6 +58,7 @@ class VisitController extends Controller
      */
     public function actionView($id)
     {
+        $this->layout = '@app/views/layouts/popuplayout';
 $visit = PcareVisit::find()->andWhere(['pendaftaranId' => $id])->One();
 //if ($visit == null) {
 //    $visit = new PcareVisit();
@@ -108,6 +109,7 @@ $visit = PcareVisit::find()->andWhere(['pendaftaranId' => $id])->One();
      */
     public function actionUpdate($id)
     {
+        $this->layout = '@app/views/layouts/popuplayout';
         $model = PcareVisit::find()->andWhere(['pendaftaranId' => $id])->One();
         $registrationModel = PcareRegistration::findOne($id);
         if ($model == null) {
