@@ -96,16 +96,12 @@ class RegistrationController extends Controller
         $params = $request->bodyParams;
 
         if (isset($params['clinicId'])) {
-
-
             $wdmodel->wdVisitId = $params['visitId'];
             $wdmodel->clinicId = $params['clinicId'];
 
             $wdmodel_exist = WdPassedValues::find()->andWhere(['wdVisitId' => $wdmodel->wdVisitId])->andWhere(['clinicId' => $wdmodel->clinicId])->One();
             if ($wdmodel_exist)
             {
-
-
                 if($wdmodel_exist->registration->status == 'registered')
                 {
                     $visit = PcareVisit::find()->andWhere(['pendaftaranId' => $wdmodel_exist->registrationId])->One();
@@ -116,7 +112,6 @@ class RegistrationController extends Controller
                     }
                 }
 //                Yii::$app->session->addFlash('warning', "EXISTED");
-
             }
             $considmodel = Consid::find()->andWhere(['wd_id' => $params['clinicId']])->One();
             if (isset($considmodel->cons_id)) {
@@ -132,13 +127,11 @@ class RegistrationController extends Controller
             }
 
 
-
             if (empty($params['kdPoli'])) {
                 $model->kdPoli = '001';
             } else {
                 $model->kdPoli = $params['kdPoli'];
             }
-
 
             $model->noKartu = $params['noKartu'];
                 $model->kunjSakit = $params['kunjSakit'];
@@ -170,8 +163,7 @@ class RegistrationController extends Controller
             $pcarevisit->terapi = str_replace('","', "\n",$prescribed);
 //            $pcarevisit->terapi = html_entity_decode($prescribed);
 
-
-
+            $wdmodel->save();
         } else {
            // Yii::$app->session->addFlash('warning', "NO POST data");
 
