@@ -17,6 +17,7 @@ use Yii;
  * @property string|null $disposition
  * @property string|null $statusAssessment
  * @property string|null $others
+ * @property string|null $status
  *
  * @property PcareRegistration $registration
  */
@@ -38,7 +39,7 @@ class WdPassedValues extends \yii\db\ActiveRecord
         return [
             [['registrationId'], 'integer'],
             [['checklistNames', 'manualDiagnoses', 'others'], 'string'],
-            [['wdVisitId', 'clinicId', 'doctor', 'disposition', 'statusAssessment'], 'string', 'max' => 255],
+            [['wdVisitId', 'clinicId', 'doctor', 'disposition', 'statusAssessment', 'status'], 'string', 'max' => 255],
             [['registrationId'], 'exist', 'skipOnError' => true, 'targetClass' => PcareRegistration::className(), 'targetAttribute' => ['registrationId' => 'id']],
         ];
     }
@@ -59,6 +60,7 @@ class WdPassedValues extends \yii\db\ActiveRecord
             'disposition' => Yii::t('app', 'Disposition'),
             'statusAssessment' => Yii::t('app', 'Status Assessment'),
             'others' => Yii::t('app', 'Others'),
+            'status' => Yii::t('app', 'Status'),
         ];
     }
 

@@ -94,21 +94,41 @@ class RegistrationController extends Controller
         $wdmodel = new WdPassedValues();
         $request = Yii::$app->request;
         $params = $request->bodyParams;
+$draftexist = 0;
+
+
+
 
         if (isset($params['clinicId'])) {
+
+            $cookiesresp = Yii::$app->response->cookies;
+            $cookiesresp->add(new \yii\web\Cookie(
+                [
+                    'name' => 'passedvalues',
+                    'value' => json_encode($params),
+                ]        ));
+
+
             $wdmodel->wdVisitId = $params['visitId'];
             $wdmodel->clinicId = $params['clinicId'];
 
-            $wdmodel_exist = WdPassedValues::find()->andWhere(['wdVisitId' => $wdmodel->wdVisitId])->andWhere(['clinicId' => $wdmodel->clinicId])->One();
+            $wdmodel_exist = WdPassedValues::find()->andWhere(['wdVisitId' => $wdmodel->wdVisitId])->andWhere(['clinicId' => $wdmodel->clinicId])
+//                ->andWhere(['status'=>'registered'])
+                ->One();
             if ($wdmodel_exist)
             {
-                if($wdmodel_exist->registration->status == 'registered')
-                {
-                    $visit = PcareVisit::find()->andWhere(['pendaftaranId' => $wdmodel_exist->registrationId])->One();
-                    if ($visit->status != "submitted") {
-                        return $this->redirect(['pcare/visit/update', 'id' => $wdmodel_exist->registrationId]);
-                    } else {
-                        return $this->redirect(['view', 'id' => $wdmodel_exist->registrationId]);
+                if (isset($wdmodel_exist->registration->status)) {
+
+
+                    if ($wdmodel_exist->registration->status == 'registered') {
+                        $visit = PcareVisit::find()->andWhere(['pendaftaranId' => $wdmodel_exist->registrationId])->One();
+                        if ($visit->status != "submitted") {
+                            return $this->redirect(['pcare/visit/update', 'id' => $wdmodel_exist->registrationId]);
+                        } else {
+                            return $this->redirect(['view', 'id' => $wdmodel_exist->registrationId]);
+                        }
+                    } else if ($wdmodel_exist->registration->status == 'draft') {
+                        $draftexist = 1;
                     }
                 }
 //                Yii::$app->session->addFlash('warning', "EXISTED");
@@ -163,6 +183,9 @@ class RegistrationController extends Controller
             $pcarevisit->terapi = str_replace('","', "\n",$prescribed);
 //            $pcarevisit->terapi = html_entity_decode($prescribed);
 
+            $wdmodel->disposition = $params['disposition'];
+            $wdmodel->statusAssessment = $params['statusAssessment'];
+            $wdmodel->status = "draft";
             $wdmodel->save();
         } else {
            // Yii::$app->session->addFlash('warning', "NO POST data");
@@ -251,6 +274,7 @@ class RegistrationController extends Controller
                                     $model->save();
                                     $pcarevisit->pendaftaranId = $model->id;
                                     $wdmodel->registrationId = $model->id;
+                                    $wdmodel->status = 'registered';
                                     $wdmodel->save();
                                     $pcarevisit->save();
 
@@ -1017,6 +1041,8 @@ $array=[];
     '&respRate=' .
     '&heartRate=' .
         '&doctor=' .
+        '&disposition=' .
+        '&statusAssessment=' .
         '&prescribed=["Parasetamol 500 mg, #18 -  3 x 2 tablet - 3 Days","Azithromycin 250 mg, #9 - Tablet 3 x 1 tablet - 3 Days","Captopril 12.5 mg, #29 -  1 x 0.96 tablet - 30 Days"]' .
 //        '&prescribed=["Paracetamol 500 mg, #9 - Tablet 3 x 1 tablet - 3 Days","Ibuprofen 400 mg, #12 - Tablet 4 x 1 tablet - 3 Days","Ambroxol 30 mg, #12 - Tablet 2 x 2 tablet - 3 Days"]' .
         '&manualDiagnoses=[{"treatment":"captoril","description":"hypertension"}]' .
