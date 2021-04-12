@@ -173,6 +173,25 @@ $draftexist = 0;
             $wdmodel->doctor = $params['doctor'];
             $wdmodel->wdVisitId = $params['visitId'];
             $wdmodel->clinicId = $params['clinicId'];
+            $wdmodel->noKartu = $params['noKartu'];
+            $wdmodel->kunjSakit = $params['kunjSakit'];
+//                $model->kdTkp = $params['kdTkp'];
+            $wdmodel->kdProviderPeserta = $params['kdProviderPeserta'];
+            $wdmodel->tglDaftar = $params['tglDaftar'];
+            // optional
+            $wdmodel->no_urut = $params['no_urut'];
+            $wdmodel->keluhan = $params['keluhan'];
+            $wdmodel->sistole = $params['sistole'];
+            $wdmodel->diastole = $params['diastole'];
+            $wdmodel->beratBadan = $params['beratBadan'];
+            $wdmodel->tinggiBadan = $params['tinggiBadan'];
+            $wdmodel->respRate = $params['respRate'];
+            $wdmodel->heartRate = $params['heartRate'];
+            $wdmodel->administered = $params['administered'];
+            $wdmodel->prescribed = $params['prescribed'];
+            $wdmodel->kdPoli = $params['kdPoli'];
+            $wdmodel->kdTkp = $params['kdTkp'];
+
             $model->status = 'not ready';
 
             $checklist = json_encode($params['checklistNames']);
@@ -184,7 +203,7 @@ $draftexist = 0;
 //            $pcarevisit->terapi = html_entity_decode($prescribed);
 
             $wdmodel->disposition = $params['disposition'];
-            $wdmodel->statusAssessment = $params['statusAssessment'];
+            $wdmodel->statusAssessment = $params['statusAssesment'];
             $wdmodel->status = "draft";
             $wdmodel->save();
         } else {
@@ -1042,7 +1061,8 @@ $array=[];
     '&heartRate=' .
         '&doctor=' .
         '&disposition=' .
-        '&statusAssessment=' .
+        '&statusAssesment=' .
+        '&administered=' .
         '&prescribed=["Parasetamol 500 mg, #18 -  3 x 2 tablet - 3 Days","Azithromycin 250 mg, #9 - Tablet 3 x 1 tablet - 3 Days","Captopril 12.5 mg, #29 -  1 x 0.96 tablet - 30 Days"]' .
 //        '&prescribed=["Paracetamol 500 mg, #9 - Tablet 3 x 1 tablet - 3 Days","Ibuprofen 400 mg, #12 - Tablet 4 x 1 tablet - 3 Days","Ambroxol 30 mg, #12 - Tablet 2 x 2 tablet - 3 Days"]' .
         '&manualDiagnoses=[{"treatment":"captoril","description":"hypertension"}]' .
