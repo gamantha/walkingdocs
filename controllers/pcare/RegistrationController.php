@@ -117,21 +117,21 @@ $draftexist = 0;
                 ->One();
             if ($wdmodel_exist)
             {
-                Yii::$app->session->addFlash('success', "model EXSITED 1");
-                if (isset($wdmodel_exist->registration->status)) {
-                    Yii::$app->session->addFlash('success', "model EXSITED 2");
+//                Yii::$app->session->addFlash('success', "model EXSITED 1");
+                if (isset($wdmodel_exist->status)) {
+//                    Yii::$app->session->addFlash('success', "model EXSITED 2");
 
-                    if ($wdmodel_exist->registration->status == 'registered') {
-                        Yii::$app->session->addFlash('success', "draft registered");
+                    if ($wdmodel_exist->status == 'registered') {
+//                        Yii::$app->session->addFlash('success', "draft registered");
                         $visit = PcareVisit::find()->andWhere(['pendaftaranId' => $wdmodel_exist->registrationId])->One();
                         if ($visit->status != "submitted") {
                             return $this->redirect(['pcare/visit/update', 'id' => $wdmodel_exist->registrationId]);
                         } else {
                             return $this->redirect(['view', 'id' => $wdmodel_exist->registrationId]);
                         }
-                    } else if ($wdmodel_exist->registration->status == 'draft') {
+                    } else if ($wdmodel_exist->status == 'draft') {
                         $draftexist = 1;
-                        Yii::$app->session->addFlash('success', "draft EXSITED");
+//                        Yii::$app->session->addFlash('success', "draft EXSITED");
                         $wdmodel_exist->delete();
 
                     }
