@@ -105,7 +105,7 @@ $draftexist = 0;
             $cookiesresp->add(new \yii\web\Cookie(
                 [
                     'name' => 'visitId',
-                    'value' => 'reno',
+                    'value' => $params['visitId'],
                 ]        ));
 
 
@@ -207,7 +207,10 @@ $draftexist = 0;
             $wdmodel->status = "draft";
             $wdmodel->save();
         } else {
-           // Yii::$app->session->addFlash('warning', "NO POST data");
+            if (isset($cookies['visitId'])) {
+                $cookie_visitid = $cookies['visitId']->value;
+            }
+            Yii::$app->session->addFlash('warning', $cookie_visitid);
 
         }
 
