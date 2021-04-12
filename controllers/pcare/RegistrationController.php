@@ -203,6 +203,7 @@ $draftexist = 0;
             $wdmodel->status = "draft";
             if ($draftexist) {
                 $wdmodel_exist->delete();
+                                Yii::$app->session->addFlash('warning', "deleted");
             }
             $wdmodel->save();
         } else {
