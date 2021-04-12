@@ -119,9 +119,10 @@ $draftexist = 0;
             {
 
                 if (isset($wdmodel_exist->registration->status)) {
-
+                    Yii::$app->session->addFlash('success', "model EXSITED");
 
                     if ($wdmodel_exist->registration->status == 'registered') {
+                        Yii::$app->session->addFlash('success', "draft registered");
                         $visit = PcareVisit::find()->andWhere(['pendaftaranId' => $wdmodel_exist->registrationId])->One();
                         if ($visit->status != "submitted") {
                             return $this->redirect(['pcare/visit/update', 'id' => $wdmodel_exist->registrationId]);
