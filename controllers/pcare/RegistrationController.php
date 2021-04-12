@@ -117,9 +117,9 @@ $draftexist = 0;
                 ->One();
             if ($wdmodel_exist)
             {
-
+                Yii::$app->session->addFlash('success', "model EXSITED 1");
                 if (isset($wdmodel_exist->registration->status)) {
-                    Yii::$app->session->addFlash('success', "model EXSITED");
+                    Yii::$app->session->addFlash('success', "model EXSITED 2");
 
                     if ($wdmodel_exist->registration->status == 'registered') {
                         Yii::$app->session->addFlash('success', "draft registered");
