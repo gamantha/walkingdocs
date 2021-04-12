@@ -133,40 +133,22 @@ $draftexist = 0;
                 }
 //                Yii::$app->session->addFlash('warning', "EXISTED");
             }
-            $considmodel = Consid::find()->andWhere(['wd_id' => $params['clinicId']])->One();
-            if (isset($considmodel->cons_id)) {
-                $model->cons_id = $considmodel->cons_id;
-            } else {
-                Yii::$app->session->addFlash('danger', "NO ConsID data!!!");
-            }
+
 
             if (empty($params['kdTkp'])) {
-                $model->kdTkp = '10';
+                $wdmodel->kdTkp = '10';
             } else {
-                $model->kdTkp = $params['kdTkp'];
+                $wdmodel->kdTkp = $params['kdTkp'];
             }
 
 
             if (empty($params['kdPoli'])) {
-                $model->kdPoli = '001';
+                $wdmodel->kdPoli = '001';
             } else {
-                $model->kdPoli = $params['kdPoli'];
+                $wdmodel->kdPoli = $params['kdPoli'];
             }
 
-            $model->noKartu = $params['noKartu'];
-                $model->kunjSakit = $params['kunjSakit'];
-//                $model->kdTkp = $params['kdTkp'];
-                $model->kdProviderPeserta = $params['kdProviderPeserta'];
-                $model->tglDaftar = $params['tglDaftar'];
-                // optional
-                $model->no_urut = $params['no_urut'];
-                $model->keluhan = $params['keluhan'];
-                $model->sistole = $params['sistole'];
-                $model->diastole = $params['diastole'];
-                $model->beratBadan = $params['beratBadan'];
-                $model->tinggiBadan = $params['tinggiBadan'];
-                $model->respRate = $params['respRate'];
-                $model->heartRate = $params['heartRate'];
+
 
 
             $wdmodel->manualDiagnoses = substr($params['manualDiagnoses'],1,(strlen($params['manualDiagnoses']) - 2));
@@ -175,7 +157,6 @@ $draftexist = 0;
             $wdmodel->clinicId = $params['clinicId'];
             $wdmodel->noKartu = $params['noKartu'];
             $wdmodel->kunjSakit = $params['kunjSakit'];
-//                $model->kdTkp = $params['kdTkp'];
             $wdmodel->kdProviderPeserta = $params['kdProviderPeserta'];
             $wdmodel->tglDaftar = $params['tglDaftar'];
             // optional
@@ -192,6 +173,21 @@ $draftexist = 0;
             $wdmodel->kdPoli = $params['kdPoli'];
             $wdmodel->kdTkp = $params['kdTkp'];
 
+            $model->noKartu = $wdmodel->noKartu;
+            $model->kunjSakit = $wdmodel->kunjSakit;
+                $model->kdTkp = $wdmodel->kdTkp;
+            $model->kdProviderPeserta = $wdmodel->kdProviderPeserta;
+            $model->tglDaftar = $wdmodel->tglDaftar;
+            // optional
+            $model->no_urut = $wdmodel->no_urut;
+            $model->keluhan = $wdmodel->keluhan;
+            $model->sistole = $wdmodel->sistole;
+            $model->diastole = $wdmodel->diastole;
+            $model->beratBadan = $wdmodel->beratBadan;
+            $model->tinggiBadan = $wdmodel->tinggiBadan;
+            $model->respRate = $wdmodel->respRate;
+            $model->heartRate = $wdmodel->heartRate;
+            $model->kdPoli = $wdmodel->kdPoli;
             $model->status = 'not ready';
 
             $checklist = json_encode($params['checklistNames']);
@@ -209,15 +205,22 @@ $draftexist = 0;
         } else {
             if (isset($cookies['visitId'])) {
                 $cookie_visitid = $cookies['visitId']->value;
-                Yii::$app->session->addFlash('success', $cookie_visitid);
-                $wdmodel_exist = WdPassedValues::find()->andWhere(['wdVisitId' => $cookie_visitid])->One();
-                Yii::$app->session->addFlash('warning', $wdmodel_exist->sistole);
+                $wdmodel = WdPassedValues::find()->andWhere(['wdVisitId' => $cookie_visitid])->One();
+//                Yii::$app->session->addFlash('warning', $wdmodel_exist->sistole);
 
             } else {
                 Yii::$app->session->addFlash('warning', 'no visit id');
             }
 
 
+        }
+
+
+        $considmodel = Consid::find()->andWhere(['wd_id' => $wdmodel->clinicId])->One();
+        if (isset($considmodel->cons_id)) {
+            $model->cons_id = $considmodel->cons_id;
+        } else {
+            Yii::$app->session->addFlash('danger', "NO ConsID data!!!");
         }
 
 
