@@ -210,6 +210,9 @@ $draftexist = 0;
             if (isset($cookies['visitId'])) {
                 $cookie_visitid = $cookies['visitId']->value;
                 Yii::$app->session->addFlash('success', $cookie_visitid);
+                $wdmodel_exist = WdPassedValues::find()->andWhere(['wdVisitId' => $wdmodel->wdVisitId])->One();
+                Yii::$app->session->addFlash('warning', $wdmodel_exist->sistole);
+
             } else {
                 Yii::$app->session->addFlash('warning', 'no visit id');
             }
