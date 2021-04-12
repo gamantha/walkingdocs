@@ -99,13 +99,13 @@ $draftexist = 0;
 
 
 
-        if (isset($params['clinicId'])) {
+        if (isset($params['visitId'])) {
 
             $cookiesresp = Yii::$app->response->cookies;
             $cookiesresp->add(new \yii\web\Cookie(
                 [
-                    'name' => 'passedvalues',
-                    'value' => json_encode($params),
+                    'name' => 'visitId',
+                    'value' => $params['visitId'],
                 ]        ));
 
 
