@@ -105,7 +105,7 @@ $draftexist = 0;
             $cookiesresp->add(new \yii\web\Cookie(
                 [
                     'name' => 'visitId',
-                    'value' => $params['visitId'],
+                    'value' => urlencode($params['visitId']),
                 ]        ));
 
 
