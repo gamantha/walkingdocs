@@ -97,7 +97,7 @@ class RegistrationController extends Controller
 $draftexist = 0;
 
 
-
+        $cookies = Yii::$app->request->cookies;
 
         if (isset($params['visitId'])) {
 
