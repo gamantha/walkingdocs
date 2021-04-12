@@ -117,7 +117,7 @@ $draftexist = 0;
                 ->One();
             if ($wdmodel_exist)
             {
-                Yii::$app->session->addFlash('success', "MODEL EXSITED");
+
                 if (isset($wdmodel_exist->registration->status)) {
 
 
@@ -130,6 +130,9 @@ $draftexist = 0;
                         }
                     } else if ($wdmodel_exist->registration->status == 'draft') {
                         $draftexist = 1;
+                        Yii::$app->session->addFlash('success', "draft EXSITED");
+                        $wdmodel_exist->delete();
+
                     }
                 }
 //                Yii::$app->session->addFlash('warning', "EXISTED");
