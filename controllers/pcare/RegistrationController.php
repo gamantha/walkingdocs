@@ -209,8 +209,11 @@ $draftexist = 0;
         } else {
             if (isset($cookies['visitId'])) {
                 $cookie_visitid = $cookies['visitId']->value;
+                Yii::$app->session->addFlash('success', $cookie_visitid);
+            } else {
+                Yii::$app->session->addFlash('warning', 'no visit id');
             }
-            Yii::$app->session->addFlash('warning', $cookie_visitid);
+
 
         }
 
