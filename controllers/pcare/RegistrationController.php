@@ -201,6 +201,9 @@ $draftexist = 0;
             $wdmodel->disposition = $params['disposition'];
             $wdmodel->statusAssessment = $params['statusAssesment'];
             $wdmodel->status = "draft";
+            if ($draftexist) {
+                $wdmodel_exist->delete();
+            }
             $wdmodel->save();
         } else {
             if (isset($cookies['visitId'])) {
