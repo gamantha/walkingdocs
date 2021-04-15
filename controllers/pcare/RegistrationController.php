@@ -78,6 +78,8 @@ class RegistrationController extends Controller
         ]);
     }
 
+
+
     /**
      * Creates a new PcareRegistration model.
      * If creation is successful, the browser will be redirected to the 'view' page.
@@ -105,10 +107,11 @@ $draftexist = 0;
             $cookiesresp->add(new \yii\web\Cookie(
                 [
                     'name' => 'visitId',
+//                    'domain' => 'localhost',
                     'value' => $params['visitId'],
                 ]        ));
 
-
+            Yii::$app->session->addFlash('success', "cookie created");
             $wdmodel->wdVisitId = $params['visitId'];
             $wdmodel->clinicId = $params['clinicId'];
 
@@ -119,7 +122,7 @@ $draftexist = 0;
             {
 //                Yii::$app->session->addFlash('success', "model EXSITED 1");
                 if (isset($wdmodel_exist->status)) {
-//                    Yii::$app->session->addFlash('success', "model EXSITED 2");
+                    Yii::$app->session->addFlash('success', "model EXSITED 2");
 
                     if ($wdmodel_exist->status == 'registered') {
 //                        Yii::$app->session->addFlash('success', "draft registered");
@@ -137,6 +140,8 @@ $draftexist = 0;
                     }
                 }
 //                Yii::$app->session->addFlash('warning', "EXISTED");
+            } else {
+                Yii::$app->session->addFlash('success', "NO model EXSITED 2");
             }
 
 
@@ -218,7 +223,7 @@ $draftexist = 0;
 //                Yii::$app->session->addFlash('warning', $wdmodel_exist->sistole);
 
             } else {
-                Yii::$app->session->addFlash('warning', 'no visit id');
+                Yii::$app->session->addFlash('warning', 'no cookie - no visit id');
             }
 
 
@@ -237,11 +242,9 @@ $draftexist = 0;
 //            && $model->save()
         ) {
 
-
-//                if ((!empty($model->noKartu)) || (!empty($model->nik)))
             if (!empty($model->cons_id))
             {
-                $response = $model->Cekpeserta();
+                $response = $model->cekPesertaByNokartu();
                 $jsonval = json_decode($response);
 
                 if (isset($jsonval->metaData->code) && ($jsonval->metaData->code == 200)) {
@@ -250,26 +253,20 @@ $draftexist = 0;
 
                         $model->kdProviderPeserta = $jsonval->response->kdProviderPst->kdProvider;
                         $model->status = 'ready';
-//                        $model->save();
-                        Yii::$app->session->addFlash('success', "Peserta aktif");
-
+                        Yii::$app->session->addFlash('success', "no Kartu - Peserta aktif  ");
 
 
                         $pcarevisit->status = 'new';
                         $pcarevisit->load(Yii::$app->request->post());
-//                        $pcarevisit->save();
+
 
                         $wdmodel->load(Yii::$app->request->post());
-
-//                        $wdmodel->save();
-
-//                        $registerresp = $model->register($model->id); //actual register to pcare
                         $bpjs_user = $model->getUsercreds($model->cons_id);
                         $payload = '{
         "kdProviderPeserta": "'.$model->kdProviderPeserta.'",
         "tglDaftar": "'.date("d-m-Y" , strtotime($model->tglDaftar)).'", 
         "noKartu": "'.$model->noKartu.'",
-        "kdPoli": "'.$model->kdPoli.'",
+        "kdPoli": "'.trim($model->kdPoli).'",
         "keluhan": "'.$model->keluhan.'",
         "kunjSakit": '. $model->kunjSakit .',
         "sistole": "'.$model->sistole.'",
@@ -301,6 +298,7 @@ $draftexist = 0;
                             Yii::warning("ERROR GETTING RESPONSE FROM BPJS.");
                         }
 
+//                        Yii::$app->session->addFlash('warning', json_encode($payload));
                         $jsonresp = json_decode($registerresp);
 
                         if (isset($jsonresp->metaData->message))
@@ -340,7 +338,8 @@ $draftexist = 0;
 
                     }
                 } else {
-                    Yii::$app->session->setFlash('danger', "cek peserta failed");
+
+                    Yii::$app->session->addFlash('danger', json_encode($jsonval));
 //            return 'cek peserta failed';
                 }
             } else {
@@ -351,6 +350,9 @@ $draftexist = 0;
 
         }
 
+        if(isset($model->kdTkp)) {
+            $model->kdTkp = '10';
+        }
 
 //        $prescribedlist = json_deco
         $prescribedlist = explode('","', $prescribed);
@@ -386,7 +388,7 @@ $draftexist = 0;
             $model->status = 'not ready';
             if (!empty($model->cons_id))
             {
-                $response = $model->Cekpeserta();
+                $response = $model->cekPesertaByNokartu();
 
                 $jsonval = json_decode($response);
 
@@ -615,9 +617,7 @@ $provider = new ArrayDataProvider();
 //        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
     }
 
-
-
-    public function getPoli($consid)
+    public function getPoli($consid, $issakit)
     {
 //        $registration = PcareRegistration::findOne($id);
         $registration = new PcareRegistration();
@@ -632,7 +632,10 @@ $provider = new ArrayDataProvider();
             if ($json->metaData->code == 200) {
                 foreach ($json->response->list as $i)
                 {
-                    $options[$i->kdPoli] = $i->kdPoli . ' : ' . $i->nmPoli;
+                    if ($i->poliSakit == filter_var($issakit, FILTER_VALIDATE_BOOLEAN)) {
+                        $options[$i->kdPoli] = $i->kdPoli . ' : ' . $i->nmPoli;
+                    }
+
                 }
             } else {
                 Yii::$app->session->setFlash('danger', "BPJS Error : " . $json->metaData->message);
@@ -881,6 +884,42 @@ Yii::$app->session->addFlash('danger', 'no kartu ' . $model['ketAktif'] . '. cob
             return ['output'=>$options, 'selected'=>''];
         }
         return ['output'=>$options, 'selected'=>''];
+
+    }
+
+    public function actionGetfilteredpolicodes()
+    {
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        $options = [];
+        if (isset($_POST['depdrop_parents'])) {
+            $parents = $_POST['depdrop_parents'];
+            if ($parents != null) {
+                $cat_id = $parents[0];
+
+//                $registration = new PcareRegistration();
+//                $registration->setConsId('16744');
+                $response = $this->getPoli('16744', $cat_id);
+                foreach ($response as $i)
+                {
+//                echo $i;
+                    $explode = explode(':', $i);
+                    array_push($options, ['id'=>$explode[0], 'name'=>$explode[1]]);
+                }
+                return ['output'=>$options, 'selected'=>''];
+            }
+//            return ['output'=>$options, 'selected'=>''];
+        } else {
+            $response = $this->getPoli('16744');
+            foreach ($response as $i)
+            {
+//                echo $i;
+                $explode = explode(':', $i);
+                array_push($options, ['id'=>$explode[0], 'name'=>$explode[1]]);
+            }
+            return ['output'=>$options, 'selected'=>''];
+//            return $response;
+        }
+//        return ['output'=>$options, 'selected'=>''];
 
     }
 

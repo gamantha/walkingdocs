@@ -4,6 +4,7 @@ use kartik\date\DatePicker;
 use kartik\widgets\DepDrop;
 use kartik\widgets\Select2;
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\web\JsExpression;
 use yii\widgets\ActiveForm;
 
@@ -45,14 +46,14 @@ use yii\widgets\ActiveForm;
     ?>
 <br/>
     <?= $form->field($model, 'noKartu')->textInput(['maxlength' => true]) ?>
-    <?= $form->field($model, 'nik')->textInput(['maxlength' => true])->label('KTP - digunakan untuk cek peserta apabila no Kartu kosong')  ?>
 
     <?php
-
+//echo $form->field($model, 'nik')->textInput(['maxlength' => true])->label('KTP - digunakan untuk cek peserta apabila no Kartu kosong');
     $refPoli = [];
 
+    $initPoli = [];
     if ($model->cons_id) {
-        $refPoli = $this->context->getPoli($model->cons_id);
+        $initPoli = $this->context->getPoli($model->cons_id, 'true');
     } else {
 
     }
@@ -60,22 +61,10 @@ use yii\widgets\ActiveForm;
     $url = \yii\helpers\Url::to(['getpolicodes']);
 
 
-    echo $form->field($model, 'kdPoli')->dropDownList(
-        $refPoli,
-        ['prompt'=>'Select...'])->label("this needs to be dependent dropdown");
 
     ?>
 
 
-
-    <?php
-
-    $listData = ['true' => 'Kunjungan Sakit', 'false' => 'Kunjungan Sehat'];
-    echo $form->field($model, 'kunjSakit')->dropDownList(
-        $listData,
-        ['prompt'=>'Select...'])->label("Jenis Kunjungan");
-
-    ?>
 
     <?php
 
@@ -83,6 +72,38 @@ use yii\widgets\ActiveForm;
     echo $form->field($model, 'kdTkp')->dropDownList(
         $listData,
         ['prompt'=>'Select...']);
+
+
+
+    $listData = ['true' => 'Kunjungan Sakit', 'false' => 'Kunjungan Sehat'];
+    echo $form->field($model, 'kunjSakit')->dropDownList(
+        $listData,
+        ['prompt'=>'Select...'])->label("Jenis Kunjungan");
+
+
+
+//    echo $form->field($model, 'kdPoli')->dropDownList(
+//        $refPoli,
+//        ['prompt'=>'Select...'])->label("this needs to be dependent dropdown");
+
+
+    echo $form->field($model, 'kdPoli')->widget(DepDrop::classname(), [
+//            'data' => $initPoli,
+        'pluginOptions'=>[
+            'depends'=>['pcareregistration-kunjsakit'],
+            'initialize' => true,
+            'initDepends' => ['pcareregistration-kunjsakit'],
+            'placeholder'=>'Select...',
+            'url'=>Url::to(['getfilteredpolicodes'])
+//            'url'=>Url::to(['/site/prod'])
+        ]
+    ]);
+
+
+    ?>
+
+    <?php
+
 
         ?>
 

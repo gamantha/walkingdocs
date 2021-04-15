@@ -52,7 +52,7 @@ class PcareRegistration extends \yii\db\ActiveRecord
         return [
             [['cons_id', 'sistole', 'diastole', 'beratBadan', 'tinggiBadan', 'respRate', 'heartRate', 'rujukBalik'], 'integer'],
             [['tglDaftar', 'created_at', 'modified_at'], 'safe'],
-            [['kdTkp'], 'required'],
+            [['kdTkp','kdPoli'], 'required'],
             [['keluhan'], 'string'],
             [['kdProviderPeserta', 'no_urut', 'noKartu', 'nik', 'noka', 'kdPoli', 'kunjSakit', 'kdTkp', 'status'], 'string', 'max' => 255],
         ];
@@ -176,48 +176,62 @@ class PcareRegistration extends \yii\db\ActiveRecord
         }
     }
 
-    public function Cekpeserta()
+
+    public function cekPesertaByNokartu()
+    {
+        $bpjs_user = self::getUsercreds($this->cons_id);
+        try {
+
+            $client = new Client(['baseUrl' => 'https://dvlp.bpjs-kesehatan.go.id:9081/pcare-rest-v3.0/peserta/' . $this->noKartu]);
+            $request = $client->createRequest()
+//                ->setContent($payload)->setMethod('POST')
+                ->setHeaders(['X-cons-id' => $bpjs_user['cons_id']])
+                ->addHeaders(['content-type' => 'application/json'])
+                ->addHeaders(['X-Timestamp' => $bpjs_user['time']])
+                ->addHeaders(['X-Signature' => $bpjs_user['encoded_sig']])
+                ->addHeaders(['X-Authorization' => $bpjs_user['encoded_auth_string']]);
+
+            $response = $request->send();
+//                return '1';
+            return $response->content;
+        } catch (\yii\base\Exception $exception) {
+
+            Yii::warning("ERROR GETTING RESPONSE FROM BPJS.");
+        }
+    }
+
+    public function cekPesertaByNik()
+    {
+        $bpjs_user = self::getUsercreds($this->cons_id);
+        try {
+
+            $client2 = new Client(['baseUrl' => 'https://dvlp.bpjs-kesehatan.go.id:9081/pcare-rest-v3.0/peserta/nik/' . $this->nik]);
+            $request2 = $client2->createRequest()
+//                ->setContent($payload)->setMethod('POST')
+                ->setHeaders(['X-cons-id' => $bpjs_user['cons_id']])
+                ->addHeaders(['content-type' => 'application/json'])
+                ->addHeaders(['X-Timestamp' => $bpjs_user['time']])
+                ->addHeaders(['X-Signature' => $bpjs_user['encoded_sig']])
+                ->addHeaders(['X-Authorization' => $bpjs_user['encoded_auth_string']]);
+
+            $response2 = $request2->send();
+//                return '2';
+            return $response2->content;
+        } catch (\yii\base\Exception $exception) {
+
+            Yii::warning("ERROR GETTING RESPONSE FROM BPJS.");
+        }
+    }
+
+
+    public function Cekpesesasasarta()
     {
         $bpjs_user = self::getUsercreds($this->cons_id);
 
         if (!empty($this->noKartu)) {
-            try {
 
-                $client = new Client(['baseUrl' => 'https://dvlp.bpjs-kesehatan.go.id:9081/pcare-rest-v3.0/peserta/' . $this->noKartu]);
-                $request = $client->createRequest()
-//                ->setContent($payload)->setMethod('POST')
-                    ->setHeaders(['X-cons-id' => $bpjs_user['cons_id']])
-                    ->addHeaders(['content-type' => 'application/json'])
-                    ->addHeaders(['X-Timestamp' => $bpjs_user['time']])
-                    ->addHeaders(['X-Signature' => $bpjs_user['encoded_sig']])
-                    ->addHeaders(['X-Authorization' => $bpjs_user['encoded_auth_string']]);
-
-                $response = $request->send();
-//                return '1';
-                return $response->content;
-            } catch (\yii\base\Exception $exception) {
-
-                Yii::warning("ERROR GETTING RESPONSE FROM BPJS.");
-            }
         } else if (!empty($this->nik)){
-            try {
 
-                $client2 = new Client(['baseUrl' => 'https://dvlp.bpjs-kesehatan.go.id:9081/pcare-rest-v3.0/peserta/nik/' . $this->nik]);
-                $request2 = $client2->createRequest()
-//                ->setContent($payload)->setMethod('POST')
-                    ->setHeaders(['X-cons-id' => $bpjs_user['cons_id']])
-                    ->addHeaders(['content-type' => 'application/json'])
-                    ->addHeaders(['X-Timestamp' => $bpjs_user['time']])
-                    ->addHeaders(['X-Signature' => $bpjs_user['encoded_sig']])
-                    ->addHeaders(['X-Authorization' => $bpjs_user['encoded_auth_string']]);
-
-                $response2 = $request2->send();
-//                return '2';
-                return $response2->content;
-            } catch (\yii\base\Exception $exception) {
-
-                Yii::warning("ERROR GETTING RESPONSE FROM BPJS.");
-            }
 
         } else {
 
