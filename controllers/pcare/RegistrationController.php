@@ -111,7 +111,7 @@ $draftexist = 0;
                     'value' => $params['visitId'],
                 ]        ));
 
-            Yii::$app->session->addFlash('success', "cookie created");
+//            Yii::$app->session->addFlash('success', "cookie created");
             $wdmodel->wdVisitId = $params['visitId'];
             $wdmodel->clinicId = $params['clinicId'];
 
@@ -122,7 +122,7 @@ $draftexist = 0;
             {
 //                Yii::$app->session->addFlash('success', "model EXSITED 1");
                 if (isset($wdmodel_exist->status)) {
-                    Yii::$app->session->addFlash('success', "model EXSITED 2");
+//                    Yii::$app->session->addFlash('success', "model EXSITED 2");
 
                     if ($wdmodel_exist->status == 'registered') {
 //                        Yii::$app->session->addFlash('success', "draft registered");
@@ -339,7 +339,7 @@ $draftexist = 0;
                     }
                 } else {
 
-                    Yii::$app->session->addFlash('danger', json_encode($jsonval));
+                    Yii::$app->session->addFlash('danger', 'no kartu error : ' . json_encode($jsonval));
 //            return 'cek peserta failed';
                 }
             } else {
