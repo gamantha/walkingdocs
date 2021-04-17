@@ -9,6 +9,7 @@ use app\models\pcare\WdPassedValues;
 use Yii;
 use app\models\pcare\PcareRegistration;
 use app\models\pcare\PcareRegistrationSearch;
+use yii\base\BaseObject;
 use yii\base\Module;
 
 use yii\data\ArrayDataProvider;
@@ -98,6 +99,9 @@ class RegistrationController extends Controller
         $params = $request->bodyParams;
         $draftexist = 0;
         $cookies = Yii::$app->request->cookies;
+
+        $nokartuok = 0;
+        $nikok = 0;
         if (isset($params['visitId'])) {
             $cookiesresp = Yii::$app->response->cookies;
             $cookiesresp->add(new \yii\web\Cookie(
@@ -242,16 +246,12 @@ class RegistrationController extends Controller
                 if (isset($jsonval->metaData->code) && ($jsonval->metaData->code == 200)) {
                     if ($jsonval->response->aktif)
                     {
-
+                        $nokartuok = 1;
                         $model->kdProviderPeserta = $jsonval->response->kdProviderPst->kdProvider;
                         $model->status = 'ready';
                         Yii::$app->session->addFlash('success', "no Kartu - Peserta aktif  ");
-
-
                         $pcarevisit->status = 'new';
                         $pcarevisit->load(Yii::$app->request->post());
-
-
                         $wdmodel->load(Yii::$app->request->post());
                         $bpjs_user = $model->getUsercreds($model->cons_id);
                         $payload = '{
@@ -272,72 +272,112 @@ class RegistrationController extends Controller
       }';
 
 
-                        try {
+//                        THIS WHERE REGISTRATION
+//                    $this->registerToBpjs();
 
-                            $client = new Client(['baseUrl' => 'https://dvlp.bpjs-kesehatan.go.id:9081/pcare-rest-v3.0/pendaftaran']);
-                            $request = $client->createRequest()
-                                ->setContent($payload)->setMethod('POST')
-                                ->setHeaders(['X-cons-id' => $bpjs_user['cons_id']])
-                                ->addHeaders(['content-type' => 'application/json'])
-                                ->addHeaders(['X-Timestamp' => $bpjs_user['time']])
-                                ->addHeaders(['X-Signature' => $bpjs_user['encoded_sig']])
-                                ->addHeaders(['X-Authorization' => $bpjs_user['encoded_auth_string']]);
+                    } else {
+                        Yii::$app->session->setFlash('danger', "nomor peserta tidak aktif");
+                    }
+                } else {
+                    Yii::$app->session->addFlash('danger', 'no kartu error : ' . json_encode($jsonval));
+                }
 
-                            $regsiterresponse = $request->send();
-                            $registerresp =  $regsiterresponse->content;
-                        } catch (\yii\base\Exception $exception) {
+                $responsenik = $model->cekPesertaByNik();
+                $nikjsonval = json_decode($responsenik);
 
-                            Yii::warning("ERROR GETTING RESPONSE FROM BPJS.");
-                        }
-
-//                        Yii::$app->session->addFlash('warning', json_encode($payload));
-                        $jsonresp = json_decode($registerresp);
-
-                        if (isset($jsonresp->metaData->message))
-                        {
-                            if($jsonresp->metaData->message == 'CREATED') {
-                                if(strpos($jsonresp->response->message, "null") ) {
-                                    Yii::$app->session->setFlash('danger', $registerresp);
-                                } else {
-                                    $model->no_urut = $jsonresp->response->message;
-                                    $model->status = 'registered';
-                                    $model->save();
-                                    $pcarevisit->pendaftaranId = $model->id;
-                                    $wdmodel->registrationId = $model->id;
-                                    $wdmodel->status = 'registered';
-                                    $wdmodel->save();
-                                    $pcarevisit->save();
-
-                                    Yii::$app->session->setFlash('success', 'no urut created ' . $jsonresp->response->message);
-                                    return $this->redirect(['pcare/visit/update', 'id' => $model->id]);
-                                }
-
-                            } else {
-                                Yii::$app->session->setFlash('danger', $registerresp);
-
-                            }
-
-                        } else {
-                            Yii::$app->session->setFlash('danger', json_encode($jsonresp));
-                        }
+                if (isset($nikjsonval->metaData->code) && ($nikjsonval->metaData->code == 200)) {
+                    if ($nikjsonval->response->aktif)
+                    {
+                        $nikok = 1;
+                        $model->kdProviderPeserta = $nikjsonval->response->kdProviderPst->kdProvider;
+                        $model->status = 'ready';
+                        Yii::$app->session->addFlash('success', "NIK - Peserta aktif  ");
+                        $pcarevisit->status = 'new';
+                        $pcarevisit->load(Yii::$app->request->post());
+                        $wdmodel->load(Yii::$app->request->post());
+                        $bpjs_user = $model->getUsercreds($model->cons_id);
+                        $payload = '{
+        "kdProviderPeserta": "'.$model->kdProviderPeserta.'",
+        "tglDaftar": "'.date("d-m-Y" , strtotime($model->tglDaftar)).'", 
+        "noKartu": "'.$model->noKartu.'",
+        "kdPoli": "'.trim($model->kdPoli).'",
+        "keluhan": "'.$model->keluhan.'",
+        "kunjSakit": '. $model->kunjSakit .',
+        "sistole": "'.$model->sistole.'",
+        "diastole": "'.$model->diastole.'",
+        "beratBadan": "'.$model->beratBadan.'",
+        "tinggiBadan": "'.$model->tinggiBadan.'",
+        "respRate": "'.$model->respRate.'",
+        "heartRate": "'.$model->heartRate.'",
+        "rujukBalik":"'.$model->rujukBalik.'",
+        "kdTkp": "'.$model->kdTkp.'"
+      }';
 
 
 
 
                     } else {
-                        Yii::$app->session->setFlash('danger', "nomor peserta tidak aktif");
-//                return ' nomor peserta tidak valid';
-
+                        Yii::$app->session->setFlash('danger', "NIK nomor peserta tidak aktif");
                     }
                 } else {
-
-                    Yii::$app->session->addFlash('danger', 'no kartu error : ' . json_encode($jsonval));
-//            return 'cek peserta failed';
+                    Yii::$app->session->addFlash('danger', 'NIK error : ' . json_encode($nikjsonval));
                 }
+
             } else {
                 Yii::$app->session->setFlash('danger', "data klinik / consID empty");
             }
 
+            if ($nokartuok || $nikok) {
+//                Yii::$app->session->addFlash('success', 'NIK : ' . $nikok);
+//                Yii::$app->session->addFlash('success', 'No kartu : ' . $nokartuok);
+//                $this->registerToBpjs();
+
+                try {
+
+                    $client = new Client(['baseUrl' => 'https://dvlp.bpjs-kesehatan.go.id:9081/pcare-rest-v3.0/pendaftaran']);
+                    $request = $client->createRequest()
+                        ->setContent($payload)->setMethod('POST')
+                        ->setHeaders(['X-cons-id' => $bpjs_user['cons_id']])
+                        ->addHeaders(['content-type' => 'application/json'])
+                        ->addHeaders(['X-Timestamp' => $bpjs_user['time']])
+                        ->addHeaders(['X-Signature' => $bpjs_user['encoded_sig']])
+                        ->addHeaders(['X-Authorization' => $bpjs_user['encoded_auth_string']]);
+
+                    $regsiterresponse = $request->send();
+                    $registerresp =  $regsiterresponse->content;
+                } catch (\yii\base\Exception $exception) {
+                    Yii::warning("ERROR GETTING RESPONSE FROM BPJS.");
+                }
+
+                $jsonresp = json_decode($registerresp);
+
+                if (isset($jsonresp->metaData->message))
+                {
+                    if($jsonresp->metaData->message == 'CREATED') {
+                        if(strpos($jsonresp->response->message, "null") ) {
+                            Yii::$app->session->setFlash('danger', $registerresp);
+                        } else {
+                            $model->no_urut = $jsonresp->response->message;
+                            $model->status = 'registered';
+                            $model->save();
+                            $pcarevisit->pendaftaranId = $model->id;
+                            $wdmodel->registrationId = $model->id;
+                            $wdmodel->status = 'registered';
+                            $wdmodel->save();
+                            $pcarevisit->save();
+
+                            Yii::$app->session->setFlash('success', 'no urut created ' . $jsonresp->response->message);
+                            return $this->redirect(['pcare/visit/update', 'id' => $model->id]);
+                        }
+
+                    } else {
+                        Yii::$app->session->setFlash('danger', $registerresp);
+
+                    }
+                } else {
+                    Yii::$app->session->setFlash('danger', json_encode($jsonresp));
+                }
+            }
 
 
         }
@@ -359,6 +399,11 @@ class RegistrationController extends Controller
         ]);
     }
 
+
+    public function registerToBpjs()
+    {
+
+    }
     /**
      * Updates an existing PcareRegistration model.
      * If update is successful, the browser will be redirected to the 'view' page.
