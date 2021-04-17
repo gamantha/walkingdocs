@@ -96,22 +96,16 @@ class RegistrationController extends Controller
         $wdmodel = new WdPassedValues();
         $request = Yii::$app->request;
         $params = $request->bodyParams;
-$draftexist = 0;
-
-
+        $draftexist = 0;
         $cookies = Yii::$app->request->cookies;
-
         if (isset($params['visitId'])) {
-
             $cookiesresp = Yii::$app->response->cookies;
             $cookiesresp->add(new \yii\web\Cookie(
                 [
                     'name' => 'visitId',
-//                    'domain' => 'localhost',
                     'value' => $params['visitId'],
                 ]        ));
 
-//            Yii::$app->session->addFlash('success', "cookie created");
             $wdmodel->wdVisitId = $params['visitId'];
             $wdmodel->clinicId = $params['clinicId'];
 
@@ -120,9 +114,7 @@ $draftexist = 0;
                 ->One();
             if ($wdmodel_exist)
             {
-//                Yii::$app->session->addFlash('success', "model EXSITED 1");
                 if (isset($wdmodel_exist->status)) {
-//                    Yii::$app->session->addFlash('success', "model EXSITED 2");
 
                     if ($wdmodel_exist->status == 'registered') {
 //                        Yii::$app->session->addFlash('success', "draft registered");
