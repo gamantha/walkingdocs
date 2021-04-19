@@ -1,5 +1,6 @@
 <?php
 
+use app\models\pcare\Tindakan;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\DetailView;
@@ -48,6 +49,18 @@ $this->title = "";
         }
 
     }
+
+    echo ' <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span> ';
+    $visitId = $model->id;
+    $tindakanexist = Tindakan::find()->andWhere(['visitId' => $visitId])->One();
+
+    echo Html::a(Yii::t('app', 'Tindakan'), ['pcare/tindakan/view', 'id' => $model->pendaftaran->id], ['class' => 'btn btn-primary']);
+//    if (null != $tindakanexist) {
+//        echo Html::a(Yii::t('app', 'edit tindakan'), ['pcare/tindakan/update', 'id' => $model->pendaftaran->id], ['class' => 'btn btn-primary']);
+//    } else {
+//        echo Html::a(Yii::t('app', 'Add tindakan'), ['pcare/tindakan/create', 'id' => $model->pendaftaran->id], ['class' => 'btn btn-primary']);
+//    }
+
 
     ?>
 
