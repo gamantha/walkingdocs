@@ -87,7 +87,6 @@ public function actionView($id)
         ],
     ]);
 
-
     return $this->render('view', [
         'dataProvider' => $dataProvider,
         'id' => $id
