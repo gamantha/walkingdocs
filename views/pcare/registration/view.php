@@ -69,11 +69,11 @@ $this->params['breadcrumbs'][] = $this->title;
         <?php
 
         $modifyregistrationstatuses = ['registered', 'submitted'];
-        if (in_array($model->status, $modifyregistrationstatuses)) {
-//        echo Html::a(Yii::t('app', 'Modify registration data'), ['update', 'id' => $model->id], ['class' => 'btn btn-warning']);
-        } else {
-//            echo Html::a(Yii::t('app', 'Modify registration data'), ['update', 'id' => $model->id], ['class' => 'btn btn-warning']);
-        }
+//        if (in_array($model->status, $modifyregistrationstatuses)) {
+////        echo Html::a(Yii::t('app', 'Modify registration data'), ['update', 'id' => $model->id], ['class' => 'btn btn-warning']);
+//        } else {
+////            echo Html::a(Yii::t('app', 'Modify registration data'), ['update', 'id' => $model->id], ['class' => 'btn btn-warning']);
+//        }
 
 
         ?>
