@@ -48,16 +48,6 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <p>
 
-    <ul class="nav nav-tabs">
-        <li role="presentation" class="active"><a href="<?php
-            echo Url::toRoute(['pcare/registration/view', 'id' => $model->id]);
-            ?>">Registration Data</a></li>
-        <li role="presentation" class=""><a href="<?php
-            echo Url::toRoute(['pcare/visit/view', 'id' => $model->id]);
-            ?>">Visit Data</a></li>
-
-    </ul>
-
 
         <?php
 //
@@ -71,9 +61,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
 <p>
-    <?php
-//    echo Html::a(Yii::t('app', 'check peserta bpjs'), ['checkpeserta', 'id' => $model->id], ['class' => 'btn btn-default']);
-    ?>
+
 </p>
 
     <p>
@@ -84,7 +72,7 @@ $this->params['breadcrumbs'][] = $this->title;
         if (in_array($model->status, $modifyregistrationstatuses)) {
 //        echo Html::a(Yii::t('app', 'Modify registration data'), ['update', 'id' => $model->id], ['class' => 'btn btn-warning']);
         } else {
-            echo Html::a(Yii::t('app', 'Modify registration data'), ['update', 'id' => $model->id], ['class' => 'btn btn-warning']);
+//            echo Html::a(Yii::t('app', 'Modify registration data'), ['update', 'id' => $model->id], ['class' => 'btn btn-warning']);
         }
 
 
@@ -100,32 +88,4 @@ $this->params['breadcrumbs'][] = $this->title;
 //}
    ?>
     </p>
-
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
-//            'id',
-            'no_urut',
-            'status',
-            'kdProviderPeserta',
-            'tglDaftar',
-            'noKartu',
-            'nik',
-            'kdPoli',
-            'kunjSakit',
-            'keluhan:ntext',
-//            'sistole',
-//            'sistole',
-//            'diastole',
-//            'beratBadan',
-//            'tinggiBadan',
-//            'respRate',
-//            'heartRate',
-//            'rujukBalik',
-            'kdTkp',
-//            'created_at',
-//            'modified_at',
-        ],
-    ]) ?>
-
 </div>
