@@ -130,14 +130,12 @@ class RegistrationController extends Controller
                         }
                     } else if ($wdmodel_exist->status == 'draft') {
                         $draftexist = 1;
-//                        Yii::$app->session->addFlash('success', "draft EXSITED");
+
                         $wdmodel_exist->delete();
 
                     }
                 }
-//                Yii::$app->session->addFlash('warning', "EXISTED");
-            } else {
-                Yii::$app->session->addFlash('success', "NO model EXSITED 2");
+
             }
 
 
@@ -209,7 +207,7 @@ class RegistrationController extends Controller
             $wdmodel->status = "draft";
             if ($draftexist) {
                 $wdmodel_exist->delete();
-                                Yii::$app->session->addFlash('warning', "deleted");
+//                                Yii::$app->session->addFlash('warning', "deleted");
             }
             $wdmodel->save();
         } else {
@@ -1091,7 +1089,7 @@ $visit = $registration->pcareVisits[0];
 ///
 
         $doctors = $registration->getDokter();
-        $pesertaresp = $registration->Cekpeserta();
+        $pesertaresp = $registration->cekPesertaByNokartu();
         $dokters = json_decode($doctors)->response->list;
         $dokter = [];
         foreach ($dokters as $dokter1) {

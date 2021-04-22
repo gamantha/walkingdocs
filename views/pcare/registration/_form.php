@@ -83,10 +83,10 @@ use yii\widgets\ActiveForm;
 
 
     <?= $form->field($model, 'keluhan')->textArea(['maxlength' => true]) ?>
-    <?= $form->field($model, 'sistole')->textArea(['maxlength' => true]) ?>
-    <?= $form->field($model, 'diastole')->textArea(['maxlength' => true]) ?>
-    <?php
 
+    <?php
+    echo $form->field($model, 'sistole')->textArea(['maxlength' => true]);
+    echo $form->field($model, 'diastole')->textArea(['maxlength' => true]);
     echo $form->field($model, 'beratBadan')->textArea(['maxlength' => true]);
     echo $form->field($model, 'tinggiBadan')->textArea(['maxlength' => true]);
     echo $form->field($model, 'respRate')->textArea(['maxlength' => true]);

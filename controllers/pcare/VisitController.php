@@ -606,8 +606,6 @@ public function actionRujukankhusus($id)
                     array_push($out['results'], $temp);
                 }
                 array_shift($out['results']);
-            } else {
-//                Yii::$app->session->addFlash('danger', 'get rujukan khusus - no pcare web service response');
             }
 
             return ['output'=>$out, 'selected'=>''];
@@ -645,8 +643,6 @@ public function actionRujukankhusus($id)
                         array_push($out['results'], $temp);
                     }
                     array_shift($out['results']);
-                } else {
-                    Yii::$app->session->addFlash('danger', 'get rujukan spesialis - no pcare web service response');
                 }
 
                 return ['output'=>$out, 'selected'=>''];

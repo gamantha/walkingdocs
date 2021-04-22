@@ -3,6 +3,7 @@
 namespace app\controllers\pcare;
 
 use app\models\pcare\PcareRegistration;
+use app\models\pcare\PcareVisit;
 use app\models\pcare\Tindakan;
 use Yii;
 use yii\base\BaseObject;
@@ -25,6 +26,7 @@ class TindakanController extends \yii\web\Controller
 
     public function actionUpdate($id)
     {
+        $this->layout = '@app/views/layouts/popuplayout';
         $model = Tindakan::findOne($id);
 
         $list=[];
@@ -80,8 +82,12 @@ class TindakanController extends \yii\web\Controller
 
 public function actionView($id)
 {
+    $this->layout = '@app/views/layouts/popuplayout';
+
+    $visit = PcareVisit::find()->andWhere(['pendaftaranId' => $id])->One();
+
     $dataProvider = new ActiveDataProvider([
-        'query' => Tindakan::find(),
+        'query' => Tindakan::find()->andWhere(['visitId' => $visit->id]),
         'pagination' => [
             'pageSize' => 20,
         ],
@@ -114,6 +120,7 @@ $result = json_decode($resultjson);
 }
     public function actionCreate($id)
     {
+        $this->layout = '@app/views/layouts/popuplayout';
 $registration = PcareRegistration::findOne($id);
         $model = new Tindakan();
         $model->visitId = $registration->getPcareVisits()->one()->id;

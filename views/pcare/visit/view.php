@@ -3,6 +3,7 @@
 use app\models\pcare\Tindakan;
 use yii\helpers\Html;
 use yii\helpers\Url;
+use yii\widgets\Breadcrumbs;
 use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
@@ -14,6 +15,21 @@ $this->title = "";
 //$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Kunjungan'), 'url' => ['pcare/registration/index']];
 //$this->params['breadcrumbs'][] = ['label' => $model->pendaftaranId, 'url' => ['pcare/registration/view', 'id' => $model->pendaftaranId]];
 //$this->params['breadcrumbs'][] = $this->title;
+
+echo Breadcrumbs::widget([
+    'itemTemplate' => "<li><i>{link}</i></li>\n", // template for all links
+    'homeLink'=>false,
+    'links' => [
+        [
+            'label' => 'Back',
+//            'url' => ['post-category/view', 'id' => 10],
+            'url' => [''],
+            'template' => "<li><b>{link}</b></li>\n", // template for this link only
+        ],
+//        ['label' => 'Sample Post', 'url' => ['post/edit', 'id' => 1]],
+    ],
+]);
+
 \yii\web\YiiAsset::register($this);
 ?>
 <div class="pcare-visit-view">
@@ -44,17 +60,20 @@ $this->title = "";
 
         echo Html::button(Yii::t('app', 'Data Submitted'),['class' => 'btn btn-success', 'disabled' => 'true']);
         if (($model->kdStatusPulang == '4') || ($model->kdStatusPulang == '4')) {
+
             echo ' <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span> ';
+            $visitId = $model->id;
+            $tindakanexist = Tindakan::find()->andWhere(['visitId' => $visitId])->One();
+
+            echo Html::a(Yii::t('app', 'Tindakan'), ['pcare/tindakan/view', 'id' => $model->pendaftaran->id], ['class' => 'btn btn-primary']);
+            echo '<hr/>';
+//            echo ' <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span> ';
             echo Html::a(Yii::t('app', 'Print Surat Rujukan'), ['pcare/registration/printpdf', 'id' => $model->pendaftaran->id], ['class' => 'btn btn-primary']);
         }
 
     }
 
-    echo ' <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span> ';
-    $visitId = $model->id;
-    $tindakanexist = Tindakan::find()->andWhere(['visitId' => $visitId])->One();
 
-    echo Html::a(Yii::t('app', 'Tindakan'), ['pcare/tindakan/view', 'id' => $model->pendaftaran->id], ['class' => 'btn btn-primary']);
 //    if (null != $tindakanexist) {
 //        echo Html::a(Yii::t('app', 'edit tindakan'), ['pcare/tindakan/update', 'id' => $model->pendaftaran->id], ['class' => 'btn btn-primary']);
 //    } else {

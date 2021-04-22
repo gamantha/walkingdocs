@@ -2,13 +2,29 @@
 
 use yii\helpers\Html;
 use yii\grid\GridView;
+use yii\widgets\Breadcrumbs;
 use yii\widgets\Pjax;
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\pcare\PcareVisitSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = Yii::t('app', 'Tindakan');
-$this->params['breadcrumbs'][] = $this->title;
+//$this->params['breadcrumbs'][] = $this->title;
+echo Breadcrumbs::widget([
+    'itemTemplate' => "<li><i>{link}</i></li>\n", // template for all links
+     'homeLink'=>false,
+    'links' => [
+        [
+            'label' => 'Back',
+//            'url' => ['post-category/view', 'id' => 10],
+        'url' => ['pcare/visit/view', 'id' => $id],
+            'template' => "<li><b>{link}</b></li>\n", // template for this link only
+        ],
+//        ['label' => 'Sample Post', 'url' => ['post/edit', 'id' => 1]],
+    ],
+]);
+
+
 ?>
 <div class="pcare-visit-index">
 
