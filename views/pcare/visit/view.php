@@ -88,13 +88,13 @@ $this->title = "";
     <p>
 
         <?php
-        if ($model->status == 'submitted') {
-
-        }  else {
-            echo Html::a(Yii::t('app', 'Modify visit data'), ['update', 'id' => $model->pendaftaranId], ['class' => 'btn btn-warning']);
-
-        }
-echo '<p>';
+//        if ($model->status == 'submitted') {
+//
+//        }  else {
+//            echo Html::a(Yii::t('app', 'Modify visit data'), ['update', 'id' => $model->pendaftaranId], ['class' => 'btn btn-warning']);
+//
+//        }
+//echo '<p>';
 //        if (empty($model->pendaftaran->kdProviderPeserta)) {
 //            echo Html::a(Yii::t('app', 'check bpjs peserta first'), ['pcare/visit/submit', 'id' => $model->id], ['class' => 'btn btn-default disabled']);
 //        } else {

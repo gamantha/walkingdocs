@@ -25,8 +25,8 @@ class TindakanController extends \yii\web\Controller
 
     public function actionUpdate($id)
     {
-        $registration = PcareRegistration::findOne($id);
-$model = Tindakan::find()->andWhere(['visitId' => $registration->getPcareVisits()->One()->id])->One();
+        $model = Tindakan::findOne($id);
+
         $list=[];
         $referensi_tindakan = self::getReferensiTindakan($model->visitId);
 //        echo $model->visit->pendaftaran->kdTkp;
@@ -39,12 +39,32 @@ $model = Tindakan::find()->andWhere(['visitId' => $registration->getPcareVisits(
         }
 
 
+
+
         if ($model->load(Yii::$app->request->post())) {
-            if($model->save()) {
-                Yii::$app->session->addFlash('success', "posted");
-                return $this->redirect(['pcare/visit/view', 'id' => $id]);
+
+            $result = $model->editTindakan($model->kdTindakanSK,$model->visit->noKunjungan, $model->kdTindakan, $model->biaya, $model->keterangan, $model->hasil);
+            $result_array = json_decode($result);
+            if (isset($result_array->metaData->code)) {
+                if (isset($result_array->response->field)) {
+
+                    if ($result_array->metaData->code == 200) {
+                        Yii::$app->session->addFlash('success', json_encode($result_array));
+                        $model->kdTindakanSK = $result_array->response->message;
+                        $model->save();
+                        return $this->redirect(['pcare/tindakan/view', 'id' => $model->visit->pendaftaranId]);
+//                        return $this->redirect(Yii::$app->request->referrer);
+                    } else {
+                        Yii::$app->session->addFlash('warning', json_encode($result_array->metaData));
+                    }
+
+
+
+                } else {
+                    Yii::$app->session->addFlash('warning', json_encode($result_array));
+                }
             } else {
-                Yii::$app->session->addFlash('warning', json_encode($model->errors));
+                Yii::$app->session->addFlash('warning', json_encode($result_array));
             }
 
         }
@@ -73,6 +93,26 @@ public function actionView($id)
         'id' => $id
     ]);
 }
+
+public function actionDelete($id)
+{
+$model = Tindakan::findOne($id);
+$resultjson = $model->deleteTindakan($id);
+$result = json_decode($resultjson);
+    if (isset($result->metaData->code)) {
+        if ($result->metaData->code == 200) {
+            Yii::$app->session->addFlash('success', "tindakan deleted");
+            $model->delete();
+            return $this->redirect(Yii::$app->request->referrer);
+        } else {
+            Yii::$app->session->addFlash('warning', json_encode($result->metaData));
+        }
+    } else {
+        Yii::$app->session->addFlash('warning', json_encode($result));
+}
+//print_r($result);
+
+}
     public function actionCreate($id)
     {
 $registration = PcareRegistration::findOne($id);
@@ -93,9 +133,8 @@ $registration = PcareRegistration::findOne($id);
 
 
         if ($model->load(Yii::$app->request->post())) {
-            if($model->save()) {
 
-                $result = $model->addTindakan($model->id);
+                $result = $model->addTindakan($model->visit->noKunjungan, $model->kdTindakan, $model->biaya, $model->keterangan, $model->hasil);
 $result_array = json_decode($result);
                 if (isset($result_array->metaData->code)) {
                     if (isset($result_array->response->field)) {
@@ -114,9 +153,7 @@ $result_array = json_decode($result);
 
 //                return $this->redirect(Yii::$app->request->referrer);
                 return $this->redirect(['pcare/tindakan/view', 'id' => $id]);
-            } else {
-                Yii::$app->session->addFlash('warning', json_encode($model->errors));
-            }
+
 
         }
 

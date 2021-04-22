@@ -131,18 +131,40 @@ class Tindakan extends \yii\db\ActiveRecord
         }
     }
 
-
-    public function addTindakan($tindakanId)
+    public function deleteTindakan($id)
     {
         $bpjs_user = self::getUsercreds($this->visit->pendaftaran->cons_id);
-        $model = Tindakan::findOne($tindakanId);
+        $model = Tindakan::findOne($id);
+
+        try {
+
+            $client = new Client(['baseUrl' => 'https://dvlp.bpjs-kesehatan.go.id:9081/pcare-rest-v3.0/tindakan/'.$model->kdTindakanSK.'/kunjungan/' . $model->visit->noKunjungan]);
+            $request = $client->createRequest()
+                ->setMethod('DELETE')
+                ->setHeaders(['X-cons-id' => $bpjs_user['cons_id']])
+                ->addHeaders(['content-type' => 'application/json'])
+                ->addHeaders(['X-Timestamp' => $bpjs_user['time']])
+                ->addHeaders(['X-Signature' => $bpjs_user['encoded_sig']])
+                ->addHeaders(['X-Authorization' => $bpjs_user['encoded_auth_string']]);
+
+            $regsiterresponse = $request->send();
+            return $registerresp =  $regsiterresponse->content;
+        } catch (\yii\base\Exception $exception) {
+            Yii::warning("ERROR GETTING RESPONSE FROM BPJS.");
+        }
+    }
+
+    public function addTindakan($noKunjungan, $kdTindakan, $biaya, $keterangan, $hasil)
+    {
+        $bpjs_user = self::getUsercreds($this->visit->pendaftaran->cons_id);
+//        $model = Tindakan::findOne($tindakanId);
         $payload = '{
         "kdTindakanSK": "0",
-        "noKunjungan": "'.$model->visit->noKunjungan . '",
-        "kdTindakan": "'.$model->kdTindakan.'",
-        "biaya": "'.$model->biaya.'",
-        "keterangan":"'.$model->keterangan.'",
-        "hasil": "'.$model->hasil.'"
+        "noKunjungan": "'.$noKunjungan . '",
+        "kdTindakan": "'.$kdTindakan.'",
+        "biaya": "'.$biaya.'",
+        "keterangan":"'.$keterangan.'",
+        "hasil": "'.$hasil.'"
       }';
 
         try {
@@ -150,6 +172,39 @@ class Tindakan extends \yii\db\ActiveRecord
             $client = new Client(['baseUrl' => 'https://dvlp.bpjs-kesehatan.go.id:9081/pcare-rest-v3.0/tindakan']);
             $request = $client->createRequest()
                 ->setContent($payload)->setMethod('POST')
+                ->setHeaders(['X-cons-id' => $bpjs_user['cons_id']])
+                ->addHeaders(['content-type' => 'application/json'])
+                ->addHeaders(['X-Timestamp' => $bpjs_user['time']])
+                ->addHeaders(['X-Signature' => $bpjs_user['encoded_sig']])
+                ->addHeaders(['X-Authorization' => $bpjs_user['encoded_auth_string']]);
+
+            $regsiterresponse = $request->send();
+            return $registerresp =  $regsiterresponse->content;
+        } catch (\yii\base\Exception $exception) {
+            Yii::warning("ERROR GETTING RESPONSE FROM BPJS.");
+        }
+
+//        $jsonresp = json_decode($registerresp);
+    }
+
+    public function editTindakan($kdTindakanSK, $noKunjungan, $kdTindakan, $biaya, $keterangan, $hasil)
+    {
+        $bpjs_user = self::getUsercreds($this->visit->pendaftaran->cons_id);
+//        $model = Tindakan::findOne($tindakanId);
+        $payload = '{
+        "kdTindakanSK": "'.$kdTindakanSK . '",
+        "noKunjungan": "'.$noKunjungan . '",
+        "kdTindakan": "'.$kdTindakan.'",
+        "biaya": "'.$biaya.'",
+        "keterangan":"'.$keterangan.'",
+        "hasil": "'.$hasil.'"
+      }';
+
+        try {
+
+            $client = new Client(['baseUrl' => 'https://dvlp.bpjs-kesehatan.go.id:9081/pcare-rest-v3.0/tindakan']);
+            $request = $client->createRequest()
+                ->setContent($payload)->setMethod('PUT')
                 ->setHeaders(['X-cons-id' => $bpjs_user['cons_id']])
                 ->addHeaders(['content-type' => 'application/json'])
                 ->addHeaders(['X-Timestamp' => $bpjs_user['time']])

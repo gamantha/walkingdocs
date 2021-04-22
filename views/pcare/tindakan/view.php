@@ -34,7 +34,23 @@ $this->params['breadcrumbs'][] = $this->title;
             'hasil',
 
 
-            ['class' => 'yii\grid\ActionColumn'],
+
+
+            [
+                'class' => 'yii\grid\ActionColumn',
+                'template' => '{update} {delete}',
+                'buttons' => [
+                    'update' => function ($url,$model) {
+                        return Html::a(
+                            '<span class="glyphicon glyphicon-pencil"></span>',
+                            $url);
+                    },
+                    'link' => function ($url,$model,$key) {
+                        return Html::a('Action', $url);
+                    },
+                ],
+            ],
+
         ],
     ]); ?>
 
