@@ -4,6 +4,7 @@ namespace app\controllers\pcare;
 
 
 use app\models\Consid;
+use app\models\pcare\ClinicInfo;
 use app\models\pcare\PcareVisit;
 use app\models\pcare\WdPassedValues;
 use Yii;
@@ -1081,17 +1082,12 @@ public function actionTest()
 $registration = PcareRegistration::findOne($id);
 $visit = $registration->pcareVisits[0];
 
-//echo '<pre>';
-//print_r($visit);
-
-///no kunjungan
-/// kdppk / kdppk_subspesialis
-///
-
         $doctors = $registration->getDokter();
         $pesertaresp = $registration->cekPesertaByNokartu();
         $dokters = json_decode($doctors)->response->list;
         $dokter = [];
+        $clinicmodel = Consid::find()->andWhere(['cons_id' => $registration->cons_id])->One();
+        $clinicinfo = ClinicInfo::findOne($clinicmodel->wd_id);
         foreach ($dokters as $dokter1) {
             if ($dokter1->kdDokter == $visit->kdDokter) {
                 $dokter =  $dokter1;
@@ -1101,6 +1097,7 @@ $visit = $registration->pcareVisits[0];
         $peserta = json_decode($pesertaresp)->response;
         return $this->render('testhtml', [
 //            'dataProvider' => $provider
+        'clinicinfo' => $clinicinfo,
         'visitModel' => $visit,
         'dokter' => $dokter,
         'peserta' => $peserta

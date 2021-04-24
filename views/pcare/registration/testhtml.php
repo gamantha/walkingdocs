@@ -40,6 +40,7 @@ ob_end_clean();
 
 //require_once('tcpdf_include.php');
 
+
 class MYPDF extends TCPDF {
     //Page header
     public function Header() {
@@ -60,7 +61,7 @@ class MYPDF extends TCPDF {
         $y = 35;
         $w = 30;
         $h = 30;
-
+        $wilayah = 'wilayah';
         $fitbox = 'L';
 //        $this->Image($img_file, $x, $y, $w, $h, 'JPG', '', '', false, 300, '', false, false, 0, $fitbox, false, false);
         // restore auto-page-break status
@@ -70,7 +71,7 @@ class MYPDF extends TCPDF {
 EOD;
 
         $subtable_header = '<table border="0" cellspacing="0" cellpadding="4">
-<tr><td colspan="2">Kedeputian Wilayah</td><td colspan="4">: </td></tr>
+<tr><td colspan="2">Kedeputian Wilayah</td>' . $wilayah . '<td colspan="4">: </td></tr>
 <tr><td colspan="2">Kantor Cabang</td><td colspan="4">: </td></tr>
 </table>';
 
@@ -92,6 +93,8 @@ EOD;
 
 // create new PDF document
 $pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+
+
 
 
 // set document information
