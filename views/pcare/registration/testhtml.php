@@ -42,6 +42,18 @@ ob_end_clean();
 
 
 class MYPDF extends TCPDF {
+    public $wilayah;
+    public $kantorcabang;
+    public $kabupaten_kota;
+    public $clinic_name;
+
+    public function setClinicinfo($clinic_name, $kabupaten_kota, $wilayah, $kantorcabang)
+    {
+        $this->wilayah = $wilayah;
+        $this->kantorcabang = $kantorcabang;
+        $this->clinic_name = $clinic_name;
+        $this->kabupaten_kota = $kabupaten_kota;
+    }
     //Page header
     public function Header() {
         // get the current page break margin
@@ -54,14 +66,15 @@ class MYPDF extends TCPDF {
         $img_file = 'https://walkingdocs.gamantha.com/logo_bpjs.png';
 //         $img_file = dirname(__FILE__).'\logo-bpjs.png';
 //         echo $img_file;
-        $this->Image($img_file, 4, 4, 0, 0, '', '', '', false, 300, '', false, false, 0);
+        $this->Image($img_file, 4, 4, 0, 15, '', '', '', false, 300, '', false, false, 0);
 //        $pdf->Rect($x, $y, $w, $h, 'F', array(), array(128,255,128));
 
         $x = 15;
         $y = 35;
         $w = 30;
         $h = 30;
-        $wilayah = 'wilayah';
+//        $wilayah = 'wilayah';
+
         $fitbox = 'L';
 //        $this->Image($img_file, $x, $y, $w, $h, 'JPG', '', '', false, 300, '', false, false, 0, $fitbox, false, false);
         // restore auto-page-break status
@@ -71,8 +84,8 @@ class MYPDF extends TCPDF {
 EOD;
 
         $subtable_header = '<table border="0" cellspacing="0" cellpadding="4">
-<tr><td colspan="2">Kedeputian Wilayah</td>' . $wilayah . '<td colspan="4">: </td></tr>
-<tr><td colspan="2">Kantor Cabang</td><td colspan="4">: </td></tr>
+<tr><td colspan="6">Kedeputian Wilayah</td><td colspan="10">: '.$this->wilayah.'</td></tr>
+<tr><td colspan="6">Kantor Cabang</td><td colspan="10">: '.$this->kantorcabang.'</td></tr>
 </table>';
 
 
@@ -80,7 +93,7 @@ EOD;
 
 
 // Print text using writeHTMLCell()
-        $this->writeHTMLCell(100, 100, 130, '', $subtable_header, 0, 1, 0, true, '', true);
+        $this->writeHTMLCell(100, 100, 120, '', $subtable_header, 0, 1, 0, true, '', true);
 //        $this->SetFillColor(215, 235, 255);
 
 //        $this->Cell(0, 15, '<< RENO HEADER >>', 0, false, 'C', 0, '', 0, false, 'M', 'M');
@@ -95,17 +108,31 @@ EOD;
 $pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
 
+$pdf->setClinicinfo($clinicinfo->clinic_name, $clinicinfo->kabupaten_kota, $clinicinfo->wilayah, $clinicinfo->kantorcabang);
 
 
-// set document information
-$pdf->SetCreator(PDF_CREATOR);
-$pdf->SetAuthor('Nicola Asuni');
-$pdf->SetTitle('TCPDF Example 001');
-$pdf->SetSubject('TCPDF Tutorial');
-$pdf->SetKeywords('TCPDF, PDF, example, test, guide');
 
 // set default header data
 $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' 001', PDF_HEADER_STRING, array(0,64,255), array(0,64,128));
+
+
+
+$style = array(
+    'position' => '',
+    'align' => 'C',
+    'stretch' => false,
+    'fitwidth' => true,
+    'cellfitalign' => '',
+    'border' => true,
+    'hpadding' => 'auto',
+    'vpadding' => 'auto',
+    'fgcolor' => array(0,0,0),
+    'bgcolor' => false, //array(255,255,255),
+    'text' => true,
+    'font' => 'helvetica',
+    'fontsize' => 8,
+    'stretchtext' => 4
+);
 
 
 // set header and footer fonts
@@ -181,23 +208,42 @@ if (null != $visitModel->kdDiag3) {
 }
 
 
-$namafktp = isset(json_decode($visitModel->meta_rujukan)->name) ? json_decode($visitModel->meta_rujukan)->name : "";
+$namafktp = isset($clinicinfo->clinic_name) ? $clinicinfo->clinic_name : "";
+$kabupatan_kota = isset($clinicinfo->kabupaten_kota) ? $clinicinfo->kabupaten_kota : "";
+$namafktprujukan = isset(json_decode($visitModel->meta_rujukan)->name) ? json_decode($visitModel->meta_rujukan)->name : "";
 $nmkc = isset(json_decode($visitModel->meta_rujukan)->nmkc) ? json_decode($visitModel->meta_rujukan)->nmkc : "";
 $di = "";
 $pesertanama = isset($peserta->nama) ? $peserta->nama : "";
 $pesertakartu = isset($peserta->noKartu) ? $peserta->noKartu : "";
 $nokunjungan = isset($visitModel->noKunjungan) ? $visitModel->noKunjungan : "";
 $pesertasex = isset($peserta->sex) ? $peserta->sex : "";
-$tglrujuk = isset($visitModel->tglEstRujuk) ? $visitModel->tglEstRujuk : "";
+
+$date=date_create($visitModel->tglEstRujuk);
+$tanggalrujuk = date_format($date,"d-M-Y");
+$date->add(new DateInterval('P3M')); // P1D means a period of 1 day
+$masa_berlaku = date_format($date,"d-M-Y");
+
+
+$tglrujuk = isset($visitModel->tglEstRujuk) ? $tanggalrujuk : "";
 $jadwal = isset(json_decode($visitModel->meta_rujukan)->jadwal)? json_decode($visitModel->meta_rujukan)->jadwal : "";
 $namadokter = isset($dokter->nmDokter) ? $dokter->nmDokter : "";
 
+
+// set document information
+$pdf->SetCreator(PDF_CREATOR);
+//$pdf->SetAuthor('Nicola Asuni');
+$pdf->SetTitle($nokunjungan);
+$pdf->SetSubject($nokunjungan);
+$pdf->SetKeywords('TCPDF, PDF, example, test, guide');
+
+
+$kepada_yth = isset($visitModel->subSpesialis_nmSubSpesialis1) ? $visitModel->subSpesialis_nmSubSpesialis1 : "";
 $subtable = '<div border="1"><table border="0" cellspacing="0" cellpadding="4"><tr><td colspan="1">No Rujukan</td><td colspan="2">: '.$nokunjungan.'</td></tr>
 <tr><td colspan="1">FKTP</td><td colspan="2">: '.$namafktp.'</td></tr>
-<tr><td colspan="1">Kabupaten/Kota</td><td colspan="2">: '.$nmkc.'</td></tr></table></div>';
+<tr><td colspan="1">Kabupaten/Kota</td><td colspan="2">: '.$kabupatan_kota.'</td></tr></table></div>';
 $subtable2 = '<table border="0" cellspacing="2" cellpadding="4">
-<tr><td colspan="1">Kepada Yth. TS Dokter</td><td colspan="2">: </td></tr>
-<tr><td colspan="1">Di</td><td colspan="2">: '.$di.'</td></tr>
+<tr><td colspan="1">Kepada Yth. TS Dokter</td><td colspan="2">: '.$kepada_yth.'</td></tr>
+<tr><td colspan="1">Di</td><td colspan="2">: '.$namafktprujukan.'</td></tr>
 </table>';
 $subtable3 = '<table border="0" cellspacing="0" cellpadding="4">
 <tr><td colspan="1">Nama</td><td colspan="2">: '.$pesertanama.'</td></tr>
@@ -206,7 +252,7 @@ $subtable3 = '<table border="0" cellspacing="0" cellpadding="4">
     $diagnose2 . $diagnose3 .
 
 '</td></tr>
-<tr><td colspan="1">Telah diberikan</td><td colspan="2">: </td></tr>
+<tr><td colspan="1">Telah diberikan</td><td colspan="2">: '.$visitModel->terapi.'</td></tr>
 </table>';
 
 $subtable4 = '<table border="0" cellspacing="0" cellpadding="4">
@@ -218,7 +264,7 @@ $subtable4 = '<table border="0" cellspacing="0" cellpadding="4">
 $subtable5 = '<table border="0" cellspacing="0" cellpadding="4">
 <tr><td>Tgl. Rencana Berkunjung</td><td>: '.$tglrujuk.'</td></tr>
 <tr><td>Jadwal Praktek</td><td>: '.$jadwal.'</td></tr>
-<tr><td>Surat rujukan berlaku 1[satu] kali kunjungan, berlaku sampai dengan</td><td>: </td></tr>
+<tr><td>Surat rujukan berlaku 1[satu] kali kunjungan, berlaku sampai dengan</td><td>: '.$masa_berlaku.'</td></tr>
 </table>';
 
 
@@ -262,8 +308,15 @@ $html = '
 <tr>
 <td colspan="3">'.$subtable.'</td>
 <td colspan="3">';
+$barcodeobj = new TCPDFBarcode('http://www.tcpdf.org', 'C128');
+//$pdf->write1DBarcode('CODE 39', 'C128', '10', '100', '', 18, 0.4, $style, 'N');
+//$barcode = $pdf->serializeTCPDFtagParameters(array('CODE 39', 'C39', '', '', 80, 30, 0.4, array('position'=>'S', 'border'=>true, 'padding'=>4, 'fgcolor'=>array(0,0,0), 'bgcolor'=>array(255,255,255), 'text'=>true, 'font'=>'helvetica', 'fontsize'=>8, 'stretchtext'=>4), 'N'));
 
-$html .= $barcode;
+//$barcode_png = $barcodeobj->getBarcodePNG(2, 30, array(0,0,0));
+//echo $barcode_png;
+//$html .= '<tcpdf method="write1DBarcode" params="'.$barcode.'" />';
+$params = $pdf->serializeTCPDFtagParameters(array($nokunjungan, 'C128', '', '', 80, 22, 0.4, array('position'=>'S', 'border'=>true, 'padding'=>4, 'fgcolor'=>array(0,0,0), 'bgcolor'=>array(255,255,255), 'text'=>true, 'font'=>'helvetica', 'fontsize'=>8, 'stretchtext'=>4), 'N'));
+$html .= '<tcpdf method="write1DBarcode" params="'.$params.'"></tcpdf>';
 $html .='</td>
 </tr>
 <tr>
@@ -293,8 +346,14 @@ $html .='</td>
 $pdf->SetFont('times', '', 14);
 //$pdf->Cell(0, 0, 'SURAT RUJUKAN FKTP', 0, 1, 'C', 0, '', 0);
 
+
+//$params = $pdf->serializeTCPDFtagParameters(array('CODE 39', 'C39', '', '', 80, 30, 0.4, array('position'=>'S', 'border'=>true, 'padding'=>4, 'fgcolor'=>array(0,0,0), 'bgcolor'=>array(255,255,255), 'text'=>true, 'font'=>'helvetica', 'fontsize'=>8, 'stretchtext'=>4), 'N'));
+//$html .= '<tcpdf method="write1DBarcode" params="'.$params.'" />';
+
+
 $pdf->SetFont('dejavusans', '', 7, '', true);
 $pdf->writeHTML($html, true, false, true, false, '');
+
 
 // PRINT VARIOUS 1D BARCODES
 

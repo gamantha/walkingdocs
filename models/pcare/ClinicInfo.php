@@ -8,6 +8,8 @@ use Yii;
  * This is the model class for table "clinic_info".
  *
  * @property string $clinicId
+ * @property string|null $clinic_name
+ * @property string|null $kabupaten_kota
  * @property string|null $wilayah
  * @property string|null $kantorcabang
  * @property string|null $meta
@@ -32,7 +34,7 @@ class ClinicInfo extends \yii\db\ActiveRecord
         return [
             [['clinicId'], 'required'],
             [['meta'], 'string'],
-            [['clinicId', 'wilayah', 'kantorcabang'], 'string', 'max' => 255],
+            [['clinicId', 'clinic_name', 'kabupaten_kota', 'wilayah', 'kantorcabang'], 'string', 'max' => 255],
             [['clinicId'], 'unique'],
             [['clinicId'], 'exist', 'skipOnError' => true, 'targetClass' => Consid::className(), 'targetAttribute' => ['clinicId' => 'wd_id']],
         ];
@@ -45,6 +47,8 @@ class ClinicInfo extends \yii\db\ActiveRecord
     {
         return [
             'clinicId' => Yii::t('app', 'Clinic ID'),
+            'clinic_name' => Yii::t('app', 'Clinic Name'),
+            'kabupaten_kota' => Yii::t('app', 'Kabupaten Kota'),
             'wilayah' => Yii::t('app', 'Wilayah'),
             'kantorcabang' => Yii::t('app', 'Kantorcabang'),
             'meta' => Yii::t('app', 'Meta'),
