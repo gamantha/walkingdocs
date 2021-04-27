@@ -196,7 +196,7 @@ class AntreanController extends Controller
         throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
     }
 
-    public function actionNext()
+    public function actionNext($)
     {
 
         Yii::$app->session->setFlash('success', "NEXT");
