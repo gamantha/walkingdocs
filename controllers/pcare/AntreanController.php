@@ -33,54 +33,77 @@ class AntreanController extends Controller
         ];
     }
 
-    public function actionPoli($id, $date)
+    public function actionPoli($id)
     {
+
+
+        $date = date("Y-m-d") ;
+
+
         if (!Yii::$app->user->isGuest)
         {
             $userId = Yii::$app->user->identity->getId();
             $clinics = ClinicUser::find()->andWhere(['userId' => $userId])->All();
             $clinics_array = ArrayHelper::getColumn($clinics, 'clinicId');
-            $antreanTerakhir = AntreanPanggil::find()->andWhere(['clinicId' => $clinics[0]->clinicId])->andWhere(['tanggalPeriksa' => $date])
+
+
+            if ($_POST) {
+                $date = $_POST['tanggalDaftar'] ;
+                Yii::$app->session->setFlash('success', $_POST['tanggalDaftar']);
+            }
+
+
+            $antreanTerakhir = AntreanPanggil::find()->andWhere(['clinicId' => $clinics[0]->clinicId])
+                ->andWhere(['tanggalPeriksa' => $date])
             ->andWhere(['kdPoli' => $id])->One();
             if (!isset($antreanTerakhir)) {
                 $antreanTerakhir = new AntreanPanggil();
                 $antreanTerakhir->nomorpanggilterakhir = '-';
             }
+
+
+            $searchModel = new AntreanSearch();
+            $query = Yii::$app->request->queryParams;
+            $query['AntreanSearch']['clinicId'] = $clinics[0]->clinicId;
+            $query['AntreanSearch']['kdPoli'] = $id;
+            $query['AntreanSearch']['tanggalPeriksa'] = $date;
+            $query['sort'] = 'angkaAntrean';
+
+            $dataProvider = $searchModel->search($query);
+
+            $searchModel2 = new AntreanSearch();
+            $query2 = Yii::$app->request->queryParams;
+            $query2['AntreanSearch']['clinicId'] = $clinics[0]->clinicId;
+            $query2['AntreanSearch']['kdPoli'] = $id;
+            $query2['AntreanSearch']['tanggalPeriksa'] = $date;
+            $query2['AntreanSearch']['status'] = 'skip';
+            $dataProvider2 = $searchModel2->search($query2);
+
+            return $this->render('indexpoli', [
+                'kdPoli' => $id,
+                'date' => $date,
+                'searchModel' => $searchModel,
+                'searchModel2' => $searchModel2,
+                'dataProvider' => $dataProvider,
+                'dataProvider2' => $dataProvider2,
+                'antreanTerakhir' => $antreanTerakhir
+            ]);
+
+
+
+
+
+
+
+
+        } else {
+            echo 'not Authorized';
         }
 
 
-//
-//        $query = Antrean::find()->andWhere(['in', 'clinicId', $clinics_array]);
 
 
-        $searchModel = new AntreanSearch();
-        $query = Yii::$app->request->queryParams;
-        $query['AntreanSearch']['clinicId'] = $clinics[0]->clinicId;
-        $query['AntreanSearch']['kdPoli'] = $id;
-        $query['AntreanSearch']['tanggalPeriksa'] = $date;
-        $query['sort'] = 'angkaAntrean';
 
-        $dataProvider = $searchModel->search($query);
-
-        $searchModel2 = new AntreanSearch();
-        $query2 = Yii::$app->request->queryParams;
-        $query2['AntreanSearch']['clinicId'] = $clinics[0]->clinicId;
-        $query2['AntreanSearch']['kdPoli'] = $id;
-        $query2['AntreanSearch']['tanggalPeriksa'] = $date;
-        $query2['AntreanSearch']['status'] = 'skip';
-        $dataProvider2 = $searchModel2->search($query2);
-
-
-//        print_r($query);
-        return $this->render('indexpoli', [
-            'kdPoli' => $id,
-            'date' => $date,
-            'searchModel' => $searchModel,
-            'searchModel2' => $searchModel2,
-            'dataProvider' => $dataProvider,
-            'dataProvider2' => $dataProvider2,
-            'antreanTerakhir' => $antreanTerakhir
-        ]);
     }
 
 
@@ -196,16 +219,41 @@ class AntreanController extends Controller
         throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
     }
 
-    public function actionNext()
+    public function actionNext($clinicId, $kdPoli,$tanggalPeriksa)
     {
+        $antreanTerakhir = AntreanPanggil::find()->andWhere(['clinicId' => $clinicId])
+            ->andWhere(['tanggalPeriksa' => $tanggalPeriksa])
+            ->andWhere(['kdPoli' => $kdPoli])->One();
 
+        $nomorterakhir = $antreanTerakhir->nomorpanggilterakhir;
+        $antreanTerakhir->nomorpanggilterakhir = $nomorterakhir++;
+        $antreanTerakhir->save();
         Yii::$app->session->setFlash('success', "NEXT");
         Yii::$app->user->returnUrl = Yii::$app->request->referrer;
         return $this->goBack();
     }
 
-    public function actionSkip()
+    public function actionSkip($clinicId, $kdPoli,$tanggalPeriksa)
     {
+        $antreanTerakhir = AntreanPanggil::find()->andWhere(['clinicId' => $clinicId])
+            ->andWhere(['tanggalPeriksa' => $tanggalPeriksa])
+            ->andWhere(['kdPoli' => $kdPoli])->One();
+
+        $nomorterakhir = $antreanTerakhir->nomorpanggilterakhir;
+
+        $antrean = Antrean::find()->andWhere(['clinicId' => $clinicId])
+            ->andWhere(['tanggalPeriksa' => $tanggalPeriksa])
+            ->andWhere(['angkaAntrean' => $nomorterakhir])
+            ->andWhere(['kdPoli' => $kdPoli])->One();
+
+        if (null !== $antrean) {
+            $antrean->status = 'skip';
+            $antrean->save();
+        }
+
+        $antreanTerakhir->nomorpanggilterakhir = $nomorterakhir++;
+        $antreanTerakhir->save();
+
         Yii::$app->session->setFlash('warning', "SKIP");
         Yii::$app->user->returnUrl = Yii::$app->request->referrer;
         return $this->goBack();
