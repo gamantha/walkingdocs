@@ -4,7 +4,9 @@ namespace app\controllers\pcare;
 
 
 use app\models\Consid;
+use app\models\pcare\Antrean;
 use app\models\pcare\ClinicInfo;
+use app\models\pcare\ClinicUser;
 use app\models\pcare\PcareVisit;
 use app\models\pcare\WdPassedValues;
 use Yii;
@@ -13,7 +15,9 @@ use app\models\pcare\PcareRegistrationSearch;
 use yii\base\BaseObject;
 use yii\base\Module;
 
+use yii\data\ActiveDataProvider;
 use yii\data\ArrayDataProvider;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\httpclient\Client;
 use yii\web\Controller;
@@ -506,7 +510,6 @@ class RegistrationController extends Controller
     public function actionCheckpeserta($id)
     {
         $registration = PcareRegistration::findOne($id);
-//        $registration->setConsId('16744');
         $response = $registration->Cekpeserta();
 
         $jsonval = json_decode($response);
@@ -515,7 +518,6 @@ class RegistrationController extends Controller
             if ($jsonval->response->aktif)
             {
 
-//                echo $response;
                 $registration->kdProviderPeserta = $jsonval->response->kdProviderPst->kdProvider;
                 $registration->status = 'ready';
                 $registration->save();
@@ -524,12 +526,10 @@ class RegistrationController extends Controller
 
             } else {
                 Yii::$app->session->setFlash('danger', "nomor peserta tidak aktif");
-//                return ' nomor peserta tidak valid';
 
             }
         } else {
             Yii::$app->session->setFlash('danger', "cek peserta failed");
-//            return 'cek peserta failed';
         }
         Yii::$app->user->returnUrl = Yii::$app->request->referrer;
         return $this->goBack();
@@ -1095,13 +1095,24 @@ $visit = $registration->pcareVisits[0];
         }
 
         $peserta = json_decode($pesertaresp)->response;
-        return $this->render('testhtml', [
+
+        $rujukan = $visit->getRujukan($visit->noKunjungan);
+$rujukanObj = json_decode($rujukan);
+if ($rujukanObj->metaData->code == 200){
+//            print_r($rujukanObj->response);
+            return $this->render('testhtml', [
 //            'dataProvider' => $provider
-        'clinicinfo' => $clinicinfo,
+            'rujukanObj' => $rujukanObj,
+//        'clinicinfo' => $clinicinfo,
         'visitModel' => $visit,
-        'dokter' => $dokter,
-        'peserta' => $peserta
+//        'dokter' => $dokter,
+//        'peserta' => $peserta
         ]);
+
+}
+
+
+
     }
 
     public function actionProviders()
@@ -1156,17 +1167,13 @@ $array=[];
         '&statusAssesment=' .
         '&administered=' .
         '&prescribed=["Parasetamol 500 mg, #18 -  3 x 2 tablet - 3 Days","Azithromycin 250 mg, #9 - Tablet 3 x 1 tablet - 3 Days","Captopril 12.5 mg, #29 -  1 x 0.96 tablet - 30 Days"]' .
-//        '&prescribed=["Paracetamol 500 mg, #9 - Tablet 3 x 1 tablet - 3 Days","Ibuprofen 400 mg, #12 - Tablet 4 x 1 tablet - 3 Days","Ambroxol 30 mg, #12 - Tablet 2 x 2 tablet - 3 Days"]' .
         '&manualDiagnoses=[{"treatment":"captoril","description":"hypertension"}]' .
         '&checklistNames=["Upper respiratory tract infection [URI] / Common Cold (J06.9)"]';
 
-//echo '<pre>';
     try {
 
         $client = new Client(['baseUrl' => 'http://localhost/walkingdocs/web/index.php/pcare/registration/create']);
         $request = $client->createRequest()
-//            ->setData($payload)
-//            ->setData(['name' => 'John Doe', 'email' => 'johndoe@domain.com'])
             ->setContent($payload)
             ->setMethod('POST')
             ->addHeaders(['content-type' => 'application/x-www-form-urlencoded'])
@@ -1176,12 +1183,39 @@ $array=[];
         ob_clean();
 
         echo $response->content;
-//        echo 'done';
     } catch (\yii\base\Exception $exception) {
 print_r($exception);
         Yii::warning("ERROR GETTING RESPONSE FROM BPJS.");
-       // return $exception;
+
     }
 
+}
+
+public function actionAntrean()
+{
+
+
+    $userId = Yii::$app->user->identity->getId();
+    $clinics = ClinicUser::find()->andWhere(['userId' => $userId])->All();
+    $clinics_array = ArrayHelper::getColumn($clinics, 'clinicId');
+
+    $query = Antrean::find()->andWhere(['in', 'clinicId', $clinics_array]);
+
+    $provider = new ActiveDataProvider([
+        'query' => $query,
+        'pagination' => [
+            'pageSize' => 100,
+        ],
+        'sort' => [
+            'defaultOrder' => [
+//                'created_at' => SORT_DESC,
+//                'title' => SORT_ASC,
+            ]
+        ],
+    ]);
+
+    return $this->render('antrean', [
+        'dataProvider' => $provider
+    ]);
 }
 }

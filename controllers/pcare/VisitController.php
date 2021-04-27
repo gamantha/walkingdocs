@@ -126,7 +126,6 @@ $visit = PcareVisit::find()->andWhere(['pendaftaranId' => $id])->One();
             ) {
 
 
-##############################
 
                 $subspesialis_payload = 'null';
                 $khusus_payload = 'null';

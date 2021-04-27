@@ -4,6 +4,7 @@ namespace app\models\pcare;
 
 use app\models\Consid;
 use Yii;
+use yii\base\BaseObject;
 use yii\httpclient\Client;
 use kartik\select2\Select2;
 
@@ -358,6 +359,28 @@ class PcareVisit extends \yii\db\ActiveRecord
         try {
 
             $client = new Client(['baseUrl' => 'https://dvlp.bpjs-kesehatan.go.id:9081/pcare-rest-v3.0/spesialis/sarana']);
+            $request = $client->createRequest()
+//                ->setContent($payload)->setMethod('POST')
+                ->setHeaders(['X-cons-id' => $bpjs_user['cons_id']])
+                ->addHeaders(['content-type' => 'application/json'])
+                ->addHeaders(['X-Timestamp' => $bpjs_user['time']])
+                ->addHeaders(['X-Signature' => $bpjs_user['encoded_sig']])
+                ->addHeaders(['X-Authorization' => $bpjs_user['encoded_auth_string']]);
+
+            $response = $request->send();
+            return $response->content;
+        } catch (\yii\base\Exception $exception) {
+
+            Yii::warning("ERROR GETTING RESPONSE FROM BPJS.");
+        }
+    }
+
+    public function getRujukan($rujukan)
+    {
+        $bpjs_user = self::getUsercreds($this->pendaftaran->cons_id);
+        try {
+
+            $client = new Client(['baseUrl' => 'https://dvlp.bpjs-kesehatan.go.id:9081/pcare-rest-v3.0/kunjungan/rujukan//'.$rujukan]);
             $request = $client->createRequest()
 //                ->setContent($payload)->setMethod('POST')
                 ->setHeaders(['X-cons-id' => $bpjs_user['cons_id']])

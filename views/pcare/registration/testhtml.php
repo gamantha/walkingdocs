@@ -47,12 +47,12 @@ class MYPDF extends TCPDF {
     public $kabupaten_kota;
     public $clinic_name;
 
-    public function setClinicinfo($clinic_name, $kabupaten_kota, $wilayah, $kantorcabang)
+    public function setClinicinfo($rujukanObj)
     {
-        $this->wilayah = $wilayah;
-        $this->kantorcabang = $kantorcabang;
-        $this->clinic_name = $clinic_name;
-        $this->kabupaten_kota = $kabupaten_kota;
+        $this->wilayah = $rujukanObj->response->ppk->kc->kdKR->nmKR;
+        $this->kantorcabang = $rujukanObj->response->ppk->kc->nmKC;
+        $this->clinic_name = $rujukanObj->response->ppk->nmPPK;
+        $this->kabupaten_kota = $rujukanObj->response->ppk->kc->dati->nmDati;
     }
     //Page header
     public function Header() {
@@ -108,7 +108,7 @@ EOD;
 $pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
 
-$pdf->setClinicinfo($clinicinfo->clinic_name, $clinicinfo->kabupaten_kota, $clinicinfo->wilayah, $clinicinfo->kantorcabang);
+$pdf->setClinicinfo($rujukanObj);
 
 
 
@@ -177,56 +177,47 @@ $pdf->AddPage();
 // set text shadow effect
 $pdf->setTextShadow(array('enabled'=>true, 'depth_w'=>0.2, 'depth_h'=>0.2, 'color'=>array(196,196,196), 'opacity'=>1, 'blend_mode'=>'Normal'));
 
-//// Set some content to print
-//$html = <<<EOD
-//<h1>Welcome to <a href="http://www.tcpdf.org" style="text-decoration:none;background-color:#CC0000;color:black;">&nbsp;<span style="color:black;">TC</span><span style="color:white;">PDF</span>&nbsp;</a>!</h1>
-//<i>This is the first example of TCPDF library.</i>
-//<p>This text is printed using the <i>writeHTMLCell()</i> method but you can also use: <i>Multicell(), writeHTML(), Write(), Cell() and Text()</i>.</p>
-//<p>Please check the source code documentation and other examples for further information.</p>
-//<p style="color:#CC0000;">TO IMPROVE AND EXPAND TCPDF I NEED YOUR SUPPORT, PLEASE <a href="http://sourceforge.net/donate/index.php?group_id=128076">MAKE A DONATION!</a></p>
-//EOD;
-//
-//
-//// Print text using writeHTMLCell()
-//$pdf->writeHTMLCell(0, 0, '', '', $html, 1, 1, 0, true, '', true);
-
 $diagnose1 = '';
 $diagnose2 = '';
 $diagnose3 = '';
 
 
-if (null != $visitModel->kdDiag1) {
-    $diagnose1 = $visitModel->nmDiag1 . '('.$visitModel->kdDiag1 . ')';
+if (null != $rujukanObj->response->diag1) {
+    $diagnose1 = $rujukanObj->response->diag1->nmDiag . '('.$rujukanObj->response->diag1->kdDiag . ')';
 }
 
-if (null != $visitModel->kdDiag2) {
-    $diagnose2 = ', ' . $visitModel->nmDiag2 . '('.$visitModel->kdDiag2 . ')';
+if (null != $rujukanObj->response->diag2) {
+    $diagnose2 = $rujukanObj->response->diag2->nmDiag . '('.$rujukanObj->response->diag2->kdDiag . ')';
 }
 
-if (null != $visitModel->kdDiag3) {
-    $diagnose3 = ', '. $visitModel->nmDiag3 . '('.$visitModel->kdDiag3 . ')';
+if (null != $rujukanObj->response->diag3) {
+    $diagnose3 = $rujukanObj->response->diag3->nmDiag . '('.$rujukanObj->response->diag3->kdDiag . ')';
 }
 
 
-$namafktp = isset($clinicinfo->clinic_name) ? $clinicinfo->clinic_name : "";
-$kabupatan_kota = isset($clinicinfo->kabupaten_kota) ? $clinicinfo->kabupaten_kota : "";
+$namafktp = isset($rujukanObj->response->ppk->nmPPK) ? $rujukanObj->response->ppk->nmPPK : "";
+$kabupatan_kota = isset($rujukanObj->response->ppk->kc->dati->nmDati) ? $rujukanObj->response->ppk->kc->dati->nmDati : "";
 $namafktprujukan = isset(json_decode($visitModel->meta_rujukan)->name) ? json_decode($visitModel->meta_rujukan)->name : "";
-$nmkc = isset(json_decode($visitModel->meta_rujukan)->nmkc) ? json_decode($visitModel->meta_rujukan)->nmkc : "";
+$nmkc = isset($rujukanObj->response->ppk->kc->nmKC) ? $rujukanObj->response->ppk->kc->nmKC : "";
 $di = "";
-$pesertanama = isset($peserta->nama) ? $peserta->nama : "";
-$pesertakartu = isset($peserta->noKartu) ? $peserta->noKartu : "";
-$nokunjungan = isset($visitModel->noKunjungan) ? $visitModel->noKunjungan : "";
-$pesertasex = isset($peserta->sex) ? $peserta->sex : "";
+$pesertanama = isset($rujukanObj->response->nmPst) ? $rujukanObj->response->nmPst : "";
+$pesertakartu = isset($rujukanObj->response->nokaPst) ? $rujukanObj->response->nokaPst : "";
+$nokunjungan = isset($rujukanObj->response->noRujukan) ? $rujukanObj->response->noRujukan : "";
+$pesertasex = isset($rujukanObj->response->sex) ? $rujukanObj->response->sex : "";
+$pisa = isset($rujukanObj->response->pisa) ? $rujukanObj->response->pisa : "";
+$catatan = isset($rujukanObj->response->catatan) ? $rujukanObj->response->catatan : "";
+$catatanRujuk = isset($rujukanObj->response->catatanRujuk) ? $rujukanObj->response->catatanRujuk : "";
 
-$date=date_create($visitModel->tglEstRujuk);
+$date=date_create($rujukanObj->response->tglEstRujuk);
 $tanggalrujuk = date_format($date,"d-M-Y");
-$date->add(new DateInterval('P3M')); // P1D means a period of 1 day
-$masa_berlaku = date_format($date,"d-M-Y");
+$date2=date_create($rujukanObj->response->tglAkhirRujuk);
+$date3 = date_create($visitModel->pendaftaran->tglDaftar);
+$masa_berlaku = date_format($date2,"d-M-Y");
 
 
-$tglrujuk = isset($visitModel->tglEstRujuk) ? $tanggalrujuk : "";
-$jadwal = isset(json_decode($visitModel->meta_rujukan)->jadwal)? json_decode($visitModel->meta_rujukan)->jadwal : "";
-$namadokter = isset($dokter->nmDokter) ? $dokter->nmDokter : "";
+$tglrujuk = isset($rujukanObj->response->tglEstRujuk) ? $tanggalrujuk : "";
+$jadwal = isset($rujukanObj->response->jadwal)? $rujukanObj->response->jadwal : "";
+$namadokter = isset($rujukanObj->response->dokter->nmDokter) ? $rujukanObj->response->dokter->nmDokter : "";
 
 
 // set document information
@@ -252,13 +243,13 @@ $subtable3 = '<table border="0" cellspacing="0" cellpadding="4">
     $diagnose2 . $diagnose3 .
 
 '</td></tr>
-<tr><td colspan="1">Telah diberikan</td><td colspan="2">: '.$visitModel->terapi.'</td></tr>
+<tr><td colspan="1">Telah diberikan</td><td colspan="2">: '.$catatan.'</td></tr>
 </table>';
 
 $subtable4 = '<table border="0" cellspacing="0" cellpadding="4">
-<tr><td colspan="2">Umur</td><td colspan="2">: '.intval(substr(date('Ymd') - date('Ymd', strtotime($peserta->tglLahir)), 0, -4)).'</td><td colspan="1">Tahun</td><td colspan="3">: '.date_format(date_create($peserta->tglLahir),"d-M-Y").'</td></tr>
-<tr><td colspan="2">Status</td><td colspan="1">: ?</td><td colspan="3">Utama/tanggungan</td><td colspan="1">'.$pesertasex.'</td><td colspan="1">(L/P)</td></tr>
-<tr><td colspan="2">Catatan</td><td>: </td></tr>
+<tr><td colspan="2">Umur</td><td colspan="2">: '.intval(substr(date('Ymd') - date('Ymd', strtotime($rujukanObj->response->tglLahir)), 0, -4)).'</td><td colspan="1">Tahun</td><td colspan="3">: '.date_format(date_create($rujukanObj->response->tglLahir),"d-M-Y").'</td></tr>
+<tr><td colspan="2">Status</td><td colspan="1">: '.$pisa.'</td><td colspan="3">Utama/tanggungan</td><td colspan="1">'.$pesertasex.'</td><td colspan="1">(L/P)</td></tr>
+<tr><td colspan="2">Catatan</td><td colspan="6">: '.$catatanRujuk.'</td></tr>
 </table>';
 
 $subtable5 = '<table border="0" cellspacing="0" cellpadding="4">
@@ -269,9 +260,9 @@ $subtable5 = '<table border="0" cellspacing="0" cellpadding="4">
 
 
 $subtable6 = '<table border="0" cellspacing="2" cellpadding="4">
-<tr><td rowspan="1">Salam Sejawat,</td></tr>
+<tr><td rowspan="1" colspan="1">Salam Sejawat, <br/>'.date_format($date3 ,"d-M-Y") .'</td></tr>
 <tr><td></td></tr>
-<tr><td></td></tr>
+<br/>
 <tr><td>'.$namadokter.'</td></tr>
 </table>';
 
@@ -308,13 +299,7 @@ $html = '
 <tr>
 <td colspan="3">'.$subtable.'</td>
 <td colspan="3">';
-$barcodeobj = new TCPDFBarcode('http://www.tcpdf.org', 'C128');
-//$pdf->write1DBarcode('CODE 39', 'C128', '10', '100', '', 18, 0.4, $style, 'N');
-//$barcode = $pdf->serializeTCPDFtagParameters(array('CODE 39', 'C39', '', '', 80, 30, 0.4, array('position'=>'S', 'border'=>true, 'padding'=>4, 'fgcolor'=>array(0,0,0), 'bgcolor'=>array(255,255,255), 'text'=>true, 'font'=>'helvetica', 'fontsize'=>8, 'stretchtext'=>4), 'N'));
 
-//$barcode_png = $barcodeobj->getBarcodePNG(2, 30, array(0,0,0));
-//echo $barcode_png;
-//$html .= '<tcpdf method="write1DBarcode" params="'.$barcode.'" />';
 $params = $pdf->serializeTCPDFtagParameters(array($nokunjungan, 'C128', '', '', 80, 22, 0.4, array('position'=>'S', 'border'=>true, 'padding'=>4, 'fgcolor'=>array(0,0,0), 'bgcolor'=>array(255,255,255), 'text'=>true, 'font'=>'helvetica', 'fontsize'=>8, 'stretchtext'=>4), 'N'));
 $html .= '<tcpdf method="write1DBarcode" params="'.$params.'"></tcpdf>';
 $html .='</td>

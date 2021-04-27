@@ -16,6 +16,8 @@ class TindakanController extends \yii\web\Controller
         return $this->render('index');
     }
 
+
+
     public function getReferensiTindakan($id)
     {
         $model = new Tindakan();
