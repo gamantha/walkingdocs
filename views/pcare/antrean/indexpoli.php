@@ -34,25 +34,26 @@ $this->title = Yii::t('app', $kdPoli . " / " . $date);
 
 
     ?>
-    <span class="input-group-btn">
-        <button class="btn btn-default" type="submit">Go</button>
-      </span>
+
+    <?= Html::submitButton('Go to Date', ['name' => 'date', 'class' => 'btn btn-primary']) ?>
 
 
-    <?php
-    ActiveForm::end();
-    ?>
 </p>
-    <p>
-        <?php // Html::a(Yii::t('app', 'Create Antrean'), ['create'], ['class' => 'btn btn-success']) ?>
-        <?= Html::a(Yii::t('app', 'Next'), ['next', 'clinicId'=> $antreanTerakhir->clinicId, 'kdPoli' => $kdPoli,'tanggalPeriksa' => $date], ['class' => 'btn btn-success', 'style' => 'width:20%;height:50px; font-size:2em;']) ?>
-        <?= Html::a(Yii::t('app', 'Skip'), ['skip','clinicId'=> $antreanTerakhir->clinicId, 'kdPoli' => $kdPoli,'tanggalPeriksa' => $date], ['class' => 'btn btn-warning', 'style' => 'width:20%;height:50px; font-size:2em;']) ?>
-    </p>
+
+
+
     <div style="">
         <span style="font-size: 15em;"><?php
         echo $antreanTerakhir->nomorpanggilterakhir;
         ?></span>
     </div>
+    <div class="form-group">
+        <?= Html::submitButton('Next', ['name' => 'next', 'class' => 'btn btn-primary', 'data-confirm' => 'Are you sure?']) ?>
+        <?= Html::submitButton('Skip', ['name' => 'skip', 'class' => 'btn btn-primary', 'data-confirm' => 'Are you sure?']) ?>
+    </div>
+    <?php
+    ActiveForm::end();
+    ?>
     <?php Pjax::begin(); ?>
     <?php  //echo $this->render('_search', ['model' => $searchModel]); ?>
     <h3>Daftar Antrean</h3>

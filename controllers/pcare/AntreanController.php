@@ -49,7 +49,20 @@ class AntreanController extends Controller
 
             if ($_POST) {
                 $date = $_POST['tanggalDaftar'] ;
-                Yii::$app->session->setFlash('success', $_POST['tanggalDaftar']);
+                if(isset($_POST['next'])) {
+
+                    $this->next($clinics[0]->clinicId,$id , $date);
+                } else if(isset($_POST['skip'])) {
+                    $this->skip($clinics[0]->clinicId,$id , $date);
+
+                } else {
+                    Yii::$app->session->setFlash('success', $_POST['tanggalDaftar']);
+                }
+
+
+
+
+
             }
 
 
@@ -219,25 +232,41 @@ class AntreanController extends Controller
         throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
     }
 
-    public function actionNext($clinicId, $kdPoli,$tanggalPeriksa)
+    public function next($clinicId, $kdPoli,$tanggalPeriksa)
     {
         $antreanTerakhir = AntreanPanggil::find()->andWhere(['clinicId' => $clinicId])
             ->andWhere(['tanggalPeriksa' => $tanggalPeriksa])
             ->andWhere(['kdPoli' => $kdPoli])->One();
+
+        if (null == $antreanTerakhir) {
+            $antreanTerakhir = new AntreanPanggil();
+            $antreanTerakhir->clinicId = $clinicId;
+            $antreanTerakhir->kdPoli = $kdPoli;
+            $antreanTerakhir->tanggalPeriksa = $tanggalPeriksa;
+            $antreanTerakhir->nomorpanggilterakhir = 0;
+        }
 
         $nomorterakhir = $antreanTerakhir->nomorpanggilterakhir;
-        $antreanTerakhir->nomorpanggilterakhir = $nomorterakhir++;
+        $nomorterakhir++;
+        $antreanTerakhir->nomorpanggilterakhir = $nomorterakhir;
         $antreanTerakhir->save();
-        Yii::$app->session->setFlash('success', "NEXT");
-        Yii::$app->user->returnUrl = Yii::$app->request->referrer;
-        return $this->goBack();
+        Yii::$app->session->setFlash('success', "NEXT ");
+        return;
     }
 
-    public function actionSkip($clinicId, $kdPoli,$tanggalPeriksa)
+    public function skip($clinicId, $kdPoli,$tanggalPeriksa)
     {
         $antreanTerakhir = AntreanPanggil::find()->andWhere(['clinicId' => $clinicId])
             ->andWhere(['tanggalPeriksa' => $tanggalPeriksa])
             ->andWhere(['kdPoli' => $kdPoli])->One();
+
+        if (null == $antreanTerakhir) {
+            $antreanTerakhir = new AntreanPanggil();
+            $antreanTerakhir->clinicId = $clinicId;
+            $antreanTerakhir->kdPoli = $kdPoli;
+            $antreanTerakhir->tanggalPeriksa = $tanggalPeriksa;
+            $antreanTerakhir->nomorpanggilterakhir = 0;
+        }
 
         $nomorterakhir = $antreanTerakhir->nomorpanggilterakhir;
 
@@ -251,11 +280,12 @@ class AntreanController extends Controller
             $antrean->save();
         }
 
-        $antreanTerakhir->nomorpanggilterakhir = $nomorterakhir++;
+        $nomorterakhir = $antreanTerakhir->nomorpanggilterakhir;
+        $nomorterakhir++;
+        $antreanTerakhir->nomorpanggilterakhir = $nomorterakhir;
         $antreanTerakhir->save();
-
         Yii::$app->session->setFlash('warning', "SKIP");
-        Yii::$app->user->returnUrl = Yii::$app->request->referrer;
-        return $this->goBack();
+
+        return;
     }
 }

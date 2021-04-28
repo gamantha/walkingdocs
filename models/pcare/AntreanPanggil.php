@@ -7,9 +7,9 @@ use Yii;
 /**
  * This is the model class for table "antrean_panggil".
  *
- * @property string|null $tanggalPeriksa
- * @property string|null $clinicId
- * @property string|null $kdPoli
+ * @property string $tanggalPeriksa
+ * @property string $clinicId
+ * @property string $kdPoli
  * @property int|null $nomorpanggilterakhir
  */
 class AntreanPanggil extends \yii\db\ActiveRecord
@@ -28,9 +28,11 @@ class AntreanPanggil extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
+            [['tanggalPeriksa', 'clinicId', 'kdPoli'], 'required'],
             [['tanggalPeriksa'], 'safe'],
             [['nomorpanggilterakhir'], 'integer'],
             [['clinicId', 'kdPoli'], 'string', 'max' => 255],
+            [['tanggalPeriksa', 'clinicId', 'kdPoli'], 'unique', 'targetAttribute' => ['tanggalPeriksa', 'clinicId', 'kdPoli']],
         ];
     }
 
