@@ -329,27 +329,11 @@ $html .='</td>
 
 // output the HTML content
 $pdf->SetFont('times', '', 14);
-//$pdf->Cell(0, 0, 'SURAT RUJUKAN FKTP', 0, 1, 'C', 0, '', 0);
-
-
-//$params = $pdf->serializeTCPDFtagParameters(array('CODE 39', 'C39', '', '', 80, 30, 0.4, array('position'=>'S', 'border'=>true, 'padding'=>4, 'fgcolor'=>array(0,0,0), 'bgcolor'=>array(255,255,255), 'text'=>true, 'font'=>'helvetica', 'fontsize'=>8, 'stretchtext'=>4), 'N'));
-//$html .= '<tcpdf method="write1DBarcode" params="'.$params.'" />';
-
 
 $pdf->SetFont('dejavusans', '', 7, '', true);
 $pdf->writeHTML($html, true, false, true, false, '');
 
 
-// PRINT VARIOUS 1D BARCODES
-
-// CODE 39 - ANSI MH10.8M-1983 - USD-3 - 3 of 9.
-//$pdf->Cell(0, 0, 'CODE 39 - ANSI MH10.8M-1983 - USD-3 - 3 of 9', 0, 1);
-//$pdf->write1DBarcode('CODE 39', 'C39', '', '', '', 18, 0.4, $style, 'N');
-
-//$pdf->Ln();
-
-//$pdf->writeHTML($html2, true, false, true, false, '');
-// Print some HTML Cells
 
 $html = '<span color="red">red</span> <span color="green">green</span> <span color="blue">blue</span><br /><span color="red">red</span> <span color="green">green</span> <span color="blue">blue</span>';
 
@@ -357,16 +341,6 @@ $pdf->SetFillColor(255,255,0);
 
 $y = $pdf->getY();
 
-//$pdf->writeHTMLCell(50, 0, '', $y, $html, 'LRTB', 0, 0, true, 'L', true);
-//$pdf->writeHTMLCell(100, 0, '', '', $html, 'LRTB', 1, 1, true, 'C', true);
-//$pdf->writeHTMLCell(80, 0, '', '', $html, 'LRTB', 1, 0, true, 'R', true);
-
-
-
-// ---------------------------------------------------------
-
-// Close and output PDF document
-// This method has several options, check the source code documentation for more information.
 $pdf->Output($nokunjungan . '.pdf', 'I');
 //============================================================+
 // END OF FILE
