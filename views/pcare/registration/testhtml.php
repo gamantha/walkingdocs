@@ -197,7 +197,7 @@ if (null != $rujukanObj->response->diag3) {
 
 $namafktp = isset($rujukanObj->response->ppk->nmPPK) ? $rujukanObj->response->ppk->nmPPK : "";
 $kabupatan_kota = isset($rujukanObj->response->ppk->kc->dati->nmDati) ? $rujukanObj->response->ppk->kc->dati->nmDati : "";
-$namafktprujukan = isset(json_decode($visitModel->meta_rujukan)->name) ? json_decode($visitModel->meta_rujukan)->name : "";
+$namafktprujukan = isset($visitModel->nmppk_subSpesialis) ? $visitModel->nmppk_subSpesialis : "";
 $nmkc = isset($rujukanObj->response->ppk->kc->nmKC) ? $rujukanObj->response->ppk->kc->nmKC : "";
 $di = "";
 $pesertanama = isset($rujukanObj->response->nmPst) ? $rujukanObj->response->nmPst : "";
@@ -234,7 +234,7 @@ $subtable = '<div border="1"><table border="0" cellspacing="0" cellpadding="4"><
 <tr><td colspan="1">Kabupaten/Kota</td><td colspan="2">: '.$kabupatan_kota.'</td></tr></table></div>';
 $subtable2 = '<table border="0" cellspacing="2" cellpadding="4">
 <tr><td colspan="1">Kepada Yth. TS Dokter</td><td colspan="2">: '.$kepada_yth.'</td></tr>
-<tr><td colspan="1">Di</td><td colspan="2">: '.$namafktprujukan.'</td></tr>
+<tr><td colspan="1">Di lokasi</td><td colspan="2">: '.$namafktprujukan.'</td></tr>
 </table>';
 $subtable3 = '<table border="0" cellspacing="0" cellpadding="4">
 <tr><td colspan="1">Nama</td><td colspan="2">: '.$pesertanama.'</td></tr>
