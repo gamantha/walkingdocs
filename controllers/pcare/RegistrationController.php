@@ -136,6 +136,7 @@ class RegistrationController extends Controller
                     } else if ($wdmodel_exist->status == 'draft') {
                         $draftexist = 1;
 
+//                        $this->refresh();
                         $wdmodel_exist->delete();
 
                     }
@@ -1150,18 +1151,18 @@ $array=[];
     public function actionTestpost()
 {
 
-    $payload = 'clinicId=59cedfba9ae80d05757f54e9.5e87a22effe0dc06b2f87964&kdPoli=&kdTkp=&tglDaftar=2021-3-13' .
+    $payload = 'clinicId=59cedfba9ae80d05757f54e9.5e87a22effe0dc06b2f87964&kdPoli=&kdTkp=&tglDaftar=2021-5-10' .
         '&visitId=12345' .
         '&noKartu=&kunjSakit=true' .
         '&kdProviderPeserta=' .
         '&no_urut=' .
     '&keluhan=' .
-    '&sistole=' .
-    '&diastole=' .
-    '&beratBadan=' .
-    '&tinggiBadan=' .
-    '&respRate=' .
-    '&heartRate=' .
+    '&sistole=77' .
+    '&diastole=77' .
+    '&beratBadan=77' .
+    '&tinggiBadan=77' .
+    '&respRate=77' .
+    '&heartRate=77' .
         '&doctor=' .
         '&disposition=' .
         '&statusAssesment=' .
@@ -1183,6 +1184,7 @@ $array=[];
         ob_clean();
 
         echo $response->content;
+
     } catch (\yii\base\Exception $exception) {
 print_r($exception);
         Yii::warning("ERROR GETTING RESPONSE FROM BPJS.");

@@ -184,6 +184,7 @@ $visit = PcareVisit::find()->andWhere(['pendaftaranId' => $id])->One();
 
                 try {
 
+                    Yii::$app->session->setFlash('warning', $payload);
                     $client = new Client(['baseUrl' => 'https://dvlp.bpjs-kesehatan.go.id:9081/pcare-rest-v3.0/kunjungan']);
                     $request = $client->createRequest()
                         ->setContent($payload)->setMethod('POST')
