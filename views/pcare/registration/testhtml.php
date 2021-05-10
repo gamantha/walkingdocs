@@ -234,7 +234,7 @@ $subtable = '<div border="1"><table border="0" cellspacing="0" cellpadding="4"><
 <tr><td colspan="1">Kabupaten/Kota</td><td colspan="2">: '.$kabupatan_kota.'</td></tr></table></div>';
 $subtable2 = '<table border="0" cellspacing="2" cellpadding="4">
 <tr><td colspan="1">Kepada Yth. TS Dokter</td><td colspan="2">: '.$kepada_yth.'</td></tr>
-<tr><td colspan="1">Di lokasi</td><td colspan="2">: '.$namafktprujukan.'</td></tr>
+<tr><td colspan="1">Di </td><td colspan="2">: '.$namafktprujukan.'</td></tr>
 </table>';
 $subtable3 = '<table border="0" cellspacing="0" cellpadding="4">
 <tr><td colspan="1">Nama</td><td colspan="2">: '.$pesertanama.'</td></tr>
