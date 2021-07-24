@@ -1663,17 +1663,14 @@ echo '<pre>';
 
     public function actionDownloadchecklist()
     {
-//        echo 'this is get checklist';
-
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, "https://beta.walkingdocs.com/external/checklists");
+        curl_setopt($ch, CURLOPT_URL, "https://app.walkingdocs.com/external/checklists");
 //        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjoiam9obmRvZSIsImRhdGEiOiJub25lb2Z5b3VyYnVzaW5lc3MiLCJqdGkiOiJjOTAyM2MwNy00MDU5LTQ1MWEtOGY1Yy02OTQyZThhMmVjMWMiLCJpYXQiOjE1OTkwNzMyMjUsImV4cCI6MTU5OTA3NjgyNX0.4_ovCcUsHHPo62uNwhHTpLvjl8CXlGPD83QFqIGX6qE'
-        ]);
+        // curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        //     'Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjoiam9obmRvZSIsImRhdGEiOiJub25lb2Z5b3VyYnVzaW5lc3MiLCJqdGkiOiJjOTAyM2MwNy00MDU5LTQ1MWEtOGY1Yy02OTQyZThhMmVjMWMiLCJpYXQiOjE1OTkwNzMyMjUsImV4cCI6MTU5OTA3NjgyNX0.4_ovCcUsHHPo62uNwhHTpLvjl8CXlGPD83QFqIGX6qE'
+        // ]);
 //        curl_setopt($ch, CURLOPT_POSTFIELDS, POST DATA);
 $result = curl_exec($ch);
-
 
 print_r($result);
 curl_close($ch);
