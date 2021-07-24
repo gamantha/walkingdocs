@@ -399,7 +399,17 @@ return $result;
         $files = scandir($appPath . '/assets/checklists', 1);
 
 //        print_r($files);
-        return $files[0];
+
+/*
+find the latest file with size at least 4000000. ignore smaller files as they probably corrupt downloads
+*/
+$i = 0;
+while (filesize($appPath . '/assets/checklists/' . $files[$i]) < 4000000) {
+    $i++;
+}
+// filesize($appPath . '/assets/checklists/' . $files[1]);
+// return filesize($appPath . '/assets/checklists/' . $files[1]);
+        return $files[$i];
         //return \Yii::$app->response->sendFile(  $appPath . '/assets/checklists/checklist.json');
     }
 
