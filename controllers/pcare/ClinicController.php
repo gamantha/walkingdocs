@@ -189,18 +189,18 @@ $schedule->delete();
 
 
         $response = Yii::$app->pcareComponent->integrationCheck($model->cons_id);
-            print_r($response);
-//if ($response == null) {
-////    echo 'null';
-//} else {
-//
-////    print_r($response);
-//
-////    return $this->render('integrationcheck', [
-////        'model' => $model,
-////        'restdata' => $response
-////    ]);
-//}
+//            print_r($response);
+if ($response == null) {
+//    echo 'null';
+} else {
+
+//    print_r($response);
+
+    return $this->render('integrationcheck', [
+        'model' => $model,
+        'restdata' => $response
+    ]);
+}
     }
 
 

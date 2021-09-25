@@ -9,7 +9,7 @@ use yii\widgets\Pjax;
 /* @var $searchModel app\models\ConsidSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = Yii::t('app', 'Clinics');
+$this->title = Yii::t('app', 'Integration Check');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="consid-index">

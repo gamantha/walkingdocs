@@ -51,7 +51,7 @@ class pcareComponent extends Component
 
     public function integrationCheck($consid)
     {
-        \Yii::$app->response->format = \yii\web\Response:: FORMAT_JSON;
+//        \Yii::$app->response->format = \yii\web\Response:: FORMAT_JSON;
         $bpjs_user = self::getUsercreds($consid);
         if ($bpjs_user['isnull']) {
             Yii::warning("null response");
