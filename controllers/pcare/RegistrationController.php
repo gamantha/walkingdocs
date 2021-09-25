@@ -94,8 +94,8 @@ class RegistrationController extends Controller
     public function actionCreate()
     {
         $this->layout = '@app/views/layouts/popuplayout';
-        $model = new PcareRegistration();
 
+        $model = new PcareRegistration();
         $pcarevisit = new PcareVisit();
         $pcarevisit->kdSadar = "01";
         $prescribed = '';
@@ -104,6 +104,17 @@ class RegistrationController extends Controller
         $params = $request->bodyParams;
         $draftexist = 0;
         $cookies = Yii::$app->request->cookies;
+
+
+        if (!isset($params['clinicId'])) {
+            Yii::$app->session->setFlash('danger', "invalid data");
+            return $this->render('error', [
+
+            ]);
+        }
+
+
+
 
         $nokartuok = 0;
         $nikok = 0;
@@ -220,13 +231,10 @@ class RegistrationController extends Controller
             if (isset($cookies['visitId'])) {
                 $cookie_visitid = $cookies['visitId']->value;
                 $wdmodel = WdPassedValues::find()->andWhere(['wdVisitId' => $cookie_visitid])->One();
-//                Yii::$app->session->addFlash('warning', $wdmodel_exist->sistole);
 
             } else {
                 Yii::$app->session->addFlash('warning', 'no cookie - no visit id');
             }
-
-
         }
 
 
@@ -238,10 +246,7 @@ class RegistrationController extends Controller
         }
 
 
-        if ($model->load(Yii::$app->request->post())
-//            && $model->save()
-        ) {
-
+        if ($model->load(Yii::$app->request->post())) {
             if (!empty($model->cons_id))
             {
                 $response = $model->cekPesertaByNokartu();
@@ -390,17 +395,17 @@ class RegistrationController extends Controller
             $model->kdTkp = '10';
         }
 
-//        $prescribedlist = json_deco
         $prescribedlist = explode('","', $prescribed);
-//echo str_replace('\n', '<br/>',$prescribed);
 
-//        print_r($prescribedlist);
+
         return $this->render('testpost', [
             'model' => $model,
             'visitmodel' => $pcarevisit,
             'wdmodel' => $wdmodel,
             'prescribed_list' => $prescribedlist
         ]);
+
+
     }
 
 

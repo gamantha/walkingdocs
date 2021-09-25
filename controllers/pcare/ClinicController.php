@@ -3,6 +3,7 @@
 namespace app\controllers\pcare;
 
 use app\models\pcare\ClinicSchedule;
+use app\models\pcare\PcareRegistration;
 use Yii;
 use app\models\Consid;
 use app\models\ConsidSearch;
@@ -179,6 +180,28 @@ $schedule->delete();
         return $this->redirect(Yii::$app->request->referrer);
     }
 
+    public function actionIntegrationcheck($wdid)
+    {
+        $model = Consid::findOne($wdid);
+            if (empty($model)) {
+                $model = new Consid();
+            }
+
+
+        $response = Yii::$app->pcareComponent->integrationCheck($model->cons_id);
+            print_r($response);
+//if ($response == null) {
+////    echo 'null';
+//} else {
+//
+////    print_r($response);
+//
+////    return $this->render('integrationcheck', [
+////        'model' => $model,
+////        'restdata' => $response
+////    ]);
+//}
+    }
 
 
     /**

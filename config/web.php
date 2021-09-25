@@ -25,6 +25,11 @@ $config = [
         ]
     ],
     'components' => [
+        'pcareComponent' => [
+
+            'class' => 'app\components\pcareComponent',
+
+        ],
             'response' => [
                 //'format' => yii\web\Response::FORMAT_JSON,
                 'charset' => 'UTF-8',
@@ -80,6 +85,7 @@ $config = [
             'showScriptName' => true,
             'rules' => [
                 ['class' => 'yii\rest\UrlRule', 'controller' => 'rest/pendaftaran',
+                    'class' => 'yii\rest\UrlRule', 'controller' => 'pcare/rest',
                 'extraPatterns' => [
                     'GET pendaftaran' => 'pendaftaran/regisdadsatration',
                 ],
