@@ -30,16 +30,33 @@ class RestController extends ActiveController
     {
         \Yii::$app->response->format = \yii\web\Response:: FORMAT_JSON;
 
+
+
         $clinicObject = Consid::findOne($wdid);
+
         if(empty($clinicObject)) {
+
+
             $response = ['integrated' => false];
-            $response['status'] = 'no integration date is found';
+            $response['status'] = 'no integration data is found';
             $response['consid'] = null;
 
     } else {
-            $response = ['integrated' => true];
-            $response['status'] = 'fully integrated';
-            $response['consid'] = $clinicObject['cons_id'];
+
+            $response = Yii::$app->pcareComponent->integrationCheck($clinicObject->cons_id);
+            $resObj = json_decode($response);
+
+            if ($resObj->response == null) {
+                $response = ['integrated' => false];
+                $response['status'] = 'null response from bpjs';
+                $response['consid'] = $clinicObject['cons_id'];
+            } else {
+                $response = ['integrated' => true];
+                $response['status'] = 'fully integrated';
+                $response['consid'] = $clinicObject['cons_id'];
+            }
+
+
 //            $response['consid'] = $clinicObject['cons_id'];
     }
 

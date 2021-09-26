@@ -180,6 +180,8 @@ $schedule->delete();
         return $this->redirect(Yii::$app->request->referrer);
     }
 
+
+
     public function actionIntegrationcheck($wdid)
     {
         $model = Consid::findOne($wdid);
@@ -189,18 +191,20 @@ $schedule->delete();
 
 
         $response = Yii::$app->pcareComponent->integrationCheck($model->cons_id);
-            print_r($response);
-//if ($response == null) {
-////    echo 'null';
-//} else {
-//
-////    print_r($response);
-//
-////    return $this->render('integrationcheck', [
-////        'model' => $model,
-////        'restdata' => $response
-////    ]);
-//}
+            $resObj = json_decode($response);
+//            print_r(json_decode($response));
+if ($resObj->response == null) {
+//    echo 'null';
+    return $this->render('integrationcheck', [
+        'model' => $model,
+        'restdata' => $response
+    ]);
+} else {
+    return $this->render('integrationcheck', [
+        'model' => $model,
+        'restdata' => $response
+    ]);
+}
     }
 
 
