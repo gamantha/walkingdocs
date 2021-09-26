@@ -191,6 +191,7 @@ $schedule->delete();
 
 
         $response = Yii::$app->pcareComponent->integrationCheck($model->cons_id);
+
             $resObj = json_decode($response);
 //            print_r(json_decode($response));
 if ($resObj->response == null) {
@@ -200,6 +201,7 @@ if ($resObj->response == null) {
         'restdata' => $response
     ]);
 } else {
+
     return $this->render('integrationcheck', [
         'model' => $model,
         'restdata' => $response
