@@ -4,6 +4,7 @@ namespace app\components;
 
 
 use app\models\Consid;
+use app\models\pcare\PcareRegistration;
 use Yii;
 use yii\base\Component;
 use yii\base\InvalidConfigException;
@@ -11,9 +12,29 @@ use yii\httpclient\Client;
 
 class pcareComponent extends Component
 {
+
+    const BASE_API_URL = "https://new-api.bpjs-kesehatan.go.id/pcare-rest-v3.0/";
+
     public function welcome()
     {
         echo "Hello..Welcome to MyComponent";
+    }
+
+
+    public function pcareRegister($payload, $bpjs_user)
+    {
+        $client = new Client(['baseUrl' => self::BASE_API_URL . 'pendaftaran']);
+        $request = $client->createRequest()
+            ->setContent($payload)->setMethod('POST')
+            ->setHeaders(['X-cons-id' => $bpjs_user['cons_id']])
+            ->addHeaders(['content-type' => 'application/json'])
+            ->addHeaders(['X-Timestamp' => $bpjs_user['time']])
+            ->addHeaders(['X-Signature' => $bpjs_user['encoded_sig']])
+            ->addHeaders(['X-Authorization' => $bpjs_user['encoded_auth_string']]);
+
+        $regsiterresponse = $request->send();
+        $registerresp =  $regsiterresponse->content;
+        return $registerresp;
     }
 
     public function getUsercreds($consId)
@@ -77,6 +98,228 @@ class pcareComponent extends Component
             Yii::warning("ERROR GETTING RESPONSE FROM BPJS.");
         }
     }
+
+    public function cekPesertaByNokartu($consId)
+    {
+        $bpjs_user = self::getUsercreds($consId);
+        try {
+
+            $client = new Client(['baseUrl' => self::BASE_API_URL . 'peserta/' . $this->noKartu]);
+            $request = $client->createRequest()
+//                ->setContent($payload)->setMethod('POST')
+                ->setHeaders(['X-cons-id' => $bpjs_user['cons_id']])
+                ->addHeaders(['content-type' => 'application/json'])
+                ->addHeaders(['X-Timestamp' => $bpjs_user['time']])
+                ->addHeaders(['X-Signature' => $bpjs_user['encoded_sig']])
+                ->addHeaders(['X-Authorization' => $bpjs_user['encoded_auth_string']]);
+
+            $response = $request->send();
+//                return '1';
+            return $response->content;
+        } catch (\yii\base\Exception $exception) {
+
+            Yii::warning("ERROR GETTING RESPONSE FROM BPJS.");
+        }
+    }
+
+    public function cekPesertaByNik($consId)
+    {
+        $bpjs_user = self::getUsercreds($consId);
+        try {
+
+            $client2 = new Client(['baseUrl' => self::BASE_API_URL .'peserta/nik/' . $this->nik]);
+            $request2 = $client2->createRequest()
+//                ->setContent($payload)->setMethod('POST')
+                ->setHeaders(['X-cons-id' => $bpjs_user['cons_id']])
+                ->addHeaders(['content-type' => 'application/json'])
+                ->addHeaders(['X-Timestamp' => $bpjs_user['time']])
+                ->addHeaders(['X-Signature' => $bpjs_user['encoded_sig']])
+                ->addHeaders(['X-Authorization' => $bpjs_user['encoded_auth_string']]);
+
+            $response2 = $request2->send();
+            return $response2->content;
+        } catch (\yii\base\Exception $exception) {
+
+            Yii::warning("ERROR GETTING RESPONSE FROM BPJS.");
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+    public function getPoli($consid)
+    {
+        $bpjs_user = self::getUsercreds($consid);
+        try {
+
+            $client = new Client(['baseUrl' => self::BASE_API_URL . 'poli/fktp/0/999']);
+            $request = $client->createRequest()
+//                ->setContent($payload)->setMethod('POST')
+                ->setHeaders(['X-cons-id' => $bpjs_user['cons_id']])
+                ->addHeaders(['content-type' => 'application/json'])
+                ->addHeaders(['X-Timestamp' => $bpjs_user['time']])
+                ->addHeaders(['X-Signature' => $bpjs_user['encoded_sig']])
+                ->addHeaders(['X-Authorization' => $bpjs_user['encoded_auth_string']]);
+
+            $response = $request->send();
+            return $response->content;
+        } catch (\yii\base\Exception $exception) {
+
+            Yii::warning("ERROR GETTING RESPONSE FROM BPJS.");
+            return $exception;
+        }
+    }
+
+    public function getDoctor($consid)
+    {
+        $bpjs_user = self::getUsercreds($consid);
+        try {
+
+            $client = new Client(['baseUrl' => self::BASE_API_URL . 'dokter/0/999']);
+            $request = $client->createRequest()
+//                ->setContent($payload)->setMethod('POST')
+                ->setHeaders(['X-cons-id' => $bpjs_user['cons_id']])
+                ->addHeaders(['content-type' => 'application/json'])
+                ->addHeaders(['X-Timestamp' => $bpjs_user['time']])
+                ->addHeaders(['X-Signature' => $bpjs_user['encoded_sig']])
+                ->addHeaders(['X-Authorization' => $bpjs_user['encoded_auth_string']]);
+
+            $response = $request->send();
+            return $response->content;
+        } catch (\yii\base\Exception $exception) {
+
+            Yii::warning("ERROR GETTING RESPONSE FROM BPJS.");
+        }
+
+    }
+        public function getListDoctor($consid)
+        {
+
+            $list = $this->getDoctor($consid);
+            $json = json_decode($list);
+            $options = [];
+            if (isset($json->response)) {
+
+
+                foreach ($json->response->list as $i)
+                {
+                    $options[$i->kdDokter] = $i->kdDokter . ' : ' . $i->nmDokter;
+                }
+            } else {
+                Yii::$app->session->addFlash('danger', 'get dokter - no pcare web service response');
+            }
+
+            return $options;
+        }
+
+    public function getListPoli($consid, $issakit)
+    {
+
+        $response = $this->getPoli($consid);
+
+        $options = [];
+
+        $json = json_decode($response);
+
+        if (isset($json->metaData->code)) {
+            if ($json->metaData->code == 200) {
+                foreach ($json->response->list as $i)
+                {
+                    if ($i->poliSakit == filter_var($issakit, FILTER_VALIDATE_BOOLEAN)) {
+                        $options[$i->kdPoli] = $i->kdPoli . ' : ' . $i->nmPoli;
+                    }
+
+                }
+            } else {
+                Yii::$app->session->setFlash('danger', "BPJS Error : " . $json->metaData->message);
+            }
+
+        } else {
+            Yii::$app->session->setFlash('danger', "BPJS no response - get poli    ");
+        }
+
+        return $options;
+
+    }
+
+
+    public function getKesadaran($consid)
+    {
+        $bpjs_user = self::getUsercreds($consid);
+        try {
+
+            $client = new Client(['baseUrl' => self::BASE_API_URL . 'kesadaran']);
+            $request = $client->createRequest()
+                ->setHeaders(['X-cons-id' => $bpjs_user['cons_id']])
+                ->addHeaders(['content-type' => 'application/json'])
+                ->addHeaders(['X-Timestamp' => $bpjs_user['time']])
+                ->addHeaders(['X-Signature' => $bpjs_user['encoded_sig']])
+                ->addHeaders(['X-Authorization' => $bpjs_user['encoded_auth_string']]);
+
+            $response = $request->send();
+            return $response->content;
+        } catch (\yii\base\Exception $exception) {
+
+            Yii::warning("ERROR GETTING RESPONSE FROM BPJS.");
+        }
+    }
+
+    public function getListKesadaran($consid)
+    {
+
+        $kesadaran = $this->getKesadaran($consid);
+        $json = json_decode($kesadaran);
+
+        $options = [];
+        if (isset($json->response)) {
+            if ($json->metaData->code == 200) {
+                foreach ($json->response->list as $i) {
+                    $options[$i->kdSadar] = $i->kdSadar . ' : ' . $i->nmSadar;
+                }
+
+                return $options;
+            } else {
+                Yii::$app->session->addFlash('danger', 'cek peserta failed');
+                return $options;
+            }
+        } else {
+            Yii::$app->session->addFlash('danger', 'no pcare web service response - getkesadaran');
+            return $options;
+        }
+
+    }
+
+    public function getDiagnosecodes($keyword, $consid)
+    {
+
+        $bpjs_user = self::getUsercreds($consid);
+
+        try {
+
+            $client = new Client(['baseUrl' => self::BASE_API_URL  . 'diagnosa/'.$keyword.'/0/1000']);
+            $request = $client->createRequest()
+                ->setHeaders(['X-cons-id' => $bpjs_user['cons_id']])
+                ->addHeaders(['content-type' => 'application/json'])
+                ->addHeaders(['X-Timestamp' => $bpjs_user['time']])
+                ->addHeaders(['X-Signature' => $bpjs_user['encoded_sig']])
+                ->addHeaders(['X-Authorization' => $bpjs_user['encoded_auth_string']]);
+
+            $response = $request->send();
+            return $response->content;
+        } catch (\yii\base\Exception $exception) {
+
+            Yii::warning("ERROR GETTING RESPONSE FROM BPJS.");
+        }
+    }
+
+
 
 }
 ?>

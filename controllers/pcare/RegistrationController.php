@@ -85,6 +85,160 @@ class RegistrationController extends Controller
     }
 
 
+    public function validateCreatePage($params)
+    {
+        if (!isset($params['clinicId'])) {
+            Yii::$app->session->setFlash('danger', "invalid data clinicID");
+            return false;
+        }
+        return true;
+    }
+
+    public function fillWdModel(&$wdmodel, &$model, $params) {
+        $wdmodel->wdVisitId = $params['visitId'];
+        $wdmodel->clinicId = $params['clinicId'];
+
+        if (empty($params['kdTkp'])) {
+            $wdmodel->kdTkp = '10';
+        } else {
+            $wdmodel->kdTkp = $params['kdTkp'];
+        }
+
+
+        if (empty($params['kdPoli'])) {
+            $wdmodel->kdPoli = '001';
+        } else {
+            $wdmodel->kdPoli = $params['kdPoli'];
+        }
+
+
+//            Yii::$app->session->addFlash('warning', 'reno 1');
+
+        $wdmodel->manualDiagnoses = substr($params['manualDiagnoses'],1,(strlen($params['manualDiagnoses']) - 2));
+        $wdmodel->doctor = $params['doctor'];
+        $wdmodel->wdVisitId = $params['visitId'];
+        $wdmodel->clinicId = $params['clinicId'];
+        $wdmodel->noKartu = $params['noKartu'];
+        $wdmodel->kunjSakit = $params['kunjSakit'];
+        $wdmodel->kdProviderPeserta = $params['kdProviderPeserta'];
+        $wdmodel->tglDaftar = $params['tglDaftar'];
+        // optional
+        $wdmodel->no_urut = $params['no_urut'];
+        $wdmodel->keluhan = $params['keluhan'];
+        $wdmodel->sistole = $params['sistole'];
+        $wdmodel->diastole = $params['diastole'];
+        $wdmodel->beratBadan = $params['beratBadan'];
+        $wdmodel->tinggiBadan = $params['tinggiBadan'];
+        $wdmodel->respRate = $params['respRate'];
+        $wdmodel->heartRate = $params['heartRate'];
+        $wdmodel->administered = $params['administered'];
+        $wdmodel->prescribed = $params['prescribed'];
+        $wdmodel->kdPoli = $params['kdPoli'];
+        $wdmodel->kdTkp = $params['kdTkp'];
+
+        $model->noKartu = $wdmodel->noKartu;
+        $model->kunjSakit = $wdmodel->kunjSakit;
+        $model->kdTkp = $wdmodel->kdTkp;
+        $model->kdProviderPeserta = $wdmodel->kdProviderPeserta;
+        $model->tglDaftar = $wdmodel->tglDaftar;
+        // optional
+        $model->no_urut = $wdmodel->no_urut;
+        $model->keluhan = $wdmodel->keluhan;
+        $model->sistole = $wdmodel->sistole;
+        $model->diastole = $wdmodel->diastole;
+        $model->beratBadan = $wdmodel->beratBadan;
+        $model->tinggiBadan = $wdmodel->tinggiBadan;
+        $model->respRate = $wdmodel->respRate;
+        $model->heartRate = $wdmodel->heartRate;
+        $model->kdPoli = $wdmodel->kdPoli;
+        $model->status = 'not ready';
+
+        $checklist = json_encode($params['checklistNames']);
+        $checklistnames = substr($params['checklistNames'],2,(strlen($params['checklistNames']) - 4));
+        $wdmodel->checklistNames =str_replace('","', PHP_EOL,$checklistnames);
+        $wdmodel->checklistNames = $checklistnames;
+
+//            $pcarevisit->terapi = html_entity_decode($prescribed);
+
+        $wdmodel->disposition = $params['disposition'];
+        $wdmodel->statusAssessment = $params['statusAssesment'];
+        $wdmodel->status = "draft";
+
+        $wdmodel->save();
+    }
+
+    public function fillPayload($model)
+    {
+        $payload = '{
+        "kdProviderPeserta": "'.$model->kdProviderPeserta.'",
+        "tglDaftar": "'.date("d-m-Y" , strtotime($model->tglDaftar)).'", 
+        "noKartu": "'.$model->noKartu.'",
+        "kdPoli": "'.trim($model->kdPoli).'",
+        "keluhan": "'.$model->keluhan.'",
+        "kunjSakit": '. $model->kunjSakit .',
+        "sistole": "'.$model->sistole.'",
+        "diastole": "'.$model->diastole.'",
+        "beratBadan": "'.$model->beratBadan.'",
+        "tinggiBadan": "'.$model->tinggiBadan.'",
+        "respRate": "'.$model->respRate.'",
+        "heartRate": "'.$model->heartRate.'",
+        "rujukBalik":"'.$model->rujukBalik.'",
+        "kdTkp": "'.$model->kdTkp.'"
+      }';
+
+        return $payload;
+    }
+    public function checkVisitId($params)
+    {
+
+        $draftexist = 0;
+
+        if (!isset($params['visitId'])) {
+            Yii::$app->session->setFlash('danger', "invalid data visitID");
+            return false;
+        }
+        $cookiesresp = Yii::$app->response->cookies;
+        $cookiesresp->add(new \yii\web\Cookie(
+            [
+                'name' => 'visitId',
+                'value' => $params['visitId'],
+            ]        ));
+
+//        $wdmodel->wdVisitId =;
+//        $wdmodel->clinicId = ;
+
+        $wdmodel_exist = WdPassedValues::find()->andWhere(['wdVisitId' =>  $params['visitId']])->andWhere(['clinicId' => $params['clinicId']])
+//                ->andWhere(['status'=>'registered'])
+            ->One();
+        if ($wdmodel_exist)
+        {
+            if (isset($wdmodel_exist->status)) {
+
+                if ($wdmodel_exist->status == 'registered') {
+//                        Yii::$app->session->addFlash('success', "draft registered");
+                    $visit = PcareVisit::find()->andWhere(['pendaftaranId' => $wdmodel_exist->registrationId])->One();
+                    if ($visit->status != "submitted") {
+                        return $this->redirect(['pcare/visit/update', 'id' => $wdmodel_exist->registrationId]);
+                    } else {
+                        return $this->redirect(['view', 'id' => $wdmodel_exist->registrationId]);
+                    }
+                } else if ($wdmodel_exist->status == 'draft') {
+                    $draftexist = 1;
+
+//                        $this->refresh();
+                    $wdmodel_exist->delete();
+
+                }
+            }
+
+        }
+
+        if ($draftexist) {
+            $wdmodel_exist->delete();
+
+        }
+        return true;
+    }
 
     /**
      * Creates a new PcareRegistration model.
@@ -102,138 +256,26 @@ class RegistrationController extends Controller
         $wdmodel = new WdPassedValues();
         $request = Yii::$app->request;
         $params = $request->bodyParams;
-        $draftexist = 0;
+
         $cookies = Yii::$app->request->cookies;
-
-
-        if (!isset($params['clinicId'])) {
-            Yii::$app->session->setFlash('danger', "invalid data");
-            return $this->render('error', [
-
-            ]);
-        }
-
-
-
 
         $nokartuok = 0;
         $nikok = 0;
-        if (isset($params['visitId'])) {
-            $cookiesresp = Yii::$app->response->cookies;
-            $cookiesresp->add(new \yii\web\Cookie(
-                [
-                    'name' => 'visitId',
-                    'value' => $params['visitId'],
-                ]        ));
-
-            $wdmodel->wdVisitId = $params['visitId'];
-            $wdmodel->clinicId = $params['clinicId'];
-
-            $wdmodel_exist = WdPassedValues::find()->andWhere(['wdVisitId' => $wdmodel->wdVisitId])->andWhere(['clinicId' => $wdmodel->clinicId])
-//                ->andWhere(['status'=>'registered'])
-                ->One();
-            if ($wdmodel_exist)
-            {
-                if (isset($wdmodel_exist->status)) {
-
-                    if ($wdmodel_exist->status == 'registered') {
-//                        Yii::$app->session->addFlash('success', "draft registered");
-                        $visit = PcareVisit::find()->andWhere(['pendaftaranId' => $wdmodel_exist->registrationId])->One();
-                        if ($visit->status != "submitted") {
-                            return $this->redirect(['pcare/visit/update', 'id' => $wdmodel_exist->registrationId]);
-                        } else {
-                            return $this->redirect(['view', 'id' => $wdmodel_exist->registrationId]);
-                        }
-                    } else if ($wdmodel_exist->status == 'draft') {
-                        $draftexist = 1;
-
-//                        $this->refresh();
-                        $wdmodel_exist->delete();
-
-                    }
-                }
-
-            }
-
-
-            if (empty($params['kdTkp'])) {
-                $wdmodel->kdTkp = '10';
-            } else {
-                $wdmodel->kdTkp = $params['kdTkp'];
-            }
-
-
-            if (empty($params['kdPoli'])) {
-                $wdmodel->kdPoli = '001';
-            } else {
-                $wdmodel->kdPoli = $params['kdPoli'];
-            }
 
 
 
+        if($this->checkVisitId($params)) {
 
-            $wdmodel->manualDiagnoses = substr($params['manualDiagnoses'],1,(strlen($params['manualDiagnoses']) - 2));
-            $wdmodel->doctor = $params['doctor'];
-            $wdmodel->wdVisitId = $params['visitId'];
-            $wdmodel->clinicId = $params['clinicId'];
-            $wdmodel->noKartu = $params['noKartu'];
-            $wdmodel->kunjSakit = $params['kunjSakit'];
-            $wdmodel->kdProviderPeserta = $params['kdProviderPeserta'];
-            $wdmodel->tglDaftar = $params['tglDaftar'];
-            // optional
-            $wdmodel->no_urut = $params['no_urut'];
-            $wdmodel->keluhan = $params['keluhan'];
-            $wdmodel->sistole = $params['sistole'];
-            $wdmodel->diastole = $params['diastole'];
-            $wdmodel->beratBadan = $params['beratBadan'];
-            $wdmodel->tinggiBadan = $params['tinggiBadan'];
-            $wdmodel->respRate = $params['respRate'];
-            $wdmodel->heartRate = $params['heartRate'];
-            $wdmodel->administered = $params['administered'];
-            $wdmodel->prescribed = $params['prescribed'];
-            $wdmodel->kdPoli = $params['kdPoli'];
-            $wdmodel->kdTkp = $params['kdTkp'];
-
-            $model->noKartu = $wdmodel->noKartu;
-            $model->kunjSakit = $wdmodel->kunjSakit;
-                $model->kdTkp = $wdmodel->kdTkp;
-            $model->kdProviderPeserta = $wdmodel->kdProviderPeserta;
-            $model->tglDaftar = $wdmodel->tglDaftar;
-            // optional
-            $model->no_urut = $wdmodel->no_urut;
-            $model->keluhan = $wdmodel->keluhan;
-            $model->sistole = $wdmodel->sistole;
-            $model->diastole = $wdmodel->diastole;
-            $model->beratBadan = $wdmodel->beratBadan;
-            $model->tinggiBadan = $wdmodel->tinggiBadan;
-            $model->respRate = $wdmodel->respRate;
-            $model->heartRate = $wdmodel->heartRate;
-            $model->kdPoli = $wdmodel->kdPoli;
-            $model->status = 'not ready';
-
-            $checklist = json_encode($params['checklistNames']);
-            $checklistnames = substr($params['checklistNames'],2,(strlen($params['checklistNames']) - 4));
-            $wdmodel->checklistNames =str_replace('","', PHP_EOL,$checklistnames);
-            $wdmodel->checklistNames = $checklistnames;
-            $prescribed = substr($params['prescribed'],2, (strlen($params['prescribed']) - 4));
+        $this->fillWdModel($wdmodel,$model,$params);
+        $prescribed = substr($params['prescribed'],2, (strlen($params['prescribed']) - 4));
             $pcarevisit->terapi = str_replace('","', "\n",$prescribed);
-//            $pcarevisit->terapi = html_entity_decode($prescribed);
-
-            $wdmodel->disposition = $params['disposition'];
-            $wdmodel->statusAssessment = $params['statusAssesment'];
-            $wdmodel->status = "draft";
-            if ($draftexist) {
-                $wdmodel_exist->delete();
-//                                Yii::$app->session->addFlash('warning', "deleted");
-            }
-            $wdmodel->save();
         } else {
             if (isset($cookies['visitId'])) {
                 $cookie_visitid = $cookies['visitId']->value;
                 $wdmodel = WdPassedValues::find()->andWhere(['wdVisitId' => $cookie_visitid])->One();
-
+                Yii::$app->session->addFlash('warning', 'no cookie - no visit id 2');
             } else {
-                Yii::$app->session->addFlash('warning', 'no cookie - no visit id');
+                Yii::$app->session->addFlash('warning', 'no cookie - no visit id 3');
             }
         }
 
@@ -247,6 +289,7 @@ class RegistrationController extends Controller
 
 
         if ($model->load(Yii::$app->request->post())) {
+            Yii::$app->session->addFlash('warning', 'FORM POSTED/CREATED');
             if (!empty($model->cons_id))
             {
                 $response = $model->cekPesertaByNokartu();
@@ -263,26 +306,9 @@ class RegistrationController extends Controller
                         $pcarevisit->load(Yii::$app->request->post());
                         $wdmodel->load(Yii::$app->request->post());
                         $bpjs_user = $model->getUsercreds($model->cons_id);
-                        $payload = '{
-        "kdProviderPeserta": "'.$model->kdProviderPeserta.'",
-        "tglDaftar": "'.date("d-m-Y" , strtotime($model->tglDaftar)).'", 
-        "noKartu": "'.$model->noKartu.'",
-        "kdPoli": "'.trim($model->kdPoli).'",
-        "keluhan": "'.$model->keluhan.'",
-        "kunjSakit": '. $model->kunjSakit .',
-        "sistole": "'.$model->sistole.'",
-        "diastole": "'.$model->diastole.'",
-        "beratBadan": "'.$model->beratBadan.'",
-        "tinggiBadan": "'.$model->tinggiBadan.'",
-        "respRate": "'.$model->respRate.'",
-        "heartRate": "'.$model->heartRate.'",
-        "rujukBalik":"'.$model->rujukBalik.'",
-        "kdTkp": "'.$model->kdTkp.'"
-      }';
+                        $payload = $this->fillPayload($model);
 
 
-//                        THIS WHERE REGISTRATION
-//                    $this->registerToBpjs();
 
                     } else {
                         Yii::$app->session->setFlash('danger', "nomor peserta tidak aktif");
@@ -291,7 +317,8 @@ class RegistrationController extends Controller
                     Yii::$app->session->addFlash('danger', 'no kartu error : ' . json_encode($jsonval));
                 }
 
-                $responsenik = $model->cekPesertaByNik();
+//                $responsenik = $model->cekPesertaByNik();
+                $responsenik = Yii::$app->pcareComponent->cekPesertaByNik($this->cons_id);
                 $nikjsonval = json_decode($responsenik);
 
                 if (isset($nikjsonval->metaData->code) && ($nikjsonval->metaData->code == 200)) {
@@ -305,22 +332,7 @@ class RegistrationController extends Controller
                         $pcarevisit->load(Yii::$app->request->post());
                         $wdmodel->load(Yii::$app->request->post());
                         $bpjs_user = $model->getUsercreds($model->cons_id);
-                        $payload = '{
-        "kdProviderPeserta": "'.$model->kdProviderPeserta.'",
-        "tglDaftar": "'.date("d-m-Y" , strtotime($model->tglDaftar)).'", 
-        "noKartu": "'.$model->noKartu.'",
-        "kdPoli": "'.trim($model->kdPoli).'",
-        "keluhan": "'.$model->keluhan.'",
-        "kunjSakit": '. $model->kunjSakit .',
-        "sistole": "'.$model->sistole.'",
-        "diastole": "'.$model->diastole.'",
-        "beratBadan": "'.$model->beratBadan.'",
-        "tinggiBadan": "'.$model->tinggiBadan.'",
-        "respRate": "'.$model->respRate.'",
-        "heartRate": "'.$model->heartRate.'",
-        "rujukBalik":"'.$model->rujukBalik.'",
-        "kdTkp": "'.$model->kdTkp.'"
-      }';
+                        $payload = $this->fillPayload($model);
 
 
 
@@ -337,23 +349,10 @@ class RegistrationController extends Controller
             }
 
             if ($nokartuok || $nikok) {
-//                Yii::$app->session->addFlash('success', 'NIK : ' . $nikok);
-//                Yii::$app->session->addFlash('success', 'No kartu : ' . $nokartuok);
-//                $this->registerToBpjs();
 
                 try {
 
-                    $client = new Client(['baseUrl' => 'https://dvlp.bpjs-kesehatan.go.id:9081/pcare-rest-v3.0/pendaftaran']);
-                    $request = $client->createRequest()
-                        ->setContent($payload)->setMethod('POST')
-                        ->setHeaders(['X-cons-id' => $bpjs_user['cons_id']])
-                        ->addHeaders(['content-type' => 'application/json'])
-                        ->addHeaders(['X-Timestamp' => $bpjs_user['time']])
-                        ->addHeaders(['X-Signature' => $bpjs_user['encoded_sig']])
-                        ->addHeaders(['X-Authorization' => $bpjs_user['encoded_auth_string']]);
-
-                    $regsiterresponse = $request->send();
-                    $registerresp =  $regsiterresponse->content;
+                    $registerresp = Yii::$app->pcareComponent->pcareRegister($payload, $bpjs_user);
                 } catch (\yii\base\Exception $exception) {
                     Yii::warning("ERROR GETTING RESPONSE FROM BPJS.");
                 }
@@ -391,18 +390,35 @@ class RegistrationController extends Controller
 
         }
 
+        if(!$this->validateCreatePage($params))
+        {
+            return $this->render('error', [
+            ]);
+        }
+
         if(isset($model->kdTkp)) {
             $model->kdTkp = '10';
         }
 
         $prescribedlist = explode('","', $prescribed);
 
+        $initPoli = [];
+        if ($model->cons_id) {
 
+            $initPoli =Yii::$app->pcareComponent->getListPoli($model->cons_id, 'true');
+        }
+
+        $listData2 = Yii::$app->pcareComponent->getListDoctor($model->cons_id);
+
+        $refKesadaran = Yii::$app->pcareComponent->getListKesadaran($model->cons_id);
         return $this->render('testpost', [
             'model' => $model,
             'visitmodel' => $pcarevisit,
             'wdmodel' => $wdmodel,
-            'prescribed_list' => $prescribedlist
+            'initPoli' => $initPoli,
+            'prescribed_list' => $prescribedlist,
+            'listData2' => $listData2,
+            'refKesadaran' => $refKesadaran
         ]);
 
 
@@ -659,7 +675,7 @@ $provider = new ArrayDataProvider();
 //        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
     }
 
-    public function getPoli($consid, $issakit)
+    public function getPoli($consid, $issakit) /** MAU DIPINDAH ke component */
     {
 //        $registration = PcareRegistration::findOne($id);
         $registration = new PcareRegistration();
@@ -684,7 +700,7 @@ $provider = new ArrayDataProvider();
             }
 
         } else {
-            Yii::$app->session->setFlash('danger', "BPJS no response    ");
+            Yii::$app->session->setFlash('danger', "BPJS no response - get poli    ");
         }
 
 
@@ -929,18 +945,14 @@ Yii::$app->session->addFlash('danger', 'no kartu ' . $model['ketAktif'] . '. cob
 
     }
 
-    public function actionGetfilteredpolicodes()
+    public function actionGetfilteredpolicodes($consid)
     {
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
         $options = [];
         if (isset($_POST['depdrop_parents'])) {
             $parents = $_POST['depdrop_parents'];
             if ($parents != null) {
-                $cat_id = $parents[0];
-
-//                $registration = new PcareRegistration();
-//                $registration->setConsId('16744');
-                $response = $this->getPoli('16744', $cat_id);
+                $response =Yii::$app->pcareComponent->getListPoli($consid, $parents[0]);
                 foreach ($response as $i)
                 {
 //                echo $i;
@@ -951,7 +963,8 @@ Yii::$app->session->addFlash('danger', 'no kartu ' . $model['ketAktif'] . '. cob
             }
 //            return ['output'=>$options, 'selected'=>''];
         } else {
-            $response = $this->getPoli('16744');
+
+            $response =Yii::$app->pcareComponent->getListPoli($consid);
             foreach ($response as $i)
             {
 //                echo $i;
@@ -972,69 +985,20 @@ public function actionTest()
 
 
 
-    public function getKesadaran($model)
-    {
-
-        $kesadaran = $model->getKesadaran();
-        $json = json_decode($kesadaran);
-
-        $options = [];
-        if (isset($json->response)) {
-            if ($json->metaData->code == 200) {
-                foreach ($json->response->list as $i) {
-                    $options[$i->kdSadar] = $i->kdSadar . ' : ' . $i->nmSadar;
-                }
-
-                return $options;
-            } else {
-                Yii::$app->session->addFlash('danger', 'cek peserta failed');
-                return $options;
-            }
-        } else {
-            Yii::$app->session->addFlash('danger', 'no pcare web service response');
-            return $options;
-        }
-
-    }
 
 
-    public function getDokter($consid)
-    {
-//        $registration = PcareRegistration::findOne($pendaftaranId);
-//        $registration = new PcareRegistration();
-//        $registration->cons_id = $consid;
-        $kesadaran = $consid->getDokter();
 
 
-        $json = json_decode($kesadaran);
-        $options = [];
-        if (isset($json->response)) {
-
-
-            foreach ($json->response->list as $i)
-            {
-                $options[$i->kdDokter] = $i->kdDokter . ' : ' . $i->nmDokter;
-            }
-        } else {
-            Yii::$app->session->addFlash('danger', 'get dokter - no pcare web service response');
-        }
-
-        return $options;
-    }
-
-
-    public function actionDiagnosecode($q = null, $id)
+    public function actionDiagnosecode($q = null, $consid)
     {
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
         $out = ['results' => [['id' => '', 'text' => '']]];
         if (!is_null($q)) {
 
-//            $visit = PcareVisit::findOne($id);
-            $registration = new PcareRegistration();
-            $registration->setConsId($id);
+//            $registration = new PcareRegistration();
+//            $registration->setConsId($id);
 
-//            $visit->setWdId('59cedfba9ae80d05757f54e9.5e87a22effe0dc06b2f87964');
-            $response = $registration->getDiagnosecodes($q);
+            $response = Yii::$app->pcareComponent->getDiagnosecodes($q, $consid);
 
             $jsonval = json_decode($response);
             if (isset($jsonval->response)) {
@@ -1044,8 +1008,7 @@ public function actionTest()
                     array_push($out['results'], $temp);
                 }
                 array_shift($out['results']);
-//            $out['results'] = ArrayHelper::map($jsonval->response->list, 'kdDiag', 'nmDiag');
-//            $out['results'] = ['id' => '1', 'text' => 'jakarta'];
+
             } else {
                 Yii::$app->session->addFlash('danger', 'get diagnose code - no pcare web service response');
             }
@@ -1156,7 +1119,7 @@ $array=[];
     public function actionTestpost()
 {
 
-    $payload = 'clinicId=59cedfba9ae80d05757f54e9.5e87a22effe0dc06b2f87964&kdPoli=&kdTkp=&tglDaftar=2021-5-10' .
+    $payload = 'clinicId=59cedfba9ae80d05757f54e9.59cedfba9ae80d05757f54e7&kdPoli=&kdTkp=&tglDaftar=2021-09-27' .
         '&visitId=12345' .
         '&noKartu=&kunjSakit=true' .
         '&kdProviderPeserta=' .
@@ -1168,7 +1131,7 @@ $array=[];
     '&tinggiBadan=77' .
     '&respRate=77' .
     '&heartRate=77' .
-        '&doctor=' .
+        '&doctor=nama dokter' .
         '&disposition=' .
         '&statusAssesment=' .
         '&administered=' .

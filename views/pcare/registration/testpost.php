@@ -20,11 +20,7 @@ use yii\widgets\ActiveForm;
 
     <?php $form = ActiveForm::begin(); ?>
     <?= $form->field($model, 'cons_id')->textInput(['maxlength' => true, 'readonly' => true, 'id' => 'pcareregistration-cons_id']) ?>
-    <?php
 
-    //echo $form->field($model, 'kdProviderPeserta')->textInput(['maxlength' => true, 'readonly' => false])
-
-    ?>
     <h2>Registration Data</h2>
     <div class="well">
 
@@ -51,15 +47,8 @@ use yii\widgets\ActiveForm;
 echo $form->field($model, 'nik')->textInput(['maxlength' => true])->label('KTP - digunakan untuk cek peserta apabila no Kartu kosong');
     $refPoli = [];
 
-    $initPoli = [];
-    if ($model->cons_id) {
-        $initPoli = $this->context->getPoli($model->cons_id, 'true');
-    } else {
-
-    }
 
     $url = \yii\helpers\Url::to(['getpolicodes']);
-
 
 
     ?>
@@ -82,10 +71,6 @@ echo $form->field($model, 'nik')->textInput(['maxlength' => true])->label('KTP -
 
 
 
-//    echo $form->field($model, 'kdPoli')->dropDownList(
-//        $refPoli,
-//        ['prompt'=>'Select...'])->label("this needs to be dependent dropdown");
-
 
     echo $form->field($model, 'kdPoli')->widget(DepDrop::classname(), [
 //            'data' => $initPoli,
@@ -94,7 +79,7 @@ echo $form->field($model, 'nik')->textInput(['maxlength' => true])->label('KTP -
             'initialize' => true,
             'initDepends' => ['pcareregistration-kunjsakit'],
             'placeholder'=>'Select...',
-            'url'=>Url::to(['getfilteredpolicodes'])
+            'url'=>Url::to(['getfilteredpolicodes','consid' => $model->cons_id])
 //            'url'=>Url::to(['/site/prod'])
         ]
     ]);
@@ -129,14 +114,6 @@ echo $form->field($model, 'nik')->textInput(['maxlength' => true])->label('KTP -
 
         <?php
 
-        $listData2 = [];
-        $refKesadaran = [];
-
-
-
-        $listData2 = $this->context->getDokter($model);
-        $refKesadaran = $this->context->getKesadaran($model);
-
         echo $form->field($wdmodel, 'doctor')->textInput(['maxlength' => true,'readonly' => true]);
         echo $form->field($visitmodel, 'kdDokter')->dropDownList(
             $listData2,
@@ -146,10 +123,7 @@ echo $form->field($model, 'nik')->textInput(['maxlength' => true])->label('KTP -
             $refKesadaran,
             ['prompt'=>'Select...']);
 
-
-
-//echo $form->field($visitmodel, 'kdDiag1')->textInput(['maxlength' => true]);
-        $url = \yii\helpers\Url::to(['diagnosecode']);
+        $url = \yii\helpers\Url::to(['diagnosecode','consid' => $model->cons_id]);
         echo $form->field($visitmodel, 'kdDiag1')->widget(Select2::classname(), [
             'options' => ['placeholder' => 'Search for diagnose...'],
             'pluginOptions' => [
