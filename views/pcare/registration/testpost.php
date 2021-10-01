@@ -17,7 +17,11 @@ use yii\widgets\ActiveForm;
     <h1><?= Html::encode($this->title) ?></h1>
 
 <div class="pcare-registration-form">
-
+    <?php
+    echo '<pre>';
+    print_r($params);
+    echo '</pre>';
+    ?>
     <?php $form = ActiveForm::begin(); ?>
     <?= $form->field($model, 'cons_id')->textInput(['maxlength' => true, 'readonly' => true, 'id' => 'pcareregistration-cons_id']) ?>
 

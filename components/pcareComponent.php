@@ -5,6 +5,8 @@ namespace app\components;
 
 use app\models\Consid;
 use app\models\pcare\PcareRegistration;
+use app\models\pcare\PcareVisit;
+use app\models\pcare\WdPassedValues;
 use Yii;
 use yii\base\Component;
 use yii\base\InvalidConfigException;
@@ -320,6 +322,56 @@ class pcareComponent extends Component
     }
 
 
+
+    public function checkVisitId($params)
+    {
+
+        $draftexist = 0;
+
+        if (!isset($params['visitId'])) {
+            Yii::$app->session->setFlash('danger', "invalid data visitID");
+            return false;
+        }
+        $cookiesresp = Yii::$app->response->cookies;
+        $cookiesresp->add(new \yii\web\Cookie(
+            [
+                'name' => 'visitId',
+                'value' => $params['visitId'],
+            ]        ));
+
+
+        $wdmodel_exist = WdPassedValues::find()->andWhere(['wdVisitId' =>  $params['visitId']])->andWhere(['clinicId' => $params['clinicId']])
+
+            ->One();
+        if ($wdmodel_exist)
+        {
+            if (isset($wdmodel_exist->status)) {
+
+                if ($wdmodel_exist->status == 'registered') {
+//                        Yii::$app->session->addFlash('success', "draft registered");
+                    $visit = PcareVisit::find()->andWhere(['pendaftaranId' => $wdmodel_exist->registrationId])->One();
+                    if ($visit->status != "submitted") {
+                        return $this->redirect(['pcare/visit/update', 'id' => $wdmodel_exist->registrationId]);
+                    } else {
+                        return $this->redirect(['view', 'id' => $wdmodel_exist->registrationId]);
+                    }
+                } else if ($wdmodel_exist->status == 'draft') {
+                    $draftexist = 1;
+
+//                        $this->refresh();
+                    $wdmodel_exist->delete();
+
+                }
+            }
+
+        }
+
+        if ($draftexist) {
+            $wdmodel_exist->delete();
+
+        }
+        return true;
+    }
 
 }
 ?>
