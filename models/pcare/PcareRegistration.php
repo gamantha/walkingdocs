@@ -177,51 +177,6 @@ class PcareRegistration extends \yii\db\ActiveRecord
     }
 
 
-//    public function cekPesertaByNokartu()
-//    {
-//        $bpjs_user = self::getUsercreds($this->cons_id);
-//        try {
-//
-//            $client = new Client(['baseUrl' => 'https://dvlp.bpjs-kesehatan.go.id:9081/pcare-rest-v3.0/peserta/' . $this->noKartu]);
-//            $request = $client->createRequest()
-////                ->setContent($payload)->setMethod('POST')
-//                ->setHeaders(['X-cons-id' => $bpjs_user['cons_id']])
-//                ->addHeaders(['content-type' => 'application/json'])
-//                ->addHeaders(['X-Timestamp' => $bpjs_user['time']])
-//                ->addHeaders(['X-Signature' => $bpjs_user['encoded_sig']])
-//                ->addHeaders(['X-Authorization' => $bpjs_user['encoded_auth_string']]);
-//
-//            $response = $request->send();
-////                return '1';
-//            return $response->content;
-//        } catch (\yii\base\Exception $exception) {
-//
-//            Yii::warning("ERROR GETTING RESPONSE FROM BPJS.");
-//        }
-//    }
-//
-//    public function cekPesertaByNik()
-//    {
-//        $bpjs_user = self::getUsercreds($this->cons_id);
-//        try {
-//
-//            $client2 = new Client(['baseUrl' => 'https://dvlp.bpjs-kesehatan.go.id:9081/pcare-rest-v3.0/peserta/nik/' . $this->nik]);
-//            $request2 = $client2->createRequest()
-////                ->setContent($payload)->setMethod('POST')
-//                ->setHeaders(['X-cons-id' => $bpjs_user['cons_id']])
-//                ->addHeaders(['content-type' => 'application/json'])
-//                ->addHeaders(['X-Timestamp' => $bpjs_user['time']])
-//                ->addHeaders(['X-Signature' => $bpjs_user['encoded_sig']])
-//                ->addHeaders(['X-Authorization' => $bpjs_user['encoded_auth_string']]);
-//
-//            $response2 = $request2->send();
-////                return '2';
-//            return $response2->content;
-//        } catch (\yii\base\Exception $exception) {
-//
-//            Yii::warning("ERROR GETTING RESPONSE FROM BPJS.");
-//        }
-//    }
 
 
     public function Cekpesesasasarta()

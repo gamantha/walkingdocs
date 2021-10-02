@@ -323,15 +323,28 @@ class pcareComponent extends Component
 
 
 
-    public function checkVisitId($params)
+    public function checkVisitId($params, $cookies)
     {
 
-        $draftexist = 0;
 
+        /** check visit ID in params  */
         if (!isset($params['visitId'])) {
-            Yii::$app->session->setFlash('danger', "invalid data visitID");
-            return false;
+            Yii::$app->session->addFlash('danger', "ConsID : not found in Params");
+//            return false;
         }
+        /** check visit ID in cookies */
+        if (isset($cookies['visitId'])) {
+            $cookie_visitid = $cookies['visitId']->value;
+            Yii::$app->session->addFlash('success', "ConsID : FOUND in cookies");
+            $wdmodel = WdPassedValues::find()->andWhere(['wdVisitId' => $cookie_visitid])->One();
+        } else {
+            Yii::$app->session->addFlash('danger', "ConsID : not found in Cookies");
+        }
+
+
+
+
+        $draftexist = 0;
         $cookiesresp = Yii::$app->response->cookies;
         $cookiesresp->add(new \yii\web\Cookie(
             [
@@ -339,10 +352,7 @@ class pcareComponent extends Component
                 'value' => $params['visitId'],
             ]        ));
 
-
-        $wdmodel_exist = WdPassedValues::find()->andWhere(['wdVisitId' =>  $params['visitId']])->andWhere(['clinicId' => $params['clinicId']])
-
-            ->One();
+        $wdmodel_exist = WdPassedValues::find()->andWhere(['wdVisitId' =>  $params['visitId']])->andWhere(['clinicId' => $params['clinicId']])->One();
         if ($wdmodel_exist)
         {
             if (isset($wdmodel_exist->status)) {
