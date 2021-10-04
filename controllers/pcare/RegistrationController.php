@@ -160,35 +160,9 @@ class RegistrationController extends Controller
         $wdmodel->save();
     }
 
-    public function fillPayload($model)
-    {
-        $payload = '{
-        "kdProviderPeserta": "'.$model->kdProviderPeserta.'",
-        "tglDaftar": "'.date("d-m-Y" , strtotime($model->tglDaftar)).'", 
-        "noKartu": "'.$model->noKartu.'",
-        "kdPoli": "'.trim($model->kdPoli).'",
-        "keluhan": "'.$model->keluhan.'",
-        "kunjSakit": '. $model->kunjSakit .',
-        "sistole": "'.$model->sistole.'",
-        "diastole": "'.$model->diastole.'",
-        "beratBadan": "'.$model->beratBadan.'",
-        "tinggiBadan": "'.$model->tinggiBadan.'",
-        "respRate": "'.$model->respRate.'",
-        "heartRate": "'.$model->heartRate.'",
-        "rujukBalik":"'.$model->rujukBalik.'",
-        "kdTkp": "'.$model->kdTkp.'"
-      }';
-
-        return $payload;
-    }
 
 
 
-    public function actionCreateconfirm()
-    {
-        return $this->render('createconfirm', [
-        ]);
-    }
     /**
      * Creates a new PcareRegistration model.
      * If creation is successful, the browser will be redirected to the 'view' page.
@@ -210,6 +184,7 @@ class RegistrationController extends Controller
         $model = new PcareRegistration();
         $pcarevisit = new PcareVisit();
         $pcarevisit->kdSadar = "01";
+        $pcarevisit->kdStatusPulang = '0';
         $prescribed = '';
         $prescribedlist = [];
         $listData2 = [];
@@ -227,6 +202,7 @@ class RegistrationController extends Controller
         $confirmflag = false;
         $postflag = false;
         $clinicModel = new Consid();
+        $refStatuspulang = [];
 
 
         if ($model->load(Yii::$app->request->post()) && $wdmodel->load(Yii::$app->request->post()) ) {
@@ -238,9 +214,12 @@ class RegistrationController extends Controller
 
             }
 
+
+
             $initPoli =Yii::$app->pcareComponent->getListPoli($model->cons_id, 'true');
             $listData2 = Yii::$app->pcareComponent->getListDoctor($model->cons_id);
             $refKesadaran = Yii::$app->pcareComponent->getListKesadaran($model->cons_id);
+//            $refStatuspulang = Yii::$app->pcareComponent->getStatuspulang('10', $model->cons_id);
 
                 $response =  Yii::$app->pcareComponent->cekPesertaByNokartu($model->cons_id,$model->noKartu);
                 $jsonval = json_decode($response);
@@ -357,6 +336,7 @@ class RegistrationController extends Controller
                     $initPoli =Yii::$app->pcareComponent->getListPoli($model->cons_id, 'true');
                     $listData2 = Yii::$app->pcareComponent->getListDoctor($model->cons_id);
                     $refKesadaran = Yii::$app->pcareComponent->getListKesadaran($model->cons_id);
+//                    $refStatuspulang = Yii::$app->pcareComponent->getStatuspulang($model->cons_id,10);
                     $prescribedlist = explode('","', $prescribed);
 
 
@@ -379,9 +359,81 @@ class RegistrationController extends Controller
         }
 
 
+        if(isset($_POST['confirm'])) {
+            Yii::$app->session->addFlash('success', 'confirm!');
+        } else if(isset($_POST['register'])) {
+            Yii::$app->session->addFlash('success', 'REGISTER!');
+            $payload = Yii::$app->pcareComponent->fillPayload($model);
+            Yii::$app->session->addFlash('success', $payload);
+            $registerresp = Yii::$app->pcareComponent->pcareRegister($payload, $model->cons_id);
+            Yii::$app->session->addFlash('success', $registerresp);
 
 
-        if (!$confirmflag) {
+
+
+            $jsonresp = json_decode($registerresp);
+
+            if (isset($jsonresp->metaData->message))
+            {
+                if($jsonresp->metaData->message == 'CREATED') {
+                    if(strpos($jsonresp->response->message, "null") ) {
+                        Yii::$app->session->addFlash('danger', $registerresp);
+                    } else {
+//                            $model->no_urut = $jsonresp->response->message;
+//                            $model->status = 'registered';
+//                            $model->save();
+//                            $pcarevisit->pendaftaranId = $model->id;
+//                            $wdmodel->registrationId = $model->id;
+//                            $wdmodel->status = 'registered';
+//                            $wdmodel->save();
+//                            $pcarevisit->save();
+
+                        Yii::$app->session->addFlash('success', 'no urut created ' . $jsonresp->response->message);
+
+
+
+
+
+                        $visitpayload = '{
+         "noKunjungan": "'.$jsonresp->response->message.'",
+        "tglDaftar": "'.date("d-m-Y" , strtotime($model->tglDaftar)).'", 
+        "noKartu": "'.$model->noKartu.'",
+        "kdPoli": "'.$model->kdPoli.'",
+        "keluhan": "'.$model->keluhan.'",
+          "kdSadar": "'.$pcarevisit->kdSadar.'",
+                    "kdStatusPulang": "'.$pcarevisit->kdStatusPulang.'",
+                              "kdDokter": "'.$pcarevisit->kdDokter.'",
+                                        "kdDiag1": "'.$pcarevisit->kdDiag1.'",
+          "sistole": "'.$model->sistole.'",
+        "diastole": "'.$model->diastole.'",
+        "beratBadan": "'.$model->beratBadan.'",
+        "tinggiBadan": "'.$model->tinggiBadan.'",
+        "respRate": "'.$model->respRate.'",
+        "heartRate": "'.$model->heartRate.'"
+      }';
+
+
+                        Yii::$app->session->addFlash('success', 'visit payload below');
+                        Yii::$app->session->addFlash('success', $visitpayload);
+//                            return $this->redirect(['pcare/visit/update', 'id' => $model->id]);
+                    }
+
+                } else {
+                    Yii::$app->session->setFlash('danger', $registerresp);
+
+                }
+            } else {
+                Yii::$app->session->setFlash('danger', json_encode($jsonresp));
+            }
+
+        }
+
+
+
+
+
+
+//        if (!$confirmflag) {
             return $this->render('testpost', [
                 'model' => $model,
                 'visitmodel' => $pcarevisit,
@@ -390,17 +442,18 @@ class RegistrationController extends Controller
                 'prescribed_list' => $prescribedlist,
                 'listData2' => $listData2,
                 'refKesadaran' => $refKesadaran,
+                'refStatuspulang' => $refStatuspulang
 //                'params' => $params
             ]);
-        } else {
-            return $this->render('createconfirm', [
-                'model' => $model,
-                'visitmodel' => $pcarevisit,
-                'wdmodel' => $wdmodel,
-            ]);
+//        } else {
+//            return $this->render('createconfirm', [
+//                'model' => $model,
+//                'visitmodel' => $pcarevisit,
+//                'wdmodel' => $wdmodel,
+//            ]);
 
 //            return $this->redirect(['createconfirm', 'registration' => json_encode($model->kdProviderPeserta), 'visit' => json_encode($pcarevisit)]);
-        }
+//        }
     }
 
 
@@ -591,26 +644,22 @@ class RegistrationController extends Controller
         return $this->goBack();
     }
 
-    public function actionRegistrationbydate()
+    public function actionRegistrationbydate($consid)
 {
 
     $registration = new PcareRegistration();
-    $registration->setConsId('16744');
+$date = '';
 
-
-//    print_r($response);
 $provider = new ArrayDataProvider();
         if (Yii::$app->request->post()) {
             $post = Yii::$app->request->post();
-            $response = $registration->getPendaftaranprovider($post['tanggal']);
+            $response =Yii::$app->pcareComponent->getPendaftaranprovider($post['tanggal'], $consid);
+            $date = $post['tanggal'];
 
 //if( $response->getIsOk()) {
     if( $response->getStatusCode() == '200') {
     $content = json_decode($response->content);
-//    foreach ($content->response->list as $item) {
-//        echo json_encode($item);
-//        echo '<br/><br/>';
-//    }
+
     if ($content->response !== null) {
             $provider = new ArrayDataProvider([
         'allModels' => $content->response->list,
@@ -624,21 +673,14 @@ $provider = new ArrayDataProvider();
     }
 
 } else {
-//    echo 'false';
-//    echo $response->getStatusCode();
     Yii::$app->session->setFlash('danger', $response->getStatusCode());
-//    echo $response->toString();
-
 };
-        } else {
         }
 
-
-
             return $this->render('regbydate', [
-                'dataProvider' => $provider
-//                'searchModel' => $searchModel,
-//                'dataProvider' => $dataProvider,
+                'dataProvider' => $provider,
+                'date' => $date
+
             ]);
 
 }
@@ -894,6 +936,38 @@ Yii::$app->session->addFlash('danger', 'no kartu ' . $model['ketAktif'] . '. cob
     }
 
 
+    public function actionGetstatuspulang($consid)
+    {
+
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        $options = [];
+        if (isset($_POST['depdrop_parents'])) {
+            $parents = $_POST['depdrop_parents'];
+            if ($parents != null) {
+                $cat_id = $parents[0];
+
+                $registration = new PcareRegistration();
+                $response =Yii::$app->pcareComponent->getStatuspulang2($consid, $parents[0]);
+//
+                $jsonval = json_decode($response);
+
+                foreach ($jsonval->response->list as $i)
+                {
+                    array_push($options, ['id'=>$i->kdStatusPulang, 'name'=>$i->nmStatusPulang]);
+                }
+                return ['output'=>$options, 'selected'=>''];
+            }
+            return ['output'=>$options, 'selected'=>''];
+        }
+        return ['output'=>$options, 'selected'=>''];
+
+
+
+
+
+    }
+
+
     public function actionGetpolicodes()
     {
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
@@ -955,7 +1029,8 @@ Yii::$app->session->addFlash('danger', 'no kartu ' . $model['ketAktif'] . '. cob
 
 public function actionTest()
 {
-    echo 'test';
+    $response = Yii::$app->pcareComponent->getStatuspulang2('10', '4566');
+    print_r($response);
 }
 
 
@@ -1094,7 +1169,7 @@ $array=[];
     public function actionTestpost()
 {
 
-        $payload = 'clinicId=59cedfba9ae80d05757f54e9.59cedfba9ae80d05757f54e7&kdPoli=&kdTkp=&tglDaftar=2021-09-27' .
+        $payload = 'clinicId=59cedfba9ae80d05757f54e9.59cedfba9ae80d05757f54e7&kdPoli=&kdTkp=&tglDaftar=2021-09-28' .
             '&visitId=12345' .
             '&noKartu=&kunjSakit=true' .
             '&kdProviderPeserta=' .

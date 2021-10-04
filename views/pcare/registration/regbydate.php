@@ -25,6 +25,7 @@ $this->params['breadcrumbs'][] = $this->title;
     echo '<label class="control-label">Tanggal </label>';
     echo DatePicker::widget([
 //        'model' => $model,
+    'value' => $date,
         'name' => 'tanggal',
         //'language' => 'ru',
         'pluginOptions' => [
@@ -83,13 +84,13 @@ $this->params['breadcrumbs'][] = $this->title;
 //            'noKartu',
 //            'kdPoli',
 //            //'kunjSakit',
-//            //'keluhan:ntext',
-//            //'sistole',
-//            //'diastole',
-//            //'beratBadan',
-//            //'tinggiBadan',
-//            //'respRate',
-//            //'heartRate',
+            'keluhan:ntext',
+            'sistole',
+            'diastole',
+            'beratBadan',
+            'tinggiBadan',
+            'respRate',
+            'heartRate',
 //            //'rujukBalik',
 //            //'kdTkp',
 //            //'created_at',

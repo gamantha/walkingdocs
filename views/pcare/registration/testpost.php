@@ -70,6 +70,25 @@ echo $form->field($model, 'nik')->textInput(['maxlength' => true])->label('KTP -
         ['prompt'=>'Select...']);
 
 
+    echo $form->field($visitmodel, 'kdStatusPulang')->widget(DepDrop::classname(), [
+//                'data' => [$model->kdPoli => 'Poli ...'],
+        'pluginOptions'=>[
+            'depends'=>['pcareregistration-kdtkp'],
+            'initialize' => true,
+            'initDepends' => ['pcareregistration-kdtkp'],
+            'placeholder'=>'Select...',
+            'url'=>Url::to(['getstatuspulang','consid' => $model->cons_id])
+
+        ]
+    ]);
+
+
+//    echo $form->field($visitmodel, 'kdStatusPulang')->label('Status Pulang')->dropDownList(
+//        $refStatuspulang,
+//        ['prompt'=>'Select...']);
+
+
+
 
     $listData = ['true' => 'Kunjungan Sakit', 'false' => 'Kunjungan Sehat'];
     echo $form->field($model, 'kunjSakit')->dropDownList(
@@ -236,6 +255,8 @@ echo $form->field($model, 'nik')->textInput(['maxlength' => true])->label('KTP -
 
 
 
+
+
             echo $form->field($wdmodel, 'clinicId')->hiddenInput(['maxlength' => true,'readonly' => true,'rows' => '3'])->label(false);
 
             echo $form->field($wdmodel, 'wdVisitId')->hiddenInput(['maxlength' => true, 'readonly' => true, 'rows' => '3'])->label(false);
@@ -247,7 +268,8 @@ echo $form->field($model, 'nik')->textInput(['maxlength' => true])->label('KTP -
 
 
     <div class="form-group">
-        <?= Html::submitButton(Yii::t('app', 'Next'), ['class' => 'btn btn-success']) ?>
+        <?= Html::submitButton(Yii::t('app', 'Next'), ['name' => 'confirm','class' => 'btn btn-success']) ?>
+        <?= Html::submitButton(Yii::t('app', 'Confirm & Register'), ['name' => 'register','class' => 'btn btn-success']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>

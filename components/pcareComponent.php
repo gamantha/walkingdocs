@@ -23,8 +23,9 @@ class pcareComponent extends Component
     }
 
 
-    public function pcareRegister($payload, $bpjs_user)
+    public function pcareRegister($payload, $consid)
     {
+        $bpjs_user = self::getUsercreds($consid);
         $client = new Client(['baseUrl' => self::BASE_API_URL . 'pendaftaran']);
         $request = $client->createRequest()
             ->setContent($payload)->setMethod('POST')
@@ -37,6 +38,31 @@ class pcareComponent extends Component
         $regsiterresponse = $request->send();
         $registerresp =  $regsiterresponse->content;
         return $registerresp;
+    }
+
+    public function pcareCreatevisit($payload, $consid)
+    {
+        $bpjs_user = self::getUsercreds($consid);
+        try {
+
+            Yii::$app->session->setFlash('warning', $payload);
+            $client = new Client(['baseUrl' => self::BASE_API_URL . 'kunjungan']);
+            $request = $client->createRequest()
+                ->setContent($payload)->setMethod('POST')
+                ->setHeaders(['X-cons-id' => $bpjs_user['cons_id']])
+                ->addHeaders(['content-type' => 'application/json'])
+                ->addHeaders(['X-Timestamp' => $bpjs_user['time']])
+                ->addHeaders(['X-Signature' => $bpjs_user['encoded_sig']])
+                ->addHeaders(['X-Authorization' => $bpjs_user['encoded_auth_string']]);
+
+            $vresponse = $request->send();
+            $visitresp = $vresponse->content;
+            return $visitresp;
+        } catch (\yii\base\Exception $exception) {
+
+            Yii::warning("ERROR GETTING RESPONSE FROM BPJS.");
+        }
+
     }
 
     public function getUsercreds($consId)
@@ -435,6 +461,103 @@ class pcareComponent extends Component
         }
         return true;
     }
+
+
+    public function fillPayload($model)
+    {
+        $payload = '{
+        "kdProviderPeserta": "'.$model->kdProviderPeserta.'",
+        "tglDaftar": "'.date("d-m-Y" , strtotime($model->tglDaftar)).'", 
+        "noKartu": "'.$model->noKartu.'",
+        "kdPoli": "'.trim($model->kdPoli).'",
+        "keluhan": "'.$model->keluhan.'",
+        "kunjSakit": '. $model->kunjSakit .',
+        "sistole": "'.$model->sistole.'",
+        "diastole": "'.$model->diastole.'",
+        "beratBadan": "'.$model->beratBadan.'",
+        "tinggiBadan": "'.$model->tinggiBadan.'",
+        "respRate": "'.$model->respRate.'",
+        "heartRate": "'.$model->heartRate.'",
+        "rujukBalik":"'.$model->rujukBalik.'",
+        "kdTkp": "'.$model->kdTkp.'"
+      }';
+
+        return $payload;
+    }
+
+
+
+    public function getPendaftaranprovider($date,$cons_id)
+    {
+        $bpjs_user = self::getUsercreds($cons_id);
+        try {
+
+            $client = new Client(['baseUrl' => self::BASE_API_URL  . '/pendaftaran/tglDaftar/'.$date.'/0/999']);
+            $request = $client->createRequest()
+//                ->setContent($payload)->setMethod('POST')
+                ->setHeaders(['X-cons-id' => $bpjs_user['cons_id']])
+                ->addHeaders(['content-type' => 'application/json'])
+                ->addHeaders(['X-Timestamp' => $bpjs_user['time']])
+                ->addHeaders(['X-Signature' => $bpjs_user['encoded_sig']])
+                ->addHeaders(['X-Authorization' => $bpjs_user['encoded_auth_string']]);
+
+            $response = $request->send();
+            return $response;
+        } catch (\yii\base\Exception $exception) {
+
+            Yii::warning("ERROR GETTING RESPONSE FROM BPJS.");
+            return $exception;
+        }
+    }
+
+
+
+    public function getStatuspulang($cons_id,$kdTkp)
+    {
+
+
+        $kesadaran = $this->getStatuspulang2($cons_id,$kdTkp);
+        $json = json_decode($kesadaran);
+        $options = [];
+        foreach ($json->response->list as $i)
+        {
+            $options[$i->kdStatusPulang] = $i->kdStatusPulang . ' : ' . $i->nmStatusPulang;
+        }
+
+        return $options;
+    }
+
+    public function getStatuspulang2($cons_id,$kdTkp)
+    {
+
+        $true = '';
+        if ($kdTkp == 10) {
+            $true = 'false';
+        } else if  ($kdTkp == 20) {
+            $true = 'true';
+        }
+        $bpjs_user = self::getUsercreds($cons_id);
+        try {
+
+            $client = new Client(['baseUrl' => self::BASE_API_URL  . '/statuspulang/rawatInap/' . $true]);
+            $request = $client->createRequest()
+//                ->setContent($payload)->setMethod('POST')
+                ->setHeaders(['X-cons-id' => $bpjs_user['cons_id']])
+                ->addHeaders(['content-type' => 'application/json'])
+                ->addHeaders(['X-Timestamp' => $bpjs_user['time']])
+                ->addHeaders(['X-Signature' => $bpjs_user['encoded_sig']])
+                ->addHeaders(['X-Authorization' => $bpjs_user['encoded_auth_string']]);
+
+            $response = $request->send();
+            return $response->content;
+        } catch (\yii\base\Exception $exception) {
+
+            Yii::warning("ERROR GETTING RESPONSE FROM BPJS.");
+        }
+    }
+
+
+
 
 }
 ?>

@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\grid\GridView;
+use yii\widgets\ActiveForm;
 use yii\widgets\DetailView;
 use yii\widgets\Pjax;
 /* @var $this yii\web\View */
@@ -48,9 +49,9 @@ echo '</hr>';
             'kdDiag2'
         ],
     ]);
-    echo '<pre>';
-    print_r($wdmodel);
-    echo '</pre>';
+//    echo '<pre>';
+//    print_r($wdmodel);
+//    echo '</pre>';
 
     echo DetailView::widget([
         'model' => $wdmodel,
@@ -71,6 +72,12 @@ echo '</hr>';
 
 
     ?>
+    <div class="pcare-registration-form">
 
-are you sure?
+        <?php $form = ActiveForm::begin(); ?>
+        <div class="form-group">
+            <?= Html::submitButton(Yii::t('app', 'Are you sure?'), ['name' => 'confirm', 'class' => 'btn btn-success']) ?>
+        </div>
+
+        <?php ActiveForm::end(); ?>
 </div>
