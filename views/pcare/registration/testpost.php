@@ -17,16 +17,19 @@ use yii\widgets\ActiveForm;
     <h1><?= Html::encode($this->title) ?></h1>
 
 <div class="pcare-registration-form">
-    <?php
-    echo '<pre>';
-    print_r($params);
-    echo '</pre>';
-    ?>
+
     <?php $form = ActiveForm::begin(); ?>
     <?= $form->field($model, 'cons_id')->textInput(['maxlength' => true, 'readonly' => true, 'id' => 'pcareregistration-cons_id']) ?>
 
     <h2>Registration Data</h2>
     <div class="well">
+        <?php
+        echo '<pre>';
+        print_r($model->params);
+        echo '</pre>';
+        ?>
+
+        <?= $form->field($model, 'params')->textInput(['maxlength' => true]) ?>
 
     <?php
 
@@ -77,7 +80,7 @@ echo $form->field($model, 'nik')->textInput(['maxlength' => true])->label('KTP -
 
 
     echo $form->field($model, 'kdPoli')->widget(DepDrop::classname(), [
-//            'data' => $initPoli,
+            'data' => [$model->kdPoli => 'Poli ...'],
         'pluginOptions'=>[
             'depends'=>['pcareregistration-kunjsakit'],
             'initialize' => true,
@@ -208,6 +211,12 @@ echo $form->field($model, 'nik')->textInput(['maxlength' => true])->label('KTP -
                 ->label(false)
             ;
 
+            echo $form->field($wdmodel, 'manualDiagnoses')->textArea(['maxlength' => true,'readonly' => true,'rows' => '3'])
+                ->label(false)
+            ;
+
+
+
 //            echo Html::label('Diagnosa Manual', 'treatment', ['class' => 'control-label','style'=>'color:blue;font-size: 100%']);
 //            echo '<br />';
 
@@ -218,12 +227,12 @@ echo $form->field($model, 'nik')->textInput(['maxlength' => true])->label('KTP -
 
             echo Html::label('Diagnosa Manual', 'description', ['class' => 'control-label','style'=>'color:blue;font-size: 100%; font-weight:200;']);
 
-            $description = isset($diagnoses->description)? $diagnoses->description : "";
-            $treatment = isset($diagnoses->treatment)? $diagnoses->treatment : "";
-            echo Html::input('text', 'description', $description, ['class' =>'form-control', 'readonly' => true]);
+            $wdmodel->manualDiagnose_description = isset($diagnoses->description)? $diagnoses->description : "";
+            $wdmodel->manualDiagnose_treatment = isset($diagnoses->treatment)? $diagnoses->treatment : "";
+            echo Html::input('text', 'description', $wdmodel->manualDiagnose_description , ['class' =>'form-control', 'readonly' => true]);
             echo '<div class="help-block"></div>';
             echo Html::label('Treatment', 'treatment', ['class' => 'control-label','style'=>'color:blue;font-size: 100%; font-weight:200;']);
-            echo Html::input('text', 'treatment', $treatment, ['class' =>'form-control', 'readonly' => true]);
+            echo Html::input('text', 'treatment', $wdmodel->manualDiagnose_treatment, ['class' =>'form-control', 'readonly' => true]);
 
 
 
@@ -238,7 +247,7 @@ echo $form->field($model, 'nik')->textInput(['maxlength' => true])->label('KTP -
 
 
     <div class="form-group">
-        <?= Html::submitButton(Yii::t('app', 'Register to Pcare'), ['class' => 'btn btn-success']) ?>
+        <?= Html::submitButton(Yii::t('app', 'Next'), ['class' => 'btn btn-success']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>

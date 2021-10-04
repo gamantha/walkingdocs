@@ -101,12 +101,12 @@ class pcareComponent extends Component
         }
     }
 
-    public function cekPesertaByNokartu($consId)
+    public function cekPesertaByNokartu($consId,$noKartu)
     {
         $bpjs_user = self::getUsercreds($consId);
         try {
 
-            $client = new Client(['baseUrl' => self::BASE_API_URL . 'peserta/' . $this->noKartu]);
+            $client = new Client(['baseUrl' => self::BASE_API_URL . 'peserta/' . $noKartu]);
             $request = $client->createRequest()
 //                ->setContent($payload)->setMethod('POST')
                 ->setHeaders(['X-cons-id' => $bpjs_user['cons_id']])
@@ -121,6 +121,7 @@ class pcareComponent extends Component
         } catch (\yii\base\Exception $exception) {
 
             Yii::warning("ERROR GETTING RESPONSE FROM BPJS.");
+            return $exception;
         }
     }
 
@@ -319,6 +320,58 @@ class pcareComponent extends Component
 
             Yii::warning("ERROR GETTING RESPONSE FROM BPJS.");
         }
+    }
+
+
+    public function validateCreate($model)
+    {
+
+        if (empty(json_decode($model->params))) {
+            Yii::$app->session->addFlash('warning', 'no params');
+        } else {
+            Yii::$app->session->addFlash('success', 'Params : ' . json_encode((json_decode($model->params))));
+            return $paramsexistflag = true;
+
+//                $model->params = json_encode($params);
+        }
+
+        $cookies = Yii::$app->request->cookies;
+        if (empty($cookies)) {
+            Yii::$app->session->addFlash('warning', 'no cookies');
+        } else {
+            Yii::$app->session->addFlash('success', 'Cookie : ' . json_encode($cookies));
+            return $cookiesexistflag = true;
+        }
+
+
+
+
+        return false;
+    }
+
+
+    public function validateClinicsender($params)
+    {
+
+        /** check clinic ID */
+        if (!isset($params->clinicId)) {
+            Yii::$app->session->addFlash('danger', "invalid data clinicID");
+            return false;
+        } else {
+//            Yii::$app->session->addFlash('success', "ClinicID is valid");
+        }
+        /** check consID in database */
+        $considmodel = Consid::find()->andWhere(['wd_id' => $params->clinicId])->One();
+        if (isset($considmodel->cons_id)) {
+            Yii::$app->session->addFlash('success', "ConsID is valid");
+            return $considmodel;
+
+        } else {
+            Yii::$app->session->addFlash('danger', "NO ConsID data!!!");
+            return false;
+        }
+
+        return false;
     }
 
 

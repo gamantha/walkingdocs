@@ -14,6 +14,8 @@ use Yii;
  * @property string|null $doctor
  * @property string|null $checklistNames
  * @property string|null $manualDiagnoses
+ * @property string|null $manualDiagnose_description
+ * @property string|null $manualDiagnose_treatment
  * @property string|null $disposition
  * @property string|null $statusAssessment
  * @property string|null $others
@@ -55,7 +57,7 @@ class WdPassedValues extends \yii\db\ActiveRecord
         return [
             [['registrationId'], 'integer'],
             [['checklistNames', 'manualDiagnoses', 'others', 'keluhan', 'administered', 'prescribed'], 'string'],
-            [['wdVisitId', 'clinicId', 'doctor', 'disposition', 'statusAssessment', 'sistole', 'diastole', 'tglDaftar', 'noKartu', 'kdTkp', 'kunjSakit', 'beratBadan', 'tinggiBadan', 'respRate', 'heartRate', 'no_urut', 'kdPoli', 'kdProviderPeserta', 'status'], 'string', 'max' => 255],
+            [['wdVisitId', 'clinicId', 'doctor', 'manualDiagnose_description', 'manualDiagnose_treatment', 'disposition', 'statusAssessment', 'sistole', 'diastole', 'tglDaftar', 'noKartu', 'kdTkp', 'kunjSakit', 'beratBadan', 'tinggiBadan', 'respRate', 'heartRate', 'no_urut', 'kdPoli', 'kdProviderPeserta', 'status'], 'string', 'max' => 255],
             [['registrationId'], 'exist', 'skipOnError' => true, 'targetClass' => PcareRegistration::className(), 'targetAttribute' => ['registrationId' => 'id']],
         ];
     }
@@ -73,6 +75,8 @@ class WdPassedValues extends \yii\db\ActiveRecord
             'doctor' => Yii::t('app', 'Doctor'),
             'checklistNames' => Yii::t('app', 'Checklist Names'),
             'manualDiagnoses' => Yii::t('app', 'Manual Diagnoses'),
+            'manualDiagnose_description' => Yii::t('app', 'Manual Diagnose Description'),
+            'manualDiagnose_treatment' => Yii::t('app', 'Manual Diagnose Treatment'),
             'disposition' => Yii::t('app', 'Disposition'),
             'statusAssessment' => Yii::t('app', 'Status Assessment'),
             'others' => Yii::t('app', 'Others'),

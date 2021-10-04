@@ -29,10 +29,12 @@ use yii\httpclient\Client;
  * @property int|null $rujukBalik
  * @property string|null $kdTkp
  * @property string|null $status
+ * @property string|null $params
  * @property string|null $created_at
  * @property string|null $modified_at
  *
  * @property PcareVisit[] $pcareVisits
+ * @property WdPassedValue[] $wdPassedValues
  */
 class PcareRegistration extends \yii\db\ActiveRecord
 {
@@ -52,8 +54,8 @@ class PcareRegistration extends \yii\db\ActiveRecord
         return [
             [['cons_id', 'sistole', 'diastole', 'beratBadan', 'tinggiBadan', 'respRate', 'heartRate', 'rujukBalik'], 'integer'],
             [['tglDaftar', 'created_at', 'modified_at'], 'safe'],
-            [['kdTkp','kdPoli'], 'required'],
-            [['keluhan'], 'string'],
+            [['kdTkp','kdPoli', 'noKartu'], 'required'],
+            [['keluhan', 'params'], 'string'],
             [['kdProviderPeserta', 'no_urut', 'noKartu', 'nik', 'noka', 'kdPoli', 'kunjSakit', 'kdTkp', 'status'], 'string', 'max' => 255],
         ];
     }
@@ -84,6 +86,7 @@ class PcareRegistration extends \yii\db\ActiveRecord
             'rujukBalik' => Yii::t('app', 'Rujuk Balik'),
             'kdTkp' => Yii::t('app', 'Kd Tkp'),
             'status' => Yii::t('app', 'Status'),
+            'params' => Yii::t('app', 'Params'),
             'created_at' => Yii::t('app', 'Created At'),
             'modified_at' => Yii::t('app', 'Modified At'),
         ];
