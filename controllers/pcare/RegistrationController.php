@@ -379,7 +379,7 @@ class RegistrationController extends Controller
                     if(strpos($jsonresp->response->message, "null") ) {
                         Yii::$app->session->addFlash('danger', $registerresp);
                     } else {
-//                            $model->no_urut = $jsonresp->response->message;
+                            $model->no_urut = $jsonresp->response->message;
 //                            $model->status = 'registered';
 //                            $model->save();
 //                            $pcarevisit->pendaftaranId = $model->id;
@@ -415,6 +415,22 @@ class RegistrationController extends Controller
 
                         Yii::$app->session->addFlash('success', 'visit payload below');
                         Yii::$app->session->addFlash('success', $visitpayload);
+
+                        $createvistresp = Yii::$app->pcareComponent->pcareCreatevisit($visitpayload, $model->cons_id);
+
+                        $jsonvisitresp = json_decode($createvistresp);
+
+                        if (isset($jsonvisitresp->metaData->message)) {
+                            if ($jsonvisitresp->metaData->message == 'CREATED') {
+                                Yii::$app->session->addFlash('success', 'visit CREATED');
+                            } else {
+                                Yii::$app->session->addFlash('danger', 'visit NOT CREATED');
+                                Yii::$app->session->addFlash('danger', $createvistresp);
+                                $deleteresp = Yii::$app->pcareComponent->pcareDeleteRegistration($model->cons_id, $model->noKartu, date("d-m-Y" , strtotime($model->tglDaftar)), $model->no_urut, $model->kdPoli);
+                                Yii::$app->session->addFlash('danger', $deleteresp);
+                            }
+                        }
+
 //                            return $this->redirect(['pcare/visit/update', 'id' => $model->id]);
                     }
 
@@ -426,6 +442,8 @@ class RegistrationController extends Controller
                 Yii::$app->session->setFlash('danger', json_encode($jsonresp));
             }
 
+        } else if(isset($_POST['update'])) {
+            Yii::$app->session->addFlash('success', 'UPDATE');
         }
 
 

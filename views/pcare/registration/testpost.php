@@ -266,10 +266,11 @@ echo $form->field($model, 'nik')->textInput(['maxlength' => true])->label('KTP -
         </div>
 </div>
 
-
+Once sent cannot be undone
     <div class="form-group">
         <?= Html::submitButton(Yii::t('app', 'Next'), ['name' => 'confirm','class' => 'btn btn-success']) ?>
         <?= Html::submitButton(Yii::t('app', 'Confirm & Register'), ['name' => 'register','class' => 'btn btn-success']) ?>
+        <?= Html::submitButton(Yii::t('app', 'Update Visit'), ['name' => 'update','class' => 'btn btn-success']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>
