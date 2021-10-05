@@ -662,12 +662,54 @@ class RegistrationController extends Controller
         return $this->goBack();
     }
 
+
+
+    public function actionUpdatekunjungan($consid,$noKartu,$date, $kdPoli) {
+        $response =Yii::$app->pcareComponent->pcareRiwayatkunjungan($noKartu, $consid);
+        $content = json_decode($response);
+//        echo '<pre>';
+//        print_r($content->response);
+//        echo '</pre>';
+        $model = new PcareRegistration();
+        $wdmodel = new WdPassedValues();
+        $pcarevisit = new PcareVisit();
+        $refStatuspulang = [];
+        $kunjungans = $content->response->list;
+        foreach ($kunjungans as $kunjungan)
+        {
+
+            echo $kunjungan->noKunjungan . ' - ' . $kunjungan->poli->kdPoli . ' - ' . $kunjungan->tglKunjungan;
+            if (($kdPoli == $kunjungan->poli->kdPoli) && ($date == $kunjungan->tglKunjungan))
+            {
+                echo ' <-------- INI ';
+            }
+            echo '<hr/>';
+        }
+
+        $listData2 = Yii::$app->pcareComponent->getListDoctor($consid);
+        $refKesadaran = Yii::$app->pcareComponent->getListKesadaran($consid);
+
+        return $this->render('updatekunjungan', [
+            'model' => $model,
+            'visitmodel' => $pcarevisit,
+            'wdmodel' => $wdmodel,
+//            'prescribed_list' => $prescribedlist,
+            'listData2' => $listData2,
+            'refKesadaran' => $refKesadaran,
+            'refStatuspulang' => $refStatuspulang
+
+        ]);
+
+
+    }
+
+
+
+
     public function actionRegistrationbydate($consid)
 {
-
     $registration = new PcareRegistration();
 $date = '';
-
 $provider = new ArrayDataProvider();
         if (Yii::$app->request->post()) {
             $post = Yii::$app->request->post();

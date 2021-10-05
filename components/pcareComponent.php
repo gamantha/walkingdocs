@@ -89,6 +89,33 @@ class pcareComponent extends Component
 
     }
 
+
+    public function pcareRiwayatkunjungan($noKartu, $consid)
+    {
+        $bpjs_user = self::getUsercreds($consid);
+        try {
+
+//            Yii::$app->session->setFlash('warning', $payload);
+            $client = new Client(['baseUrl' => self::BASE_API_URL . 'kunjungan/peserta/' . $noKartu]);
+            $request = $client->createRequest()
+                ->setMethod('GET')
+                ->setHeaders(['X-cons-id' => $bpjs_user['cons_id']])
+                ->addHeaders(['content-type' => 'application/json'])
+                ->addHeaders(['X-Timestamp' => $bpjs_user['time']])
+                ->addHeaders(['X-Signature' => $bpjs_user['encoded_sig']])
+                ->addHeaders(['X-Authorization' => $bpjs_user['encoded_auth_string']]);
+
+            $vresponse = $request->send();
+            $visitresp = $vresponse->content;
+            return $visitresp;
+        } catch (\yii\base\Exception $exception) {
+
+            Yii::warning("ERROR GETTING RESPONSE FROM BPJS.");
+        }
+
+    }
+
+
     public function getUsercreds($consId)
     {
         $usercreds = [];

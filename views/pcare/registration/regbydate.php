@@ -81,6 +81,14 @@ $this->params['breadcrumbs'][] = $this->title;
                 }
 
             ],
+            [
+                'label' => 'kunjungan',
+                'format' => 'raw',
+                'value' => function($data) use ($date) {
+                   return Html::a(Html::encode("Update kunjungan"),'updatekunjungan?consid=' . $_GET['consid'] . '&noKartu=' . $data->peserta->noKartu . '&date=' . $date . '&kdPoli=' . $data->poli->kdPoli);
+                }
+
+            ],
 //            'noKartu',
 //            'kdPoli',
 //            //'kunjSakit',
