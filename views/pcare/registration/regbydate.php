@@ -93,12 +93,20 @@ $this->params['breadcrumbs'][] = $this->title;
 //            'kdPoli',
 //            //'kunjSakit',
             'keluhan:ntext',
-            'sistole',
-            'diastole',
-            'beratBadan',
-            'tinggiBadan',
-            'respRate',
-            'heartRate',
+//            'sistole',
+//            [
+//                'label' => 'Sistole',
+//                'format' => 'raw',
+//                'value' => function($data) use ($date) {
+//                   return 'sistole';
+//                }
+//
+//            ],
+//            'diastole',
+//            'beratBadan',
+//            'tinggiBadan',
+//            'respRate',
+//            'heartRate',
 //            //'rujukBalik',
 //            //'kdTkp',
 //            //'created_at',

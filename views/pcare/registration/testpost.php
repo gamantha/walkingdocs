@@ -69,9 +69,25 @@ echo $form->field($model, 'nik')->textInput(['maxlength' => true])->label('KTP -
         $listData,
         ['prompt'=>'Select...']);
 
+    echo '<label class="control-label">Tanggal Pulang (HARUS APABILA RITP) </label>';
+    echo DatePicker::widget([
+        'model' => $visitmodel,
+        'attribute' => 'tglPulang',
+        'pluginOptions' => [
+            'todayHighlight' => true,
+            'todayBtn' => true,
+            'autoclose'=>true,
+            'format' => 'yyyy-mm-dd'
+//                   'format' => 'dd-mm-yyyy'
+        ]
+//        'dateFormat' => 'yyyy-MM-dd',
+    ]);
+
+
+
 
     echo $form->field($visitmodel, 'kdStatusPulang')->widget(DepDrop::classname(), [
-//                'data' => [$model->kdPoli => 'Poli ...'],
+                'data' => [$visitmodel->kdStatusPulang => 'Poli ...'],
         'pluginOptions'=>[
             'depends'=>['pcareregistration-kdtkp'],
             'initialize' => true,
@@ -119,15 +135,15 @@ echo $form->field($model, 'nik')->textInput(['maxlength' => true])->label('KTP -
         ?>
 
 
-    <?= $form->field($model, 'keluhan')->textArea(['maxlength' => true]) ?>
-    <?= $form->field($model, 'sistole')->textArea(['maxlength' => true]) ?>
-    <?= $form->field($model, 'diastole')->textArea(['maxlength' => true]) ?>
+    <?= $form->field($visitmodel, 'keluhan')->textArea(['maxlength' => true]) ?>
+    <?= $form->field($visitmodel, 'sistole')->textArea(['maxlength' => true]) ?>
+    <?= $form->field($visitmodel, 'diastole')->textArea(['maxlength' => true]) ?>
     <?php
 
-    echo $form->field($model, 'beratBadan')->textArea(['maxlength' => true]);
-    echo $form->field($model, 'tinggiBadan')->textArea(['maxlength' => true]);
-    echo $form->field($model, 'respRate')->textArea(['maxlength' => true]);
-    echo $form->field($model, 'heartRate')->textArea(['maxlength' => true]);
+    echo $form->field($visitmodel, 'beratBadan')->textArea(['maxlength' => true]);
+    echo $form->field($visitmodel, 'tinggiBadan')->textArea(['maxlength' => true]);
+    echo $form->field($visitmodel, 'respRate')->textArea(['maxlength' => true]);
+    echo $form->field($visitmodel, 'heartRate')->textArea(['maxlength' => true]);
 
     ?>
 </div>
@@ -265,6 +281,161 @@ echo $form->field($model, 'nik')->textInput(['maxlength' => true])->label('KTP -
 
         </div>
 </div>
+
+    <h2>Rujukan</h2>
+    <?php
+
+    echo '<label class="control-label">Tanggal Rencana Berkunjung / rujuk </label>';
+    echo DatePicker::widget([
+        'model' => $visitmodel,
+        'attribute' => 'tglEstRujuk',
+        //'language' => 'ru',
+        'pluginOptions' => [
+            'autoclose'=>true,
+            'todayHighlight' => true,
+            'todayBtn' => true,
+            'format' => 'yyyy-mm-dd'
+        ]
+//        'dateFormat' => 'yyyy-MM-dd',
+    ]);
+echo '<br/>';
+    echo $form->field($visitmodel, 'spesialis_type')->radioList(['khusus' => 'Kondisi Khusus',
+        'spesialis' => 'Spesialis']);
+    echo '<br/>';
+    ?>
+    <div id="rujukan" class="">
+
+        <div class="well">
+            <h2>Spesialis</h2><br/>
+            <div id="spesialis" style="display:true>
+
+
+                <?php
+                echo $form->field($visitmodel, 'subSpesialis_kdSpesialis')->dropDownList(
+                    $refSpesialis,
+                    ['prompt'=>'Select...']);
+
+                echo $form->field($visitmodel, 'subSpesialis_kdSubSpesialis1')->widget(DepDrop::classname(), [
+//                    'data'=>[$visitmodel->subSpesialis_kdSubSpesialis1=>$visitmodel->subSpesialis_nmSubSpesialis1],
+                    'pluginOptions'=>[
+                        'depends'=>['pcarevisit-subspesialis_kdspesialis'],
+                        'placeholder'=>'Select...',
+                        'url'=>Url::to(['subspesialis','consid' => $model->cons_id])
+                    ]
+                ]);
+
+                echo $form->field($visitmodel, 'subSpesialis_kdSarana')->widget(DepDrop::classname(), [
+//            'options'=>['id'=>'subspesialis-id'],
+                    'data'=>[$visitmodel->subSpesialis_kdSarana =>$visitmodel->subSpesialis_nmSarana],
+                    'pluginOptions'=>[
+                        'depends'=>['pcarevisit-subspesialis_kdsubspesialis1'],
+                        'placeholder'=>'Select...',
+                        'url'=>Url::to(['subspesialiskdsarana','id' => $visitmodel->id])
+                    ]
+                ]);
+
+
+
+                echo Html::hiddenInput('PcareVisit[nmppk_subSpesialis]', $visitmodel->nmppk_subSpesialis, ['id' => 'pcarevisit-nmppk_subspesialis']);
+                echo Html::hiddenInput('PcareVisit[meta_rujukan]', $visitmodel->meta_rujukan, ['id' => 'pcarevisit-meta_rujukan']);
+                //        echo Html::hiddenInput('PcareVisit[nmppk_subSpesialis]', $model->meta_rujukan, ['id' => 'pcarevisit-meta_rujukan']);
+
+                echo $form->field($visitmodel, 'kdppk_subSpesialis')->widget(DepDrop::classname(), [
+                    'data'=>[$visitmodel->kdppk_subSpesialis=>$visitmodel->nmppk_subSpesialis],
+                    'pluginOptions'=>[
+                        'depends'=>['pcarevisit-subspesialis_kdsubspesialis1','pcarevisit-subspesialis_kdsarana', 'pcarevisit-tglestrujuk'],
+                        'placeholder'=>'Select...',
+                        'url'=>Url::to(['rujukanspesialis','id' => $visitmodel->id]),
+                    ]
+                ]);
+
+                echo Html::textArea('schedule',"",['id'=>'schedule', 'class' => 'form-control']);
+                ?>
+            </div>
+
+
+
+
+
+
+            <div id="khusus" class="well" style="display:true">
+                <h2>Keadaan Khusus</h2><br/>
+
+                <?php
+
+
+                echo $form->field($visitmodel, 'khusus_kdKhusus')->label('Kategori')->dropDownList(
+                    $refKhususdata,
+                    ['id'=>'khusus-id','prompt'=>'Select...']);
+
+
+                $datasubspesialis = [
+                    "3" => "PENYAKIT DALAM",
+                    "8" => "HEMATOLOGI - ONKOLOGI MEDIK",
+                    "26" => "ANAK",
+                    "30" => "ANAK HEMATOLOGI ONKOLOGI"
+                ];
+
+                ?>
+                <div id="khusus_subspesialis">
+                    <?php
+
+
+                    echo $form->field($visitmodel, 'khusus_kdSubSpesialis')->label('Spesialis')->dropDownList(
+                        $datasubspesialis,
+                        ['prompt'=>'Select...']);
+
+
+                    ?>
+                </div>
+
+                <?= $form->field($visitmodel, 'khusus_catatan')->textarea(['rows' => 6]) ?>
+                <?php
+
+                echo Html::hiddenInput('PcareVisit[nmppk]', $visitmodel->nmppk, ['id' => 'pcarevisit-nmppk']);
+
+
+                echo $form->field($visitmodel, 'kdppk')->widget(DepDrop::classname(), [
+//            'data'=>[$model->kdppk_subSpesialis=>$model->nmppk_subSpesialis],
+                    'pluginOptions'=>[
+                        'depends'=>['pcarevisit-khusus_kdkhusus','pcarevisit-khusus_kdsubspesialis', 'pcarevisit-tglestrujuk'],
+                        'placeholder'=>'Select...',
+                        'url'=>Url::to(['rujukankhusus','id' => $visitmodel->id])
+                    ],
+                    'pluginEvents' => [
+                        'depdrop:afterChange'=>'function(event, id, value) { 
+                alert("dsadsa");
+                }',
+                    ]
+                ]);
+
+                ?>
+            </div>
+
+
+
+        </div>
+
+        <?php
+
+        $ref_tacc = [
+            "-1" => "Tanpa TACC",
+            "1" => "Time",
+            "2" => "Age",
+            "3" => "Complication",
+            "4" => "Comorbidity"
+
+        ];
+
+//        echo $form->field($visitmodel, 'kdTacc')->textInput(['maxlength' => true]);
+//
+//        echo $form->field($visitmodel, 'alasanTacc')->textarea(['rows' => 6]);
+
+        ?>
+
+
+
+    </div>
 
 Once sent cannot be undone
     <div class="form-group">

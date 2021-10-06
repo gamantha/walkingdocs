@@ -107,14 +107,14 @@ use yii\widgets\ActiveForm;
 
 
             <?= $form->field($model, 'keluhan')->textArea(['maxlength' => true]) ?>
-            <?= $form->field($model, 'sistole')->textArea(['maxlength' => true]) ?>
-            <?= $form->field($model, 'diastole')->textArea(['maxlength' => true]) ?>
+            <?= $form->field($visitmodel, 'sistole')->textArea(['maxlength' => true]) ?>
+            <?= $form->field($visitmodel, 'diastole')->textArea(['maxlength' => true]) ?>
             <?php
 
-            echo $form->field($model, 'beratBadan')->textArea(['maxlength' => true]);
-            echo $form->field($model, 'tinggiBadan')->textArea(['maxlength' => true]);
-            echo $form->field($model, 'respRate')->textArea(['maxlength' => true]);
-            echo $form->field($model, 'heartRate')->textArea(['maxlength' => true]);
+            echo $form->field($visitmodel, 'beratBadan')->textArea(['maxlength' => true]);
+            echo $form->field($visitmodel, 'tinggiBadan')->textArea(['maxlength' => true]);
+            echo $form->field($visitmodel, 'respRate')->textArea(['maxlength' => true]);
+            echo $form->field($visitmodel, 'heartRate')->textArea(['maxlength' => true]);
 
             ?>
         </div>

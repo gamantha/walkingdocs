@@ -16,6 +16,7 @@ use kartik\select2\Select2;
  * @property string|null $noKunjungan
  * @property string|null $kdSadar
  * @property string|null $terapi
+ * @property string|null $keluhan
  * @property string|null $kdStatusPulang
  * @property string|null $tglPulang
  * @property string|null $kdDokter
@@ -48,11 +49,18 @@ use kartik\select2\Select2;
  * @property string|null $nmDiag1
  * @property string|null $nmDiag2
  * @property string|null $nmDiag3
+ * @property int|null $sistole
+ * @property int|null $diastole
+ * @property int|null $beratBadan
+ * @property int|null $tinggiBadan
+ * @property int|null $respRate
+ * @property int|null $heartRate
  * @property string|null $meta_rujukan
  * @property string|null $created_at
  * @property string|null $modified_at
  *
  * @property PcareRegistration $pendaftaran
+ * @property Tindakan[] $tindakans
  */
 class PcareVisit extends \yii\db\ActiveRecord
 {
@@ -72,8 +80,8 @@ class PcareVisit extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['pendaftaranId'], 'integer'],
-            [['terapi', 'khusus_catatan', 'alasanTacc', 'json', 'meta_rujukan'], 'string'],
+            [['pendaftaranId', 'sistole', 'diastole', 'beratBadan', 'tinggiBadan', 'respRate', 'heartRate'], 'integer'],
+            [['terapi','keluhan', 'khusus_catatan', 'alasanTacc', 'json', 'meta_rujukan'], 'string'],
             [['tglPulang', 'tglEstRujuk', 'created_at', 'modified_at'], 'safe'],
             [['noKunjungan', 'kdSadar', 'kdStatusPulang', 'kdDokter', 'kdDiag1', 'kdDiag2', 'kdDiag3', 'kdPoliRujukInternal', 'kdppk', 'kdppk_subSpesialis', 'nmppk', 'nmppk_subSpesialis', 'spesialis_type', 'subSpesialis_kdSpesialis', 'subSpesialis_nmSpesialis', 'subSpesialis_nmSubSpesialis1', 'subSpesialis_kdSubSpesialis1', 'subSpesialis_kdSarana', 'subSpesialis_nmSarana', 'khusus_kdKhusus', 'khusus_nmKhusus', 'khusus_kdSubSpesialis', 'khusus_nmSubSpesialis', 'kdTacc', 'status', 'nmDokter', 'nmDiag1', 'nmDiag2', 'nmDiag3'], 'string', 'max' => 255],
             [['pendaftaranId'], 'exist', 'skipOnError' => true, 'targetClass' => PcareRegistration::className(), 'targetAttribute' => ['pendaftaranId' => 'id']],
@@ -91,6 +99,7 @@ class PcareVisit extends \yii\db\ActiveRecord
             'noKunjungan' => Yii::t('app', 'No Kunjungan'),
             'kdSadar' => Yii::t('app', 'Kd Sadar'),
             'terapi' => Yii::t('app', 'Terapi'),
+            'keluhan' => Yii::t('app', 'Keluhan'),
             'kdStatusPulang' => Yii::t('app', 'Kd Status Pulang'),
             'tglPulang' => Yii::t('app', 'Tgl Pulang'),
             'kdDokter' => Yii::t('app', 'Kd Dokter'),
@@ -123,11 +132,29 @@ class PcareVisit extends \yii\db\ActiveRecord
             'nmDiag1' => Yii::t('app', 'Nm Diag1'),
             'nmDiag2' => Yii::t('app', 'Nm Diag2'),
             'nmDiag3' => Yii::t('app', 'Nm Diag3'),
+            'sistole' => Yii::t('app', 'Sistole'),
+            'diastole' => Yii::t('app', 'Diastole'),
+            'beratBadan' => Yii::t('app', 'Berat Badan'),
+            'tinggiBadan' => Yii::t('app', 'Tinggi Badan'),
+            'respRate' => Yii::t('app', 'Resp Rate'),
+            'heartRate' => Yii::t('app', 'Heart Rate'),
             'meta_rujukan' => Yii::t('app', 'Meta Rujukan'),
             'created_at' => Yii::t('app', 'Created At'),
             'modified_at' => Yii::t('app', 'Modified At'),
         ];
     }
+
+    /**
+     * Gets query for [[Tindakans]].
+     *
+     * @return \yii\db\ActiveQuery|TindakanQuery
+     */
+    public function getTindakans()
+    {
+        return $this->hasMany(Tindakan::className(), ['visitId' => 'id']);
+    }
+
+
 
     /**
      * Gets query for [[Pendaftaran]].

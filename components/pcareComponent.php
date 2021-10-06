@@ -513,6 +513,91 @@ class pcareComponent extends Component
         return true;
     }
 
+    public function getSpesialis($consid)
+    {
+        $bpjs_user = self::getUsercreds($consid);
+        try {
+
+            $client = new Client(['baseUrl' => self::BASE_API_URL  . '/spesialis']);
+            $request = $client->createRequest()
+//                ->setContent($payload)->setMethod('POST')
+                ->setHeaders(['X-cons-id' => $bpjs_user['cons_id']])
+                ->addHeaders(['content-type' => 'application/json'])
+                ->addHeaders(['X-Timestamp' => $bpjs_user['time']])
+                ->addHeaders(['X-Signature' => $bpjs_user['encoded_sig']])
+                ->addHeaders(['X-Authorization' => $bpjs_user['encoded_auth_string']]);
+
+            $response = $request->send();
+            return $response->content;
+        } catch (\yii\base\Exception $exception) {
+
+            Yii::warning("ERROR GETTING RESPONSE FROM BPJS.");
+        }
+    }
+
+    public function getReferensiSpesialis($consid)
+    {
+        $bpjs_user = self::getUsercreds($consid);
+
+        $kesadaran = $this->getSpesialis($consid);
+        $json = json_decode($kesadaran);
+        $options = [];
+        if (isset($json->response)) {
+
+
+            foreach ($json->response->list as $i) {
+                $options[$i->kdSpesialis] = $i->kdSpesialis . ' : ' . $i->nmSpesialis;
+            }
+        } else {
+            Yii::$app->session->addFlash('danger', 'get referensi spesialis - no pcare web service response');
+        }
+        return $options;
+
+    }
+    public function getSubspesialis($consid,$keyword)
+    {
+        $bpjs_user = self::getUsercreds($consid);
+        try {
+
+            $client = new Client(['baseUrl' => self::BASE_API_URL . '/spesialis/'.$keyword.'/subspesialis']);
+            $request = $client->createRequest()
+//                ->setContent($payload)->setMethod('POST')
+                ->setHeaders(['X-cons-id' => $bpjs_user['cons_id']])
+                ->addHeaders(['content-type' => 'application/json'])
+                ->addHeaders(['X-Timestamp' => $bpjs_user['time']])
+                ->addHeaders(['X-Signature' => $bpjs_user['encoded_sig']])
+                ->addHeaders(['X-Authorization' => $bpjs_user['encoded_auth_string']]);
+
+            $response = $request->send();
+            return $response->content;
+        } catch (\yii\base\Exception $exception) {
+
+            Yii::warning("ERROR GETTING RESPONSE FROM BPJS.");
+        }
+    }
+
+
+
+    public function getReferensiSubspesialis($consid,$keyword)
+    {
+        $bpjs_user = self::getUsercreds($consid);
+        $response = $this->getSubspesialis($consid,$keyword);
+        $out = ['results' => [['id' => '', 'name' => '']]];
+        $jsonval = json_decode($response);
+        if (isset($jsonval->response)) {
+
+            foreach ($jsonval->response->list as $item) {
+                $temp = ['id' => $item->kdSubSpesialis, 'name' => $item->nmSubSpesialis, 'kdPoliRujuk' => $item->kdPoliRujuk];
+                array_push($out['results'], $temp);
+            }
+            array_shift($out['results']);
+        } else {
+            Yii::$app->session->addFlash('danger', 'get subspesialis kd - no pcare web service response');
+        }
+        return $out;
+    }
+
+
 
     public function fillPayload($model)
     {
@@ -605,6 +690,49 @@ class pcareComponent extends Component
 
             Yii::warning("ERROR GETTING RESPONSE FROM BPJS.");
         }
+    }
+
+    public function getKhusus($consid)
+    {
+        $bpjs_user = self::getUsercreds($consid);
+        try {
+
+            $client = new Client(['baseUrl' => self::BASE_API_URL . '/spesialis/khusus']);
+            $request = $client->createRequest()
+//                ->setContent($payload)->setMethod('POST')
+                ->setHeaders(['X-cons-id' => $bpjs_user['cons_id']])
+                ->addHeaders(['content-type' => 'application/json'])
+                ->addHeaders(['X-Timestamp' => $bpjs_user['time']])
+                ->addHeaders(['X-Signature' => $bpjs_user['encoded_sig']])
+                ->addHeaders(['X-Authorization' => $bpjs_user['encoded_auth_string']]);
+
+            $response = $request->send();
+            return $response->content;
+        } catch (\yii\base\Exception $exception) {
+
+            Yii::warning("ERROR GETTING RESPONSE FROM BPJS.");
+        }
+    }
+
+
+    public function getReferensiKhusus($consid)
+    {
+        $bpjs_user = self::getUsercreds($consid);
+        $kesadaran = $this->getKhusus($consid);
+        $json = json_decode($kesadaran);
+        $options = [];
+        if (isset($json->response)) {
+
+
+            foreach ($json->response->list as $i)
+            {
+                $options[$i->kdKhusus] = $i->kdKhusus . ' : ' . $i->nmKhusus;
+            }
+        } else {
+            Yii::$app->session->addFlash('danger', 'get referensi khusus - no pcare web service response');
+        }
+
+        return $options;
     }
 
 
