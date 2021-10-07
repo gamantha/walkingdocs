@@ -91,7 +91,7 @@ class RegistrationController extends Controller
     public function fillWdModel(&$visitmodel,&$wdmodel, &$model, $params) {
         $wdmodel->wdVisitId = $params['visitId'];
         $wdmodel->clinicId = $params['clinicId'];
-
+//
         if (empty($params['kdTkp'])) {
             $wdmodel->kdTkp = '10';
         } else {
@@ -218,7 +218,9 @@ class RegistrationController extends Controller
         $refStatuspulang = [];
 
 
-        if ($model->load(Yii::$app->request->post()) && $wdmodel->load(Yii::$app->request->post()) ) {
+        if(isset($_POST['confirm']) || isset($_POST['register'])) {
+        $wdmodel->load(Yii::$app->request->post());
+        $model->load(Yii::$app->request->post());
             $pcarevisit->load(Yii::$app->request->post());
             if (empty($model->params)) {
                 Yii::$app->session->addFlash('warning', 'no model params');
@@ -343,10 +345,10 @@ class RegistrationController extends Controller
                 {
                     $model->cons_id = $clinicModel->cons_id;
                     Yii::$app->session->addFlash('success', 'clinic ID is TRUE');
-
+                    Yii::$app->session->addFlash('success', json_encode($params));
                     $this->fillWdModel($pcarevisit,$wdmodel,$model,$params);
-                    $prescribed = substr($params['prescribed'],2, (strlen($params['prescribed']) - 4));
-                    $pcarevisit->terapi = str_replace('","', "\n",$prescribed);
+//                    $prescribed = substr($params['prescribed'],2, (strlen($params['prescribed']) - 4));
+//                    $pcarevisit->terapi = str_replace('","', "\n",$prescribed);
 
                     $initPoli =Yii::$app->pcareComponent->getListPoli($model->cons_id, 'true');
                     $listData2 = Yii::$app->pcareComponent->getListDoctor($model->cons_id);
@@ -454,11 +456,11 @@ class RegistrationController extends Controller
                     }
 
                 } else {
-                    Yii::$app->session->setFlash('danger', $registerresp);
+                    Yii::$app->session->addFlash('danger', $registerresp);
 
                 }
             } else {
-                Yii::$app->session->setFlash('danger', json_encode($jsonresp));
+                Yii::$app->session->addFlash('danger', json_encode($jsonresp));
             }
 
         } else if(isset($_POST['update'])) {
@@ -1271,7 +1273,7 @@ $array=[];
     public function actionTestpost()
 {
 
-        $payload = 'clinicId=59cedfba9ae80d05757f54e9.59cedfba9ae80d05757f54e7&kdPoli=&kdTkp=&tglDaftar=2021-10-05' .
+        $payload = 'clinicId=59cedfba9ae80d05757f54e9.59cedfba9ae80d05757f54e7&kdPoli=&kdTkp=&tglDaftar=2021-10-02' .
             '&visitId=12345' .
             '&noKartu=0001113569638&kunjSakit=true' .
             '&kdProviderPeserta=' .
