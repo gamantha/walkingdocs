@@ -147,15 +147,20 @@ echo $form->field($model, 'nik')->textInput(['maxlength' => true])->label('KTP -
 
     ?>
 </div>
-
     <h2>Visit Data</h2>
     <div class="well">
+
+
+
+
+
         <?php
+
         echo $form->field($wdmodel, 'doctor')->textInput(['maxlength' => true,'readonly' => true]);
         echo $form->field($visitmodel, 'kdDokter')->dropDownList(
             $listData2,
             ['prompt'=>'Select...']);
-        //        echo '<hr/>';
+//        echo '<hr/>';
         echo $form->field($visitmodel, 'kdSadar')->dropDownList(
             $refKesadaran,
             ['prompt'=>'Select...']);
@@ -218,15 +223,66 @@ echo $form->field($model, 'nik')->textInput(['maxlength' => true])->label('KTP -
             ],
         ]);
 
-        //echo '<hr/>';
+//echo '<hr/>';
         echo $form->field($visitmodel, 'terapi')->textArea(['maxlength' => true,'readonly' => true,'rows' => '3']);
 
+//        foreach ($prescribed_list as $prescribed)
+//        {
+//            echo $prescribed;
+//            echo '<br/>';
+//        }
+
+        //        echo $visitmodel->terapi;
+
+
+
         ?>
-    </div>
+
+        <div class="well">
+
+            <label class="control-label" style="color:blue;font-size: 100%">Diagnosa Daftar Tilik</label>
+            <?php
+            echo $form->field($wdmodel, 'checklistNames')->textArea(['maxlength' => true,'readonly' => true,'rows' => '3'])
+                ->label(false)
+            ;
+
+            echo $form->field($wdmodel, 'manualDiagnoses')->textArea(['maxlength' => true,'readonly' => true,'rows' => '3'])
+                ->label(false)
+            ;
+
+
+
+//            echo Html::label('Diagnosa Manual', 'treatment', ['class' => 'control-label','style'=>'color:blue;font-size: 100%']);
+//            echo '<br />';
+
+            $diagnoses = json_decode($wdmodel->manualDiagnoses);
+//            echo $diagnoses->treatment;
+//            echo $form->field($wdmodel, 'manualDiagnoses')->textInput(['maxlength' => true,'readonly' => true,'rows' => '6'])->label(false);
+
+
+            echo Html::label('Diagnosa Manual', 'description', ['class' => 'control-label','style'=>'color:blue;font-size: 100%; font-weight:200;']);
+
+            $wdmodel->manualDiagnose_description = isset($diagnoses->description)? $diagnoses->description : "";
+            $wdmodel->manualDiagnose_treatment = isset($diagnoses->treatment)? $diagnoses->treatment : "";
+            echo Html::input('text', 'description', $wdmodel->manualDiagnose_description , ['class' =>'form-control', 'readonly' => true]);
+            echo '<div class="help-block"></div>';
+            echo Html::label('Treatment', 'treatment', ['class' => 'control-label','style'=>'color:blue;font-size: 100%; font-weight:200;']);
+            echo Html::input('text', 'treatment', $wdmodel->manualDiagnose_treatment, ['class' =>'form-control', 'readonly' => true]);
+
+
+
+
+
+            echo $form->field($wdmodel, 'clinicId')->hiddenInput(['maxlength' => true,'readonly' => true,'rows' => '3'])->label(false);
+
+            echo $form->field($wdmodel, 'wdVisitId')->hiddenInput(['maxlength' => true, 'readonly' => true, 'rows' => '3'])->label(false);
+            ?>
+
+
+        </div>
+</div>
 
     <h2>Rujukan</h2>
-    HANYA KALAU PILIH RUJUK vertikal untuk status pulang maka pilihan dibawah jadi nyala .Saat ini hanya ada rujukan vertikal (spesialis , khusus)
-    <div class="well">
     <?php
     $ref_tacc = [
         "-1" => "Tanpa TACC",
@@ -249,13 +305,11 @@ echo $form->field($model, 'nik')->textInput(['maxlength' => true])->label('KTP -
         ]
 //        'dateFormat' => 'yyyy-MM-dd',
     ]);
-    //echo '<br/>';
+//echo '<br/>';
     echo $form->field($visitmodel, 'spesialis_type')->radioList(['khusus' => 'Kondisi Khusus',
         'spesialis' => 'Spesialis']);
-    //    echo '<br/>';
+//    echo '<br/>';
     ?>
-    </div>
-
     <div id="rujukan" class="">
 
         <div class="well">
@@ -263,101 +317,115 @@ echo $form->field($model, 'nik')->textInput(['maxlength' => true])->label('KTP -
             <div id="spesialis" style="display:true>
 
 
-            <?php
-            echo $form->field($visitmodel, 'subSpesialis_kdSpesialis')->dropDownList(
-                $refSpesialis,
-                ['prompt'=>'Select...']);
+                <?php
+                echo $form->field($visitmodel, 'subSpesialis_kdSpesialis')->dropDownList(
+                    $refSpesialis,
+                    ['prompt'=>'Select...']);
 
-            echo $form->field($visitmodel, 'subSpesialis_kdSubSpesialis1')->widget(DepDrop::classname(), [
-                    'data'=>[$visitmodel->subSpesialis_kdSubSpesialis1=>$visitmodel->subSpesialis_nmSubSpesialis1],
-                'pluginOptions'=>[
-                    'depends'=>['pcarevisit-subspesialis_kdspesialis'],
-                    'placeholder'=>'Select...',
-                    'url'=>Url::to(['subspesialis','consid' => $model->cons_id])
-                ]
-            ]);
+                echo $form->field($visitmodel, 'subSpesialis_kdSubSpesialis1')->widget(DepDrop::classname(), [
+//                    'data'=>[$visitmodel->subSpesialis_kdSubSpesialis1=>$visitmodel->subSpesialis_nmSubSpesialis1],
+                    'pluginOptions'=>[
+                        'depends'=>['pcarevisit-subspesialis_kdspesialis'],
+                        'placeholder'=>'Select...',
+                        'url'=>Url::to(['subspesialis','consid' => $model->cons_id])
+                    ]
+                ]);
 
-            echo $form->field($visitmodel, 'subSpesialis_kdSarana')->widget(DepDrop::classname(), [
+                echo $form->field($visitmodel, 'subSpesialis_kdSarana')->widget(DepDrop::classname(), [
 //            'options'=>['id'=>'subspesialis-id'],
-                'data'=>[$visitmodel->subSpesialis_kdSarana =>$visitmodel->subSpesialis_nmSarana],
-                'pluginOptions'=>[
-                    'depends'=>['pcarevisit-subspesialis_kdsubspesialis1'],
-                    'placeholder'=>'Select...',
-                    'url'=>Url::to(['subspesialiskdsarana','consid' => $model->cons_id])
-                ]
-            ]);
+                    'data'=>[$visitmodel->subSpesialis_kdSarana =>$visitmodel->subSpesialis_nmSarana],
+                    'pluginOptions'=>[
+                        'depends'=>['pcarevisit-subspesialis_kdsubspesialis1'],
+                        'placeholder'=>'Select...',
+                        'url'=>Url::to(['subspesialiskdsarana','id' => $visitmodel->id])
+                    ]
+                ]);
 
 
 
-            echo Html::hiddenInput('PcareVisit[nmppk_subSpesialis]', $visitmodel->nmppk_subSpesialis, ['id' => 'pcarevisit-nmppk_subspesialis']);
-            echo Html::hiddenInput('PcareVisit[meta_rujukan]', $visitmodel->meta_rujukan, ['id' => 'pcarevisit-meta_rujukan']);
-            //        echo Html::hiddenInput('PcareVisit[nmppk_subSpesialis]', $model->meta_rujukan, ['id' => 'pcarevisit-meta_rujukan']);
+                echo Html::hiddenInput('PcareVisit[nmppk_subSpesialis]', $visitmodel->nmppk_subSpesialis, ['id' => 'pcarevisit-nmppk_subspesialis']);
+                echo Html::hiddenInput('PcareVisit[meta_rujukan]', $visitmodel->meta_rujukan, ['id' => 'pcarevisit-meta_rujukan']);
+                //        echo Html::hiddenInput('PcareVisit[nmppk_subSpesialis]', $model->meta_rujukan, ['id' => 'pcarevisit-meta_rujukan']);
 
-            echo $form->field($visitmodel, 'kdppk_subSpesialis')->widget(DepDrop::classname(), [
-                'data'=>[$visitmodel->kdppk_subSpesialis=>$visitmodel->nmppk_subSpesialis],
-                'pluginOptions'=>[
-                    'depends'=>['pcarevisit-subspesialis_kdsubspesialis1','pcarevisit-subspesialis_kdsarana', 'pcarevisit-tglestrujuk'],
-                    'placeholder'=>'Select...',
-                    'url'=>Url::to(['rujukanspesialis','consid' => $model->cons_id]),
-                ]
-            ]);
+                echo $form->field($visitmodel, 'kdppk_subSpesialis')->widget(DepDrop::classname(), [
+                    'data'=>[$visitmodel->kdppk_subSpesialis=>$visitmodel->nmppk_subSpesialis],
+                    'pluginOptions'=>[
+                        'depends'=>['pcarevisit-subspesialis_kdsubspesialis1','pcarevisit-subspesialis_kdsarana', 'pcarevisit-tglestrujuk'],
+                        'placeholder'=>'Select...',
+                        'url'=>Url::to(['rujukanspesialis','id' => $visitmodel->id]),
+                    ]
+                ]);
 
-            echo Html::textArea('schedule',"",['id'=>'schedule', 'class' => 'form-control']);
-            ?>
-                    </div>
+                echo Html::textArea('schedule',"",['id'=>'schedule', 'class' => 'form-control']);
+                ?>
+            </div>
 
-                    <div id="khusus" class="well" style="display:true">
-            <h2>Keadaan Khusus</h2><br/>
+            <div id="khusus" class="well" style="display:true">
+                <h2>Keadaan Khusus</h2><br/>
 
-            <?php
-
-
-            echo $form->field($visitmodel, 'khusus_kdKhusus')->label('Khusus')->dropDownList(
-                $refKhususdata,
-                ['id'=>'khusus-id','prompt'=>'Select...']);
-
-
-            $datasubspesialis = [
-                "3" => "PENYAKIT DALAM",
-                "8" => "HEMATOLOGI - ONKOLOGI MEDIK",
-                "26" => "ANAK",
-                "30" => "ANAK HEMATOLOGI ONKOLOGI"
-            ];
-
-            ?>
-            <div id="khusus_subspesialis">
                 <?php
 
 
-                echo $form->field($visitmodel, 'khusus_kdSubSpesialis')->label('Khusus SubSpesialis THALASEMIA & HEMOFILI')->dropDownList(
-                    $datasubspesialis,
-                    ['prompt'=>'Select...']);
+                echo $form->field($visitmodel, 'khusus_kdKhusus')->label('Khusus')->dropDownList(
+                    $refKhususdata,
+                    ['id'=>'khusus-id','prompt'=>'Select...']);
 
+
+                $datasubspesialis = [
+                    "3" => "PENYAKIT DALAM",
+                    "8" => "HEMATOLOGI - ONKOLOGI MEDIK",
+                    "26" => "ANAK",
+                    "30" => "ANAK HEMATOLOGI ONKOLOGI"
+                ];
+
+                ?>
+                <div id="khusus_subspesialis">
+                    <?php
+
+
+                    echo $form->field($visitmodel, 'khusus_kdSubSpesialis')->label('Khusus SubSpesialis THALASEMIA & HEMOFILI')->dropDownList(
+                        $datasubspesialis,
+                        ['prompt'=>'Select...']);
+
+
+                    ?>
+                </div>
+
+                <?= $form->field($visitmodel, 'khusus_catatan')->textarea(['rows' => 6]) ?>
+                <?php
+
+                echo Html::hiddenInput('PcareVisit[nmppk]', $visitmodel->nmppk, ['id' => 'pcarevisit-nmppk']);
+
+
+                echo $form->field($visitmodel, 'kdppk')->widget(DepDrop::classname(), [
+//            'data'=>[$model->kdppk_subSpesialis=>$model->nmppk_subSpesialis],
+                    'pluginOptions'=>[
+                        'depends'=>['pcarevisit-khusus_kdkhusus','pcarevisit-khusus_kdsubspesialis', 'pcarevisit-tglestrujuk'],
+                        'placeholder'=>'Select...',
+                        'url'=>Url::to(['rujukankhusus','id' => $visitmodel->id])
+                    ],
+                    'pluginEvents' => [
+                        'depdrop:afterChange'=>'function(event, id, value) { 
+                            alert("dsadsa");         
+                            }',
+                    ]
+                ]);
 
                 ?>
             </div>
 
-            <?= $form->field($visitmodel, 'khusus_catatan')->textarea(['rows' => 6]) ?>
-            <?php
-
-            echo Html::hiddenInput('PcareVisit[nmppk]', $visitmodel->nmppk, ['id' => 'pcarevisit-nmppk']);
-
-            echo $form->field($visitmodel, 'kdppk')->widget(DepDrop::classname(), [
-//            'data'=>[$model->kdppk_subSpesialis=>$model->nmppk_subSpesialis],
-                'pluginOptions'=>[
-                    'depends'=>['pcarevisit-khusus_kdkhusus','pcarevisit-khusus_kdsubspesialis', 'pcarevisit-tglestrujuk'],
-                    'placeholder'=>'Select...',
-                    'url'=>Url::to(['rujukankhusus2','consid' => $model->cons_id])
-                ],
-                'pluginEvents' => [
-                    'depdrop:afterChange'=>'function(event, id, value) { 
-                        
-                            }',
-                ]
-            ]);
-
-            ?>
         </div>
+
+        <?php
+
+
+
+//        echo $form->field($visitmodel, 'kdTacc')->textInput(['maxlength' => true]);
+//        echo $form->field($visitmodel, 'alasanTacc')->textarea(['rows' => 6]);
+
+        ?>
+
+
 
     </div>
 

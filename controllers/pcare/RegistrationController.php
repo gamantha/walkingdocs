@@ -219,6 +219,7 @@ class RegistrationController extends Controller
 
 
         if(isset($_POST['confirm']) || isset($_POST['register'])) {
+            Yii::$app->session->addFlash('success', 'Confirm OR Register button pushed');
         $wdmodel->load(Yii::$app->request->post());
         $model->load(Yii::$app->request->post());
             $pcarevisit->load(Yii::$app->request->post());
@@ -410,8 +411,34 @@ class RegistrationController extends Controller
                         Yii::$app->session->addFlash('success', 'no urut created ' . $jsonresp->response->message);
 
 
+$khususpayload = "null";
+$spesialispayload = "null";
+                        $kdKhusus_subspesialis = "null";
+if ($pcarevisit->spesialis_type == 'spesialis') {
 
+    $spesialispayload = '{
+            "kdSubSpesialis1": "'.$pcarevisit->subSpesialis_kdSubSpesialis1.'",
+      "kdSarana": "'.$pcarevisit->subSpesialis_kdSarana.'"
+    }';
+} else if ($pcarevisit->spesialis_type == 'khusus') {
 
+    if ($pcarevisit->khusus_kdKhusus == 'HEM')
+    {
+        $kdKhusus_subspesialis = $pcarevisit->khusus_kdSubSpesialis;
+    }
+    $khususpayload = '{
+        "kdKhusus": "'.$pcarevisit->khusus_kdKhusus.'",
+      "kdSubSpesialis": '.$kdKhusus_subspesialis.',
+      "catatan": "peserta sudah biasa hemodialisa"
+    }';
+} else {
+
+}
+$rujukpayload = '{
+        "tglEstRujuk": "'.date("d-m-Y" , strtotime($pcarevisit->tglEstRujuk)).'",
+         "kdppk": "'.$pcarevisit->kdppk_subSpesialis.'",
+                 "subSpesialis": '.$spesialispayload.',
+                 "khusus" :' . $khususpayload .'}';
 
                         $visitpayload = '{
         "tglDaftar": "'.date("d-m-Y" , strtotime($model->tglDaftar)).'", 
@@ -423,13 +450,16 @@ class RegistrationController extends Controller
                             "tglPulang": "'.date("d-m-Y" , strtotime($pcarevisit->tglPulang)).'",
                               "kdDokter": "'.$pcarevisit->kdDokter.'",
                                         "kdDiag1": "'.$pcarevisit->kdDiag1.'",
+                                          "kdDiag2": "'.$pcarevisit->kdDiag2.'",
+                                            "kdDiag3": "'.$pcarevisit->kdDiag3.'",
+                                              "terapi": "'.$pcarevisit->terapi.'",
           "sistole": "'.$pcarevisit->sistole.'",
         "diastole": "'.$pcarevisit->diastole.'",
         "beratBadan": "'.$pcarevisit->beratBadan.'",
         "tinggiBadan": "'.$pcarevisit->tinggiBadan.'",
         "respRate": "'.$pcarevisit->respRate.'",
-        "heartRate": "'.$pcarevisit->heartRate.'"
-      }';
+        "heartRate": "'.$pcarevisit->heartRate.'",
+        "rujukLanjut" : '. $rujukpayload . '}';
 
 
                         Yii::$app->session->addFlash('success', 'visit payload below');
@@ -1241,7 +1271,7 @@ if ($rujukanObj->metaData->code == 200){
     public function actionProviders()
     {
         $registration = new PcareRegistration();
-        $registration->setConsId('16744');
+//        $registration->setConsId('16744');
         $response = $registration->Getprovider();
         $response_obj = json_decode($response);
 
@@ -1273,7 +1303,7 @@ $array=[];
     public function actionTestpost()
 {
 
-        $payload = 'clinicId=59cedfba9ae80d05757f54e9.59cedfba9ae80d05757f54e7&kdPoli=&kdTkp=&tglDaftar=2021-10-02' .
+        $payload = 'clinicId=59cedfba9ae80d05757f54e9.59cedfba9ae80d05757f54e7&kdPoli=&kdTkp=&tglDaftar=2021-10-07' .
             '&visitId=12345' .
             '&noKartu=0001113569638&kunjSakit=true' .
             '&kdProviderPeserta=' .
@@ -1361,6 +1391,121 @@ public function actionAntrean()
         }
         return ['output'=>'', 'selected'=>''];
     }
+
+    public function actionRujukankhusus2($consid)
+    {
+        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        $out = ['results' => [['id' => '', 'name' => '']]];
+
+        if (isset($_POST['depdrop_parents'])) {
+            $parents = $_POST['depdrop_parents'];
+            if ($parents != null) {
+                $kdkhusus = $parents[0];
+                $kdsubspesialis = empty($parents[1]) ? null : $parents[1];
+                $tglrujuk = empty($parents[2]) ? null : $parents[2];
+
+                $out = ['results' => [['id' => $kdkhusus, 'name' => $tglrujuk, 'sarana' => $kdsubspesialis]]];
+
+
+
+                $response = Yii::$app->pcareComponent->getRujukanKhusus($consid,$kdkhusus, $kdsubspesialis, $tglrujuk, $noKartu);
+
+                $jsonval = json_decode($response);
+                if (isset($jsonval->response)) {
+
+                    foreach ($jsonval->response->list as $item) {
+                        $temp = ['id' => $item->kdppk, 'name' => $item->nmppk, 'alamatPpk' => $item->alamatPpk, 'jadwal' => $item->jadwal, 'nmkc' => $item->nmkc];
+                        array_push($out['results'], $temp);
+                    }
+                    array_shift($out['results']);
+                }
+
+                return ['output'=>$out, 'selected'=>''];
+            }
+        }
+        return ['output'=>$out, 'selected'=>''];
+    }
+
+
+    public function actionSubspesialiskdsarana($consid)
+    {
+
+        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        $out = ['results' => [['id' => '', 'name' => '']]];
+        if (isset($_POST['depdrop_parents'])) {
+            $parents = $_POST['depdrop_parents'];
+            if ($parents != null) {
+                $keyword = $parents[0];
+
+
+
+                $response = Yii::$app->pcareComponent->getSarana($consid);
+
+                $jsonval = json_decode($response);
+                if (isset($jsonval->response)) {
+
+                    foreach ($jsonval->response->list as $item) {
+                        $temp = ['id' => $item->kdSarana, 'name' => $item->nmSarana];
+                        array_push($out['results'], $temp);
+                    }
+                    array_shift($out['results']);
+                } else {
+                    Yii::$app->session->addFlash('danger', 'get subspesialis kd sarana - no pcare web service response');
+                }
+
+
+//                // the getSubCatList function will query the database based on the
+//                // cat_id and return an array like below:
+//                // [
+//                //    ['id'=>'<sub-cat-id-1>', 'name'=>'<sub-cat-name1>'],
+//                //    ['id'=>'<sub-cat_id_2>', 'name'=>'<sub-cat-name2>']
+//                // ]
+                return ['output'=>$out, 'selected'=>''];
+            }
+        }
+        return ['output'=>'', 'selected'=>''];
+
+
+    }
+
+
+
+    public function actionRujukanspesialis($consid)
+    {
+        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        $out = ['results' => [['id' => '', 'name' => '']]];
+        if (isset($_POST['depdrop_parents'])) {
+            $parents = $_POST['depdrop_parents'];
+            if ($parents != null) {
+                $keyword = $parents[0];
+                $sarana = empty($parents[1]) ? null : $parents[1];
+                $tglrujuk = empty($parents[2]) ? null : $parents[2];
+
+                $out = ['results' => [['id' => $keyword, 'name' => $tglrujuk, 'sarana' => $sarana]]];
+
+
+                $response = Yii::$app->pcareComponent->getRujukanSpesialis($consid, $keyword, $sarana, $tglrujuk);
+
+                $jsonval = json_decode($response);
+                if (isset($jsonval->response)) {
+
+                    foreach ($jsonval->response->list as $item) {
+                        $temp = ['id' => $item->kdppk, 'name' => $item->nmppk . ' alamat : ' . $item->alamatPpk . ', ' . $item->nmkc, 'alamatPpk' => $item->alamatPpk, 'telpPpk' => $item->telpPpk,
+                            'kelas' => $item->kelas,'nmkc' => $item->nmkc, 'distance' => $item->distance, 'jadwal' => $item->jadwal,
+                            'jmlRujuk' => $item->jmlRujuk, 'kapasitas' => $item->kapasitas, 'persentase' => $item->persentase
+
+                        ];
+                        array_push($out['results'], $temp);
+                    }
+                    array_shift($out['results']);
+                }
+
+                return ['output'=>$out, 'selected'=>''];
+            }
+        }
+        return ['output'=>$out, 'selected'=>''];
+    }
+
 
 
 }

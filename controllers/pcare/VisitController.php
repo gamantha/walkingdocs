@@ -523,25 +523,25 @@ $model->kdStatusPulang=3;
         }
         return $options;
     }
-        public function getSarana($pendaftaranId)
-    {
-        $registration = PcareVisit::find()->andWhere(['pendaftaranId' => $pendaftaranId])->One();
-        $kesadaran = $registration->getSarana();
-        $json = json_decode($kesadaran);
-        $options = [];
-        if (isset($json->response)) {
-
-
-            foreach ($json->response->list as $i) {
-                $options[$i->kdSarana] = $i->kdSarana . ' : ' . $i->nmSarana;
-            }
-        } else {
-            Yii::$app->session->addFlash('danger', 'get sarana - no pcare web service response');
-            return $options;
-        }
-
-        return $options;
-    }
+//        public function getSarana($pendaftaranId)
+//    {
+//        $registration = PcareVisit::find()->andWhere(['pendaftaranId' => $pendaftaranId])->One();
+//        $kesadaran = $registration->getSarana();
+//        $json = json_decode($kesadaran);
+//        $options = [];
+//        if (isset($json->response)) {
+//
+//
+//            foreach ($json->response->list as $i) {
+//                $options[$i->kdSarana] = $i->kdSarana . ' : ' . $i->nmSarana;
+//            }
+//        } else {
+//            Yii::$app->session->addFlash('danger', 'get sarana - no pcare web service response');
+//            return $options;
+//        }
+//
+//        return $options;
+//    }
 
     public function getSubspesialisksdjakljdlajdlajldajldjalsdjaldjal($keyword)
     {
@@ -614,83 +614,83 @@ public function actionRujukankhusus($id)
     return ['output'=>$out, 'selected'=>''];
 }
 
-    public function actionRujukanspesialis($id)
-    {
-        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-        $out = ['results' => [['id' => '', 'name' => '']]];
-        if (isset($_POST['depdrop_parents'])) {
-            $parents = $_POST['depdrop_parents'];
-            if ($parents != null) {
-                $keyword = $parents[0];
-                $sarana = empty($parents[1]) ? null : $parents[1];
-                $tglrujuk = empty($parents[2]) ? null : $parents[2];
+//    public function actionRujukanspesialis($id)
+//    {
+//        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+//        $out = ['results' => [['id' => '', 'name' => '']]];
+//        if (isset($_POST['depdrop_parents'])) {
+//            $parents = $_POST['depdrop_parents'];
+//            if ($parents != null) {
+//                $keyword = $parents[0];
+//                $sarana = empty($parents[1]) ? null : $parents[1];
+//                $tglrujuk = empty($parents[2]) ? null : $parents[2];
+//
+//                $out = ['results' => [['id' => $keyword, 'name' => $tglrujuk, 'sarana' => $sarana]]];
+//
+//                $visit = PcareVisit::findOne($id);
+//
+//                $response = $visit->getRujukanSpesialis($keyword, $sarana, $tglrujuk);
+//
+//                $jsonval = json_decode($response);
+//                if (isset($jsonval->response)) {
+//
+//                    foreach ($jsonval->response->list as $item) {
+//                        $temp = ['id' => $item->kdppk, 'name' => $item->nmppk . ' alamat : ' . $item->alamatPpk . ', ' . $item->nmkc, 'alamatPpk' => $item->alamatPpk, 'telpPpk' => $item->telpPpk,
+//                            'kelas' => $item->kelas,'nmkc' => $item->nmkc, 'distance' => $item->distance, 'jadwal' => $item->jadwal,
+//                            'jmlRujuk' => $item->jmlRujuk, 'kapasitas' => $item->kapasitas, 'persentase' => $item->persentase
+//
+//                            ];
+//                        array_push($out['results'], $temp);
+//                    }
+//                    array_shift($out['results']);
+//                }
+//
+//                return ['output'=>$out, 'selected'=>''];
+//            }
+//        }
+//        return ['output'=>$out, 'selected'=>''];
+//    }
 
-                $out = ['results' => [['id' => $keyword, 'name' => $tglrujuk, 'sarana' => $sarana]]];
-
-                $visit = PcareVisit::findOne($id);
-
-                $response = $visit->getRujukanSpesialis($keyword, $sarana, $tglrujuk);
-
-                $jsonval = json_decode($response);
-                if (isset($jsonval->response)) {
-
-                    foreach ($jsonval->response->list as $item) {
-                        $temp = ['id' => $item->kdppk, 'name' => $item->nmppk . ' alamat : ' . $item->alamatPpk . ', ' . $item->nmkc, 'alamatPpk' => $item->alamatPpk, 'telpPpk' => $item->telpPpk,
-                            'kelas' => $item->kelas,'nmkc' => $item->nmkc, 'distance' => $item->distance, 'jadwal' => $item->jadwal,
-                            'jmlRujuk' => $item->jmlRujuk, 'kapasitas' => $item->kapasitas, 'persentase' => $item->persentase
-
-                            ];
-                        array_push($out['results'], $temp);
-                    }
-                    array_shift($out['results']);
-                }
-
-                return ['output'=>$out, 'selected'=>''];
-            }
-        }
-        return ['output'=>$out, 'selected'=>''];
-    }
-
-public function actionSubspesialiskdsarana($id)
-{
-
-    Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-    $out = ['results' => [['id' => '', 'name' => '']]];
-    if (isset($_POST['depdrop_parents'])) {
-        $parents = $_POST['depdrop_parents'];
-        if ($parents != null) {
-            $keyword = $parents[0];
-
-            $visit = PcareVisit::findOne($id);
-
-            $response = $visit->getSarana();
-
-            $jsonval = json_decode($response);
-            if (isset($jsonval->response)) {
-
-                foreach ($jsonval->response->list as $item) {
-                    $temp = ['id' => $item->kdSarana, 'name' => $item->nmSarana];
-                    array_push($out['results'], $temp);
-                }
-                array_shift($out['results']);
-            } else {
-                Yii::$app->session->addFlash('danger', 'get subspesialis kd sarana - no pcare web service response');
-            }
-
-
-//                // the getSubCatList function will query the database based on the
-//                // cat_id and return an array like below:
-//                // [
-//                //    ['id'=>'<sub-cat-id-1>', 'name'=>'<sub-cat-name1>'],
-//                //    ['id'=>'<sub-cat_id_2>', 'name'=>'<sub-cat-name2>']
-//                // ]
-            return ['output'=>$out, 'selected'=>''];
-        }
-    }
-    return ['output'=>'', 'selected'=>''];
-
-
-}
+//public function actionSubspesialiskdsarana($id)
+//{
+//
+//    Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+//    $out = ['results' => [['id' => '', 'name' => '']]];
+//    if (isset($_POST['depdrop_parents'])) {
+//        $parents = $_POST['depdrop_parents'];
+//        if ($parents != null) {
+//            $keyword = $parents[0];
+//
+//            $visit = PcareVisit::findOne($id);
+//
+//            $response = $visit->getSarana();
+//
+//            $jsonval = json_decode($response);
+//            if (isset($jsonval->response)) {
+//
+//                foreach ($jsonval->response->list as $item) {
+//                    $temp = ['id' => $item->kdSarana, 'name' => $item->nmSarana];
+//                    array_push($out['results'], $temp);
+//                }
+//                array_shift($out['results']);
+//            } else {
+//                Yii::$app->session->addFlash('danger', 'get subspesialis kd sarana - no pcare web service response');
+//            }
+//
+//
+////                // the getSubCatList function will query the database based on the
+////                // cat_id and return an array like below:
+////                // [
+////                //    ['id'=>'<sub-cat-id-1>', 'name'=>'<sub-cat-name1>'],
+////                //    ['id'=>'<sub-cat_id_2>', 'name'=>'<sub-cat-name2>']
+////                // ]
+//            return ['output'=>$out, 'selected'=>''];
+//        }
+//    }
+//    return ['output'=>'', 'selected'=>''];
+//
+//
+//}
 
 
 

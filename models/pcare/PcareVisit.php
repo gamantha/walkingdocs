@@ -475,30 +475,30 @@ class PcareVisit extends \yii\db\ActiveRecord
         }
     }
 
-    public function getRujukanSpesialis($kdsubspesialis,$sarana,$tglrujuk)
-    {
-
-
-        $bpjs_user = self::getUsercreds($this->pendaftaran->cons_id);
-        try {
-            $converted_date = date("d-m-Y" , strtotime($tglrujuk));
-            $client = new Client(['baseUrl' => 'https://dvlp.bpjs-kesehatan.go.id:9081/pcare-rest-v3.0/spesialis/rujuk/subspesialis/'.$kdsubspesialis.'/sarana/'.$sarana.'/tglEstRujuk/' . $converted_date]);
-            $request = $client->createRequest()
-//                ->setContent($payload)->setMethod('POST')
-                ->setHeaders(['X-cons-id' => $bpjs_user['cons_id']])
-                ->addHeaders(['content-type' => 'application/json'])
-                ->addHeaders(['X-Timestamp' => $bpjs_user['time']])
-                ->addHeaders(['X-Signature' => $bpjs_user['encoded_sig']])
-                ->addHeaders(['X-Authorization' => $bpjs_user['encoded_auth_string']]);
-
-            $response = $request->send();
-            return $response->content;
-        } catch (\yii\base\Exception $exception) {
-
-            Yii::warning("ERROR GETTING RESPONSE FROM BPJS.");
-        }
-
-    }
+//    public function getRujukanSpesialis($kdsubspesialis,$sarana,$tglrujuk)
+//    {
+//
+//
+//        $bpjs_user = self::getUsercreds($this->pendaftaran->cons_id);
+//        try {
+//            $converted_date = date("d-m-Y" , strtotime($tglrujuk));
+//            $client = new Client(['baseUrl' => 'https://dvlp.bpjs-kesehatan.go.id:9081/pcare-rest-v3.0/spesialis/rujuk/subspesialis/'.$kdsubspesialis.'/sarana/'.$sarana.'/tglEstRujuk/' . $converted_date]);
+//            $request = $client->createRequest()
+////                ->setContent($payload)->setMethod('POST')
+//                ->setHeaders(['X-cons-id' => $bpjs_user['cons_id']])
+//                ->addHeaders(['content-type' => 'application/json'])
+//                ->addHeaders(['X-Timestamp' => $bpjs_user['time']])
+//                ->addHeaders(['X-Signature' => $bpjs_user['encoded_sig']])
+//                ->addHeaders(['X-Authorization' => $bpjs_user['encoded_auth_string']]);
+//
+//            $response = $request->send();
+//            return $response->content;
+//        } catch (\yii\base\Exception $exception) {
+//
+//            Yii::warning("ERROR GETTING RESPONSE FROM BPJS.");
+//        }
+//
+//    }
 
     public function setWdId($wdId)
     {
