@@ -447,7 +447,7 @@ class RegistrationController extends Controller
 //                                Yii::$app->session->addFlash('danger', 'visit NOT CREATED');
                                 Yii::$app->session->addFlash('danger', $createvistresp);
                                 /** INI YANG PENTING - ini nanti auto deletenya dinyalain */
-//                                $deleteresp = Yii::$app->pcareComponent->pcareDeleteRegistration($model->cons_id, $model->noKartu, date("d-m-Y" , strtotime($model->tglDaftar)), $model->no_urut, $model->kdPoli);
+                                $deleteresp = Yii::$app->pcareComponent->pcareDeleteRegistration($model->cons_id, $model->noKartu, date("d-m-Y" , strtotime($model->tglDaftar)), $model->no_urut, $model->kdPoli);
 //                                Yii::$app->session->addFlash('danger', 'Registration is AUTO-DELETED because visit data is invalid : ' . $deleteresp);
                             }
                         }
@@ -1273,7 +1273,7 @@ $array=[];
     public function actionTestpost()
 {
 
-        $payload = 'clinicId=59cedfba9ae80d05757f54e9.59cedfba9ae80d05757f54e7&kdPoli=&kdTkp=&tglDaftar=2021-10-02' .
+        $payload = 'clinicId=59cedfba9ae80d05757f54e9.59cedfba9ae80d05757f54e7&kdPoli=&kdTkp=&tglDaftar=2021-10-07' .
             '&visitId=12345' .
             '&noKartu=0001113569638&kunjSakit=true' .
             '&kdProviderPeserta=' .
