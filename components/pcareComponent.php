@@ -736,6 +736,101 @@ class pcareComponent extends Component
     }
 
 
+    public function getRujukanKhusus2($consid,$kdkhusus, $kdsubspesialis, $tglrujuk, $noKartu)
+    {
+        $bpjs_user = self::getUsercreds($consid);
+        try {
+            $converted_date = date("d-m-Y" , strtotime($tglrujuk));
+            $list = ['THA', 'HEM'];
+            if (in_array(strtoupper($kdkhusus), $list)) {
+                $client = new Client(['baseUrl' => self::BASE_API_URL . '/spesialis/rujuk/khusus/'.$kdkhusus.'/subspesialis/'.$kdsubspesialis.'/noKartu/'.$noKartu.'/tglEstRujuk/' . $converted_date]);
+            } else {
+                $client = new Client(['baseUrl' => self::BASE_API_URL . '/spesialis/rujuk/khusus/'.$kdkhusus.'/noKartu/'.$noKartu.'/tglEstRujuk/' . $converted_date]);
+            }
+
+            $request = $client->createRequest()
+//                ->setContent($payload)->setMethod('POST')
+                ->setHeaders(['X-cons-id' => $bpjs_user['cons_id']])
+                ->addHeaders(['content-type' => 'application/json'])
+                ->addHeaders(['X-Timestamp' => $bpjs_user['time']])
+                ->addHeaders(['X-Signature' => $bpjs_user['encoded_sig']])
+                ->addHeaders(['X-Authorization' => $bpjs_user['encoded_auth_string']]);
+
+            $response = $request->send();
+            return $response->content;
+        } catch (\yii\base\Exception $exception) {
+
+            Yii::warning("ERROR GETTING RESPONSE FROM BPJS.");
+        }
+    }
+    public function getSarana($consid)
+    {
+        $bpjs_user = self::getUsercreds($consid);
+        try {
+
+            $client = new Client(['baseUrl' => self::BASE_API_URL  . '/spesialis/sarana']);
+            $request = $client->createRequest()
+//                ->setContent($payload)->setMethod('POST')
+                ->setHeaders(['X-cons-id' => $bpjs_user['cons_id']])
+                ->addHeaders(['content-type' => 'application/json'])
+                ->addHeaders(['X-Timestamp' => $bpjs_user['time']])
+                ->addHeaders(['X-Signature' => $bpjs_user['encoded_sig']])
+                ->addHeaders(['X-Authorization' => $bpjs_user['encoded_auth_string']]);
+
+            $response = $request->send();
+            return $response->content;
+        } catch (\yii\base\Exception $exception) {
+
+            Yii::warning("ERROR GETTING RESPONSE FROM BPJS.");
+        }
+    }
+
+    public function getReferensiSarana($consid)
+    {
+
+        $kesadaran = $this->getSarana($consid);
+        $json = json_decode($kesadaran);
+        $options = [];
+        if (isset($json->response)) {
+
+
+            foreach ($json->response->list as $i) {
+                $options[$i->kdSarana] = $i->kdSarana . ' : ' . $i->nmSarana;
+            }
+        } else {
+            Yii::$app->session->addFlash('danger', 'get sarana - no pcare web service response');
+            return $options;
+        }
+
+        return $options;
+    }
+
+
+    public function getRujukanSpesialis($consid, $kdsubspesialis,$sarana,$tglrujuk)
+    {
+
+
+        $bpjs_user = self::getUsercreds($consid);
+        try {
+            $converted_date = date("d-m-Y" , strtotime($tglrujuk));
+            $client = new Client(['baseUrl' => self::BASE_API_URL . '/spesialis/rujuk/subspesialis/'.$kdsubspesialis.'/sarana/'.$sarana.'/tglEstRujuk/' . $converted_date]);
+            $request = $client->createRequest()
+//                ->setContent($payload)->setMethod('POST')
+                ->setHeaders(['X-cons-id' => $bpjs_user['cons_id']])
+                ->addHeaders(['content-type' => 'application/json'])
+                ->addHeaders(['X-Timestamp' => $bpjs_user['time']])
+                ->addHeaders(['X-Signature' => $bpjs_user['encoded_sig']])
+                ->addHeaders(['X-Authorization' => $bpjs_user['encoded_auth_string']]);
+
+            $response = $request->send();
+            return $response->content;
+        } catch (\yii\base\Exception $exception) {
+
+            Yii::warning("ERROR GETTING RESPONSE FROM BPJS.");
+        }
+
+    }
+
 
 
 }
