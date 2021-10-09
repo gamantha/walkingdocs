@@ -225,7 +225,7 @@ echo $form->field($model, 'nik')->textInput(['maxlength' => true])->label('KTP -
     </div>
 
     <h2>Rujukan</h2>
-    HANYA KALAU PILIH RUJUK vertikal untuk status pulang maka pilihan dibawah jadi nyala .Saat ini hanya ada rujukan vertikal (spesialis , khusus)
+    HANYA KALAU PILIH RUJUK maka pilihan dibawah jadi nyala .Saat ini hanya ada rujukan vertikal (spesialis , khusus)
     <div class="well">
     <?php
     $ref_tacc = [
