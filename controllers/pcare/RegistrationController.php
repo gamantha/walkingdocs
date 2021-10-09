@@ -477,7 +477,7 @@ $rujukpayload = '{
 //                                Yii::$app->session->addFlash('danger', 'visit NOT CREATED');
                                 Yii::$app->session->addFlash('danger', $createvistresp);
                                 /** INI YANG PENTING - ini nanti auto deletenya dinyalain */
-//                                $deleteresp = Yii::$app->pcareComponent->pcareDeleteRegistration($model->cons_id, $model->noKartu, date("d-m-Y" , strtotime($model->tglDaftar)), $model->no_urut, $model->kdPoli);
+                                $deleteresp = Yii::$app->pcareComponent->pcareDeleteRegistration($model->cons_id, $model->noKartu, date("d-m-Y" , strtotime($model->tglDaftar)), $model->no_urut, $model->kdPoli);
 //                                Yii::$app->session->addFlash('danger', 'Registration is AUTO-DELETED because visit data is invalid : ' . $deleteresp);
                             }
                         }

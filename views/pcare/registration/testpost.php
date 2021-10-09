@@ -6,6 +6,7 @@ use kartik\widgets\Select2;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\web\JsExpression;
+use yii\web\View;
 use yii\widgets\ActiveForm;
 
 /* @var $this yii\web\View */
@@ -13,7 +14,106 @@ use yii\widgets\ActiveForm;
 /* @var $form yii\widgets\ActiveForm */
 ?>
 <div class="pcare-registration-create">
+    <?php
+    $this->registerJs(
+        "$('#pcarevisit-kdstatuspulang').on('change', function() { 
 
+        
+        });
+        
+
+        
+        $('input[name=\"PcareVisit[spesialis_type]\"]').on('change', function() { 
+
+
+        });
+                $('#khusus_subspesialis').show();
+                
+                if($('#khusus-id.form-control :selected').val() == 'HDL') {
+      
+                } else {
+            
+                }
+         
+         
+         
+                 $('#khusus-id.form-control').on('change', function() { 
+            if (this.value == 'HEM') {
+        
+                    $('#khusus_subspesialis').show();
+                    
+            } else if(this.value == 'THA') {
+        
+                    $('#khusus_subspesialis').show();
+            } else {
+
+            }
+            
+
+        }); 
+        
+               
+$('#pcarevisit-kddiag1').on('change', function() { 
+$('#pcarevisit-nmdiag1').val($('#pcarevisit-kddiag1 option:selected').text());
+}); 
+
+$('#pcarevisit-kddiag2').on('change', function() { 
+$('#pcarevisit-nmdiag2').val($('#pcarevisit-kddiag2 option:selected').text());
+}); 
+
+$('#pcarevisit-kddiag3').on('change', function() { 
+$('#pcarevisit-nmdiag3').val($('#pcarevisit-kddiag3 option:selected').text());
+}); 
+        
+        $('#pcarevisit-subspesialis_kdsubspesialis1').on('change', function() { 
+        $('#pcarevisit-subspesialis_nmsubspesialis1').val($('#pcarevisit-subspesialis_kdsubspesialis1 option:selected').text());
+        
+
+        }); 
+        
+        
+                $('#pcarevisit-kdppk_subspesialis').on('change', function() { 
+        $('#pcarevisit-nmppk_subspesialis').val($('#pcarevisit-kdppk_subspesialis option:selected').text());
+
+       
+        
+        var ajaxResults = $('#pcarevisit-kdppk_subspesialis').depdrop('getAjaxResults');
+        $('#schedule').val(ajaxResults.output.results[0].jadwal);
+
+         $('#pcarevisit-meta_rujukan').val(JSON.stringify(ajaxResults.output.results[0]));
+
+        }); 
+        
+        $('#pcarevisit-kdppk_subspesialis').on('depdrop:beforeChange', function(event, id, value, jqXHR, textStatus) {
+
+
+});
+
+
+        $('#pcarevisit-kdppk_subspesialis').on('depdrop:change', function(event, id, value, count, textStatus, jqXHR) {
+
+});
+
+
+        
+        
+  if($('input[name=\"PcareVisit[spesialis_type]\"]:checked').val() == 'khusus') {
+        $('#khusus').show();
+      
+        } else {    
+      
+        $('#spesialis').show();
+        }        
+                
+
+        ",
+        View::POS_READY,
+        'my-button-handler'
+    );
+
+
+
+    ?>
     <h1><?= Html::encode($this->title) ?></h1>
 
 <div class="pcare-registration-form">
@@ -269,8 +369,10 @@ echo $form->field($model, 'nik')->textInput(['maxlength' => true])->label('KTP -
                 ['prompt'=>'Select...']);
 
             echo $form->field($visitmodel, 'subSpesialis_kdSubSpesialis1')->widget(DepDrop::classname(), [
+//                'data' => [2 => 'Tablets'],
                     'data'=>[$visitmodel->subSpesialis_kdSubSpesialis1=>$visitmodel->subSpesialis_nmSubSpesialis1],
                 'pluginOptions'=>[
+                    'initialize' => true,
                     'depends'=>['pcarevisit-subspesialis_kdspesialis'],
                     'placeholder'=>'Select...',
                     'url'=>Url::to(['subspesialis','consid' => $model->cons_id])
@@ -281,6 +383,7 @@ echo $form->field($model, 'nik')->textInput(['maxlength' => true])->label('KTP -
 //            'options'=>['id'=>'subspesialis-id'],
                 'data'=>[$visitmodel->subSpesialis_kdSarana =>$visitmodel->subSpesialis_nmSarana],
                 'pluginOptions'=>[
+                    'initialize' => true,
                     'depends'=>['pcarevisit-subspesialis_kdsubspesialis1'],
                     'placeholder'=>'Select...',
                     'url'=>Url::to(['subspesialiskdsarana','consid' => $model->cons_id])
@@ -288,6 +391,8 @@ echo $form->field($model, 'nik')->textInput(['maxlength' => true])->label('KTP -
             ]);
 
 
+            echo Html::hiddenInput('PcareVisit[subSpesialis_nmSubSpesialis1]', $visitmodel->subSpesialis_nmSubSpesialis1, ['id' => 'pcarevisit-subspesialis_nmspesialis1']);
+            echo Html::hiddenInput('PcareVisit[subSpesialis_nmSarana]', $visitmodel->subSpesialis_nmSarana, ['id' => 'pcarevisit-subspesialis_nmsarana']);
 
             echo Html::hiddenInput('PcareVisit[nmppk_subSpesialis]', $visitmodel->nmppk_subSpesialis, ['id' => 'pcarevisit-nmppk_subspesialis']);
             echo Html::hiddenInput('PcareVisit[meta_rujukan]', $visitmodel->meta_rujukan, ['id' => 'pcarevisit-meta_rujukan']);
@@ -296,12 +401,13 @@ echo $form->field($model, 'nik')->textInput(['maxlength' => true])->label('KTP -
             echo $form->field($visitmodel, 'kdppk_subSpesialis')->widget(DepDrop::classname(), [
                 'data'=>[$visitmodel->kdppk_subSpesialis=>$visitmodel->nmppk_subSpesialis],
                 'pluginOptions'=>[
+                    'initialize' => true,
                     'depends'=>['pcarevisit-subspesialis_kdsubspesialis1','pcarevisit-subspesialis_kdsarana', 'pcarevisit-tglestrujuk'],
                     'placeholder'=>'Select...',
                     'url'=>Url::to(['rujukanspesialis','consid' => $model->cons_id]),
                 ]
             ]);
-
+            echo '<label class="control-label">Info Jadwal</label>';
             echo Html::textArea('schedule',"",['id'=>'schedule', 'class' => 'form-control']);
             ?>
                     </div>
