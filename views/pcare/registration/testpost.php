@@ -16,7 +16,11 @@ use yii\widgets\ActiveForm;
 <div class="pcare-registration-create">
     <?php
     $this->registerJs(
-        "$('#pcarevisit-kdstatuspulang').on('change', function() { 
+
+        "
+                $('#spesialis').hide();
+                        $('#khusus').hide();
+        $('#pcarevisit-kdstatuspulang').on('change', function() { 
 
         
         });
@@ -25,26 +29,30 @@ use yii\widgets\ActiveForm;
         
         $('input[name=\"PcareVisit[spesialis_type]\"]').on('change', function() { 
 
+        if (this.value == 'khusus') {
+
+        $('#khusus').show();
+        $('#spesialis').hide();
+        } else {    
+        $('#khusus').hide();
+        $('#spesialis').show();
+        }
 
         });
-                $('#khusus_subspesialis').show();
-                
-                if($('#khusus-id.form-control :selected').val() == 'HDL') {
-      
-                } else {
-            
-                }
+
          
          
          
-                 $('#khusus-id.form-control').on('change', function() { 
+                 $('#pcarevisit-khusus_kdkhusus.form-control').on('change', function() { 
             if (this.value == 'HEM') {
         
                     $('#khusus_subspesialis').show();
+                    alert('hem')
                     
             } else if(this.value == 'THA') {
         
                     $('#khusus_subspesialis').show();
+                     alert('tha')
             } else {
 
             }
@@ -100,7 +108,7 @@ $('#pcarevisit-nmdiag3').val($('#pcarevisit-kddiag3 option:selected').text());
   if($('input[name=\"PcareVisit[spesialis_type]\"]:checked').val() == 'khusus') {
         $('#khusus').show();
       
-        } else {    
+        } else if($('input[name=\"PcareVisit[spesialis_type]\"]:checked').val() == 'khusus') {    
       
         $('#spesialis').show();
         }        
@@ -322,6 +330,41 @@ echo $form->field($model, 'nik')->textInput(['maxlength' => true])->label('KTP -
         echo $form->field($visitmodel, 'terapi')->textArea(['maxlength' => true,'readonly' => true,'rows' => '3']);
 
         ?>
+
+        <div class="well">
+
+            <label class="control-label" style="color:blue;font-size: 100%">Diagnosa Daftar Tilik</label>
+            <?php
+            echo $form->field($wdmodel, 'checklistNames')->textArea(['maxlength' => true,'readonly' => true,'rows' => '3'])
+                ->label(false)
+            ;
+
+            echo $form->field($wdmodel, 'manualDiagnoses')->textArea(['maxlength' => true,'readonly' => true,'rows' => '3'])
+                ->label(false)
+            ;
+
+            $diagnoses = json_decode($wdmodel->manualDiagnoses);
+
+            echo Html::label('Diagnosa Manual', 'description', ['class' => 'control-label','style'=>'color:blue;font-size: 100%; font-weight:200;']);
+
+            $wdmodel->manualDiagnose_description = isset($diagnoses->description)? $diagnoses->description : "";
+            $wdmodel->manualDiagnose_treatment = isset($diagnoses->treatment)? $diagnoses->treatment : "";
+            echo Html::input('text', 'description', $wdmodel->manualDiagnose_description , ['class' =>'form-control', 'readonly' => true]);
+            echo '<div class="help-block"></div>';
+            echo Html::label('Treatment', 'treatment', ['class' => 'control-label','style'=>'color:blue;font-size: 100%; font-weight:200;']);
+            echo Html::input('text', 'treatment', $wdmodel->manualDiagnose_treatment, ['class' =>'form-control', 'readonly' => true]);
+
+
+
+
+
+            echo $form->field($wdmodel, 'clinicId')->hiddenInput(['maxlength' => true,'readonly' => true,'rows' => '3'])->label(false);
+
+            echo $form->field($wdmodel, 'wdVisitId')->hiddenInput(['maxlength' => true, 'readonly' => true, 'rows' => '3'])->label(false);
+            ?>
+
+
+        </div>
     </div>
 
     <h2>Rujukan</h2>
@@ -359,9 +402,9 @@ echo $form->field($model, 'nik')->textInput(['maxlength' => true])->label('KTP -
     <div id="rujukan" class="">
 
         <div class="well">
-            <h2>Spesialis</h2><br/>
-            <div id="spesialis" style="display:true>
 
+            <div id="spesialis">
+                <h2>Spesialis</h2><br/>
 
             <?php
             echo $form->field($visitmodel, 'subSpesialis_kdSpesialis')->dropDownList(
@@ -412,15 +455,15 @@ echo $form->field($model, 'nik')->textInput(['maxlength' => true])->label('KTP -
             ?>
                     </div>
 
-                    <div id="khusus" class="well" style="display:true">
+                    <div id="khusus">
             <h2>Keadaan Khusus</h2><br/>
+            <div id="khusus_spesialis">
+
 
             <?php
-
-
             echo $form->field($visitmodel, 'khusus_kdKhusus')->label('Khusus')->dropDownList(
                 $refKhususdata,
-                ['id'=>'khusus-id','prompt'=>'Select...']);
+                ['id'=>'pcarevisit-khusus_kdkhusus','prompt'=>'Select...']);
 
 
             $datasubspesialis = [
@@ -429,8 +472,25 @@ echo $form->field($model, 'nik')->textInput(['maxlength' => true])->label('KTP -
                 "26" => "ANAK",
                 "30" => "ANAK HEMATOLOGI ONKOLOGI"
             ];
+            echo Html::hiddenInput('PcareVisit[nmppk]', $visitmodel->nmppk, ['id' => 'pcarevisit-nmppk']);
+
+            echo $form->field($visitmodel, 'kdppk')->widget(DepDrop::classname(), [
+                'data'=>[$visitmodel->kdppk  =>$visitmodel->nmppk],
+                'pluginOptions'=>[
+                    'depends'=>['pcarevisit-khusus_kdkhusus', 'pcarevisit-tglestrujuk'],
+                    'placeholder'=>'Select...',
+                    'url'=>Url::to(['rujukankhusus1','consid' => $model->cons_id, 'nokartu' => $model->noKartu])
+                ],
+                'pluginEvents' => [
+                    'depdrop:afterChange'=>'function(event, id, value) { 
+    
+                            }',
+                ]
+            ]);
+
 
             ?>
+            </div>
             <div id="khusus_subspesialis">
                 <?php
 
@@ -439,6 +499,19 @@ echo $form->field($model, 'nik')->textInput(['maxlength' => true])->label('KTP -
                     $datasubspesialis,
                     ['prompt'=>'Select...']);
 
+                echo $form->field($visitmodel, 'kdppk_khusus')->label("Rujukan khusus THA & HEM")->widget(DepDrop::classname(), [
+                    'data'=>[$visitmodel->kdppk_khusus  =>$visitmodel->nmppk_khusus],
+                    'pluginOptions'=>[
+                        'depends'=>['pcarevisit-khusus_kdkhusus','pcarevisit-khusus_kdsubspesialis', 'pcarevisit-tglestrujuk'],
+                        'placeholder'=>'Select...',
+                        'url'=>Url::to(['rujukankhusus2','consid' => $model->cons_id, 'nokartu' => $model->noKartu])
+                    ],
+                    'pluginEvents' => [
+                        'depdrop:afterChange'=>'function(event, id, value) { 
+     
+                            }',
+                    ]
+                ]);
 
                 ?>
             </div>
@@ -446,27 +519,14 @@ echo $form->field($model, 'nik')->textInput(['maxlength' => true])->label('KTP -
             <?= $form->field($visitmodel, 'khusus_catatan')->textarea(['rows' => 6]) ?>
             <?php
 
-            echo Html::hiddenInput('PcareVisit[nmppk]', $visitmodel->nmppk, ['id' => 'pcarevisit-nmppk']);
 
-            echo $form->field($visitmodel, 'kdppk')->widget(DepDrop::classname(), [
-//            'data'=>[$model->kdppk_subSpesialis=>$model->nmppk_subSpesialis],
-                'pluginOptions'=>[
-                    'depends'=>['pcarevisit-khusus_kdkhusus','pcarevisit-khusus_kdsubspesialis', 'pcarevisit-tglestrujuk'],
-                    'placeholder'=>'Select...',
-                    'url'=>Url::to(['rujukankhusus2','consid' => $model->cons_id])
-                ],
-                'pluginEvents' => [
-                    'depdrop:afterChange'=>'function(event, id, value) { 
-                        
-                            }',
-                ]
-            ]);
+
 
             ?>
         </div>
 
     </div>
-
+    </div>
 Once sent cannot be undone
     <div class="form-group">
         <?= Html::submitButton(Yii::t('app', 'Next'), ['name' => 'confirm','class' => 'btn btn-success']) ?>

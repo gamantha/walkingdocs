@@ -26,8 +26,10 @@ use kartik\select2\Select2;
  * @property string|null $kdPoliRujukInternal
  * @property string|null $tglEstRujuk
  * @property string|null $kdppk
- * @property string|null $kdppk_subSpesialis
  * @property string|null $nmppk
+ * @property string|null $kdppk_khusus
+ * @property string|null $nmppk_khusus
+ * @property string|null $kdppk_subSpesialis
  * @property string|null $nmppk_subSpesialis
  * @property string|null $spesialis_type
  * @property string|null $subSpesialis_kdSpesialis
@@ -66,6 +68,7 @@ class PcareVisit extends \yii\db\ActiveRecord
 {
 
     public $wdId;
+    public $nmStatusPulang;
     /**
      * {@inheritdoc}
      */
@@ -81,9 +84,9 @@ class PcareVisit extends \yii\db\ActiveRecord
     {
         return [
             [['pendaftaranId', 'sistole', 'diastole', 'beratBadan', 'tinggiBadan', 'respRate', 'heartRate'], 'integer'],
-            [['terapi','keluhan', 'khusus_catatan', 'alasanTacc', 'json', 'meta_rujukan'], 'string'],
+            [['terapi', 'keluhan', 'khusus_catatan', 'alasanTacc', 'json', 'meta_rujukan'], 'string'],
             [['tglPulang', 'tglEstRujuk', 'created_at', 'modified_at'], 'safe'],
-            [['noKunjungan', 'kdSadar', 'kdStatusPulang', 'kdDokter', 'kdDiag1', 'kdDiag2', 'kdDiag3', 'kdPoliRujukInternal', 'kdppk', 'kdppk_subSpesialis', 'nmppk', 'nmppk_subSpesialis', 'spesialis_type', 'subSpesialis_kdSpesialis', 'subSpesialis_nmSpesialis', 'subSpesialis_nmSubSpesialis1', 'subSpesialis_kdSubSpesialis1', 'subSpesialis_kdSarana', 'subSpesialis_nmSarana', 'khusus_kdKhusus', 'khusus_nmKhusus', 'khusus_kdSubSpesialis', 'khusus_nmSubSpesialis', 'kdTacc', 'status', 'nmDokter', 'nmDiag1', 'nmDiag2', 'nmDiag3'], 'string', 'max' => 255],
+            [['noKunjungan', 'kdSadar', 'kdStatusPulang', 'kdDokter', 'kdDiag1', 'kdDiag2', 'kdDiag3', 'kdPoliRujukInternal', 'kdppk', 'nmppk', 'kdppk_khusus', 'nmppk_khusus', 'kdppk_subSpesialis', 'nmppk_subSpesialis', 'spesialis_type', 'subSpesialis_kdSpesialis', 'subSpesialis_nmSpesialis', 'subSpesialis_nmSubSpesialis1', 'subSpesialis_kdSubSpesialis1', 'subSpesialis_kdSarana', 'subSpesialis_nmSarana', 'khusus_kdKhusus', 'khusus_nmKhusus', 'khusus_kdSubSpesialis', 'khusus_nmSubSpesialis', 'kdTacc', 'status', 'nmDokter', 'nmDiag1', 'nmDiag2', 'nmDiag3'], 'string', 'max' => 255],
             [['pendaftaranId'], 'exist', 'skipOnError' => true, 'targetClass' => PcareRegistration::className(), 'targetAttribute' => ['pendaftaranId' => 'id']],
             ];
     }
@@ -109,8 +112,10 @@ class PcareVisit extends \yii\db\ActiveRecord
             'kdPoliRujukInternal' => Yii::t('app', 'Kd Poli Rujuk Internal'),
             'tglEstRujuk' => Yii::t('app', 'Tgl Est Rujuk'),
             'kdppk' => Yii::t('app', 'Kdppk'),
-            'kdppk_subSpesialis' => Yii::t('app', 'Kdppk Sub Spesialis'),
             'nmppk' => Yii::t('app', 'Nmppk'),
+            'kdppk_khusus' => Yii::t('app', 'Kdppk Khusus'),
+            'nmppk_khusus' => Yii::t('app', 'Nmppk Khusus'),
+            'kdppk_subSpesialis' => Yii::t('app', 'Kdppk Sub Spesialis'),
             'nmppk_subSpesialis' => Yii::t('app', 'Nmppk Sub Spesialis'),
             'spesialis_type' => Yii::t('app', 'Spesialis Type'),
             'subSpesialis_kdSpesialis' => Yii::t('app', 'Sub Spesialis Kd Spesialis'),

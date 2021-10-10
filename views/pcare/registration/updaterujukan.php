@@ -6,7 +6,6 @@ use kartik\widgets\Select2;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\web\JsExpression;
-use yii\web\View;
 use yii\widgets\ActiveForm;
 
 /* @var $this yii\web\View */
@@ -14,128 +13,18 @@ use yii\widgets\ActiveForm;
 /* @var $form yii\widgets\ActiveForm */
 ?>
 <div class="pcare-registration-create">
-    <?php
-    $this->registerJs(
 
-        "
-                $('#spesialis').hide();
-                        $('#khusus').hide();
-        $('#pcarevisit-kdstatuspulang').on('change', function() { 
-
-        
-        });
-        
-
-        
-        $('input[name=\"PcareVisit[spesialis_type]\"]').on('change', function() { 
-
-        if (this.value == 'khusus') {
-
-        $('#khusus').show();
-        $('#spesialis').hide();
-        } else {    
-        $('#khusus').hide();
-        $('#spesialis').show();
-        }
-
-        });
-
-         
-         
-         
-                 $('#pcarevisit-khusus_kdkhusus.form-control').on('change', function() { 
-            if (this.value == 'HEM') {
-        
-                    $('#khusus_subspesialis').show();
-                    alert('hem')
-                    
-            } else if(this.value == 'THA') {
-        
-                    $('#khusus_subspesialis').show();
-                     alert('tha')
-            } else {
-
-            }
-            
-
-        }); 
-        
-               
-$('#pcarevisit-kddiag1').on('change', function() { 
-$('#pcarevisit-nmdiag1').val($('#pcarevisit-kddiag1 option:selected').text());
-}); 
-
-$('#pcarevisit-kddiag2').on('change', function() { 
-$('#pcarevisit-nmdiag2').val($('#pcarevisit-kddiag2 option:selected').text());
-}); 
-
-$('#pcarevisit-kddiag3').on('change', function() { 
-$('#pcarevisit-nmdiag3').val($('#pcarevisit-kddiag3 option:selected').text());
-}); 
-        
-        $('#pcarevisit-subspesialis_kdsubspesialis1').on('change', function() { 
-        $('#pcarevisit-subspesialis_nmsubspesialis1').val($('#pcarevisit-subspesialis_kdsubspesialis1 option:selected').text());
-        
-
-        }); 
-        
-        
-                $('#pcarevisit-kdppk_subspesialis').on('change', function() { 
-        $('#pcarevisit-nmppk_subspesialis').val($('#pcarevisit-kdppk_subspesialis option:selected').text());
-
-       
-        
-        var ajaxResults = $('#pcarevisit-kdppk_subspesialis').depdrop('getAjaxResults');
-        $('#schedule').val(ajaxResults.output.results[0].jadwal);
-
-         $('#pcarevisit-meta_rujukan').val(JSON.stringify(ajaxResults.output.results[0]));
-
-        }); 
-        
-        $('#pcarevisit-kdppk_subspesialis').on('depdrop:beforeChange', function(event, id, value, jqXHR, textStatus) {
-
-
-});
-
-
-        $('#pcarevisit-kdppk_subspesialis').on('depdrop:change', function(event, id, value, count, textStatus, jqXHR) {
-
-});
-
-
-        
-        
-  if($('input[name=\"PcareVisit[spesialis_type]\"]:checked').val() == 'khusus') {
-        $('#khusus').show();
-      
-        } else if($('input[name=\"PcareVisit[spesialis_type]\"]:checked').val() == 'khusus') {    
-      
-        $('#spesialis').show();
-        }        
-                
-
-        ",
-        View::POS_READY,
-        'my-button-handler'
-    );
-
-
-
-    ?>
     <h1><?= Html::encode($this->title) ?></h1>
 
     <div class="pcare-registration-form">
 
         <?php $form = ActiveForm::begin(); ?>
 
-        <h2>Data Kunjungan</h2>
+        <h2>Registration Data</h2>
         <div class="well">
             <?php
             echo '<pre>';
-            print_r($payload);
-            echo '</pre>';
-            echo '<pre>';
-            print_r($visitmodel);
+            print_r($model->params);
             echo '</pre>';
             ?>
 
@@ -178,20 +67,6 @@ $('#pcarevisit-nmdiag3').val($('#pcarevisit-kddiag3 option:selected').text());
             echo $form->field($model, 'kdTkp')->dropDownList(
                 $listData,
                 ['prompt'=>'Select...', 'readonly' => true]);
-
-            echo '<label class="control-label">Tanggal Pulang (HARUS APABILA RITP) </label>';
-            echo DatePicker::widget([
-                'model' => $visitmodel,
-                'attribute' => 'tglPulang',
-                'pluginOptions' => [
-                    'todayHighlight' => true,
-                    'todayBtn' => true,
-                    'autoclose'=>true,
-                    'format' => 'yyyy-mm-dd'
-//                   'format' => 'dd-mm-yyyy'
-                ]
-//        'dateFormat' => 'yyyy-MM-dd',
-            ]);
 
 
             echo $form->field($visitmodel, 'kdStatusPulang')->widget(DepDrop::classname(), [
@@ -312,7 +187,6 @@ $('#pcarevisit-nmdiag3').val($('#pcarevisit-kddiag3 option:selected').text());
 
         </div>
 
-
         <h2>Rujukan</h2>
         HANYA KALAU PILIH RUJUK maka pilihan dibawah jadi nyala .Saat ini hanya ada rujukan vertikal (spesialis , khusus)
         <div class="well">
@@ -348,9 +222,9 @@ $('#pcarevisit-nmdiag3').val($('#pcarevisit-kddiag3 option:selected').text());
         <div id="rujukan" class="">
 
             <div class="well">
+                <h2>Spesialis</h2><br/>
+                <div id="spesialis" style="display:true>
 
-                <div id="spesialis">
-                        <h2>Spesialis</h2><br/>
 
                 <?php
                 echo $form->field($visitmodel, 'subSpesialis_kdSpesialis')->dropDownList(
@@ -401,43 +275,25 @@ $('#pcarevisit-nmdiag3').val($('#pcarevisit-kddiag3 option:selected').text());
                 ?>
                         </div>
 
-                        <div id="khusus">
-                            <h2>Keadaan Khusus</h2><br/>
-                            <div id="khusus_spesialis">
-                                <?php
-                                echo $form->field($visitmodel, 'khusus_kdKhusus')->label('Khusus')->dropDownList(
-                                    $refKhususdata,
-                                    ['id'=>'pcarevisit-khusus_kdkhusus','prompt'=>'Select...']);
+                        <div id="khusus" class="well" style="display:true">
+                <h2>Keadaan Khusus</h2><br/>
 
-                                $datasubspesialis = [
-                                    "3" => "PENYAKIT DALAM",
-                                    "8" => "HEMATOLOGI - ONKOLOGI MEDIK",
-                                    "26" => "ANAK",
-                                    "30" => "ANAK HEMATOLOGI ONKOLOGI"
-                                ];
-
-                                echo Html::hiddenInput('PcareVisit[nmppk]', $visitmodel->nmppk, ['id' => 'pcarevisit-nmppk']);
-
-                                echo $form->field($visitmodel, 'kdppk')->widget(DepDrop::classname(), [
-                                    'data'=>[$visitmodel->kdppk  =>$visitmodel->nmppk],
-                                    'pluginOptions'=>[
-                                        'depends'=>['pcarevisit-khusus_kdkhusus', 'pcarevisit-tglestrujuk'],
-                                        'placeholder'=>'Select...',
-                                        'url'=>Url::to(['rujukankhusus1','consid' => $model->cons_id, 'nokartu' => $model->noKartu])
-                                    ],
-                                    'pluginEvents' => [
-                                        'depdrop:afterChange'=>'function(event, id, value) { 
-    
-                            }',
-                                    ]
-                                ]);
-
-                                ?>
-                            </div>
+                <?php
 
 
+                echo $form->field($visitmodel, 'khusus_kdKhusus')->label('Khusus')->dropDownList(
+                    $refKhususdata,
+                    ['id'=>'pcarevisit-khusus_kdkhusus','prompt'=>'Select...']);
 
 
+                $datasubspesialis = [
+                    "3" => "PENYAKIT DALAM",
+                    "8" => "HEMATOLOGI - ONKOLOGI MEDIK",
+                    "26" => "ANAK",
+                    "30" => "ANAK HEMATOLOGI ONKOLOGI"
+                ];
+
+                ?>
                 <div id="khusus_subspesialis">
                     <?php
 
@@ -453,7 +309,21 @@ $('#pcarevisit-nmdiag3').val($('#pcarevisit-kddiag3 option:selected').text());
                 <?= $form->field($visitmodel, 'khusus_catatan')->textarea(['rows' => 6]) ?>
                 <?php
 
+                echo Html::hiddenInput('PcareVisit[nmppk]', $visitmodel->nmppk, ['id' => 'pcarevisit-nmppk']);
 
+                echo $form->field($visitmodel, 'kdppk')->widget(DepDrop::classname(), [
+                    'data'=>[$visitmodel->kdppk  =>$visitmodel->nmppk],
+                    'pluginOptions'=>[
+                        'depends'=>['pcarevisit-khusus_kdkhusus', 'pcarevisit-tglestrujuk'],
+                        'placeholder'=>'Select...',
+                        'url'=>Url::to(['rujukankhusus1','consid' => $model->cons_id, 'nokartu' => $model->noKartu])
+                    ],
+                    'pluginEvents' => [
+                        'depdrop:afterChange'=>'function(event, id, value) { 
+    
+                            }',
+                    ]
+                ]);
 
                 echo $form->field($visitmodel, 'kdppk_khusus')->label("Rujukan khusus THA & HEM")->widget(DepDrop::classname(), [
                     'data'=>[$visitmodel->kdppk_khusus  =>$visitmodel->nmppk_khusus],
@@ -475,10 +345,9 @@ $('#pcarevisit-nmdiag3').val($('#pcarevisit-kddiag3 option:selected').text());
             </div>
 
         </div>
-
         Once sent cannot be undone
         <div class="form-group">
-            <?= Html::submitButton(Yii::t('app', 'Update'), ['name' => 'update','class' => 'btn btn-success']) ?>
+            <?= Html::submitButton(Yii::t('app', 'Confirm & Register'), ['name' => 'register','class' => 'btn btn-success']) ?>
         </div>
 
         <?php ActiveForm::end(); ?>
