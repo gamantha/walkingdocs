@@ -21,8 +21,13 @@ use yii\widgets\ActiveForm;
                 $('#spesialis').hide();
                         $('#khusus').hide();
         $('#pcarevisit-kdstatuspulang').on('change', function() { 
+  if (this.value == 4) {
 
-        
+       $('#rujukan').show();
+  } else {
+       $('#rujukan').hide();
+       
+  }
         });
         
 
@@ -104,6 +109,11 @@ $('#pcarevisit-nmdiag3').val($('#pcarevisit-kddiag3 option:selected').text());
 
 
         
+          if($('#pcarevisit-kdstatuspulang').val() == 4) {
+     $('#rujukan').show();
+          } else {
+          $('#rujukan').hide();
+          }
         
   if($('input[name=\"PcareVisit[spesialis_type]\"]:checked').val() == 'khusus') {
         $('#khusus').show();
@@ -134,9 +144,9 @@ $('#pcarevisit-nmdiag3').val($('#pcarevisit-kddiag3 option:selected').text());
             echo '<pre>';
             print_r($payload);
             echo '</pre>';
-            echo '<pre>';
-            print_r($visitmodel);
-            echo '</pre>';
+//            echo '<pre>';
+//            print_r($visitmodel);
+//            echo '</pre>';
             ?>
 
 
@@ -313,40 +323,40 @@ $('#pcarevisit-nmdiag3').val($('#pcarevisit-kddiag3 option:selected').text());
         </div>
 
 
-        <h2>Rujukan</h2>
-        HANYA KALAU PILIH RUJUK maka pilihan dibawah jadi nyala .Saat ini hanya ada rujukan vertikal (spesialis , khusus)
-        <div class="well">
-            <?php
-            $ref_tacc = [
-                "-1" => "Tanpa TACC",
-                "1" => "Time",
-                "2" => "Age",
-                "3" => "Complication",
-                "4" => "Comorbidity"
 
-            ];
-            echo '<label class="control-label">Tanggal Rencana Berkunjung / rujuk </label>';
-            echo DatePicker::widget([
-                'model' => $visitmodel,
-                'attribute' => 'tglEstRujuk',
-                //'language' => 'ru',
-                'pluginOptions' => [
-                    'autoclose'=>true,
-                    'todayHighlight' => true,
-                    'todayBtn' => true,
-                    'format' => 'yyyy-mm-dd'
-                ]
-//        'dateFormat' => 'yyyy-MM-dd',
-            ]);
-            //echo '<br/>';
-            echo $form->field($visitmodel, 'spesialis_type')->radioList(['khusus' => 'Kondisi Khusus',
-                'spesialis' => 'Spesialis']);
-            //    echo '<br/>';
-            ?>
-        </div>
 
         <div id="rujukan" class="">
+            <h2>Rujukan</h2>
+            HANYA KALAU PILIH RUJUK maka pilihan dibawah jadi nyala .Saat ini hanya ada rujukan vertikal (spesialis , khusus)
+            <div class="well">
+                <?php
+                $ref_tacc = [
+                    "-1" => "Tanpa TACC",
+                    "1" => "Time",
+                    "2" => "Age",
+                    "3" => "Complication",
+                    "4" => "Comorbidity"
 
+                ];
+                echo '<label class="control-label">Tanggal Rencana Berkunjung / rujuk </label>';
+                echo DatePicker::widget([
+                    'model' => $visitmodel,
+                    'attribute' => 'tglEstRujuk',
+                    //'language' => 'ru',
+                    'pluginOptions' => [
+                        'autoclose'=>true,
+                        'todayHighlight' => true,
+                        'todayBtn' => true,
+                        'format' => 'yyyy-mm-dd'
+                    ]
+//        'dateFormat' => 'yyyy-MM-dd',
+                ]);
+                //echo '<br/>';
+                echo $form->field($visitmodel, 'spesialis_type')->radioList(['khusus' => 'Kondisi Khusus',
+                    'spesialis' => 'Spesialis']);
+                //    echo '<br/>';
+                ?>
+            </div>
             <div class="well">
 
                 <div id="spesialis">
