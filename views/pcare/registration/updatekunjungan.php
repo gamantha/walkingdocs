@@ -52,14 +52,14 @@ use yii\widgets\ActiveForm;
             if (this.value == 'HEM') {
         
                     $('#khusus_subspesialis').show();
-                    alert('hem')
+               
                     
             } else if(this.value == 'THA') {
         
                     $('#khusus_subspesialis').show();
-                     alert('tha')
+               
             } else {
-
+ $('#khusus_subspesialis').hide();
             }
             
 
@@ -117,11 +117,15 @@ $('#pcarevisit-nmdiag3').val($('#pcarevisit-kddiag3 option:selected').text());
         
   if($('input[name=\"PcareVisit[spesialis_type]\"]:checked').val() == 'khusus') {
         $('#khusus').show();
-      
-        } else if($('input[name=\"PcareVisit[spesialis_type]\"]:checked').val() == 'khusus') {    
+  
+        } else if($('input[name=\"PcareVisit[spesialis_type]\"]:checked').val() == 'spesialis') {    
       
         $('#spesialis').show();
-        }        
+
+        } else {
+          $('#khusus').hide();
+            $('#khusus').hide();
+        }
                 
 
         ",
@@ -141,9 +145,9 @@ $('#pcarevisit-nmdiag3').val($('#pcarevisit-kddiag3 option:selected').text());
         <h2>Data Kunjungan</h2>
         <div class="well">
             <?php
-            echo '<pre>';
-            print_r($payload);
-            echo '</pre>';
+//            echo '<pre>';
+//            print_r($payload);
+//            echo '</pre>';
 //            echo '<pre>';
 //            print_r($visitmodel);
 //            echo '</pre>';
@@ -168,42 +172,79 @@ $('#pcarevisit-nmdiag3').val($('#pcarevisit-kddiag3 option:selected').text());
             ]);
             ?>
             <br/>
-            <?= $form->field($model, 'noKartu')->textInput(['maxlength' => true,'readonly' => true,]) ?>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <?= $form->field($model, 'noKartu')->textInput(['maxlength' => true,'readonly' => true,]) ?>
+                </div>
+                <div class="col-md-6">
+                    <?php
+                    echo $form->field($model, 'nik')->textInput(['maxlength' => true])->label('KTP - digunakan untuk cek peserta apabila no Kartu kosong');
+                    $refPoli = [];
+                    $url = \yii\helpers\Url::to(['getpolicodes']);
+                    ?>
+                </div>
+            </div>
+
+
+        <hr/>
+
+
+
+            <?= $form->field($visitmodel, 'keluhan')->textArea(['maxlength' => true]) ?>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <?= $form->field($visitmodel, 'sistole')->textArea(['maxlength' => true]) ?>
+                </div>
+                <div class="col-md-6">
+                    <?= $form->field($visitmodel, 'diastole')->textArea(['maxlength' => true]) ?>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <?= $form->field($visitmodel, 'beratBadan')->textArea(['maxlength' => true]) ?>
+                </div>
+                <div class="col-md-6">
+                    <?= $form->field($visitmodel, 'tinggiBadan')->textArea(['maxlength' => true]) ?>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <?= $form->field($visitmodel, 'respRate')->textArea(['maxlength' => true]) ?>
+                </div>
+                <div class="col-md-6">
+                    <?= $form->field($visitmodel, 'heartRate')->textArea(['maxlength' => true]) ?>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <?php
+                    $listData = ['10' => 'RJTP', '20' => 'RITP', '50' => 'Promotif'];
+                    echo $form->field($model, 'kdTkp')->dropDownList(
+                        $listData,
+                        ['prompt'=>'Select...', 'readonly' => true]);
+                    ?>
+                </div>
+                <div class="col-md-6">
+                    <?php
+                    echo '<label class="control-label">Tanggal Pulang (HARUS APABILA RITP) </label>';
+                    echo DatePicker::widget([
+                        'model' => $visitmodel,
+                        'attribute' => 'tglPulang',
+                        'pluginOptions' => [
+                            'todayHighlight' => true,
+                            'todayBtn' => true,
+                            'autoclose'=>true,
+                            'format' => 'yyyy-mm-dd'
+                        ]
+                    ]);
+
+                    ?>
+                </div>
+            </div>
 
             <?php
-            echo $form->field($model, 'nik')->textInput(['maxlength' => true])->label('KTP - digunakan untuk cek peserta apabila no Kartu kosong');
-            $refPoli = [];
-
-
-            $url = \yii\helpers\Url::to(['getpolicodes']);
-
-
-            ?>
-
-
-
-            <?php
-
-            $listData = ['10' => 'RJTP', '20' => 'RITP', '50' => 'Promotif'];
-            echo $form->field($model, 'kdTkp')->dropDownList(
-                $listData,
-                ['prompt'=>'Select...', 'readonly' => true]);
-
-            echo '<label class="control-label">Tanggal Pulang (HARUS APABILA RITP) </label>';
-            echo DatePicker::widget([
-                'model' => $visitmodel,
-                'attribute' => 'tglPulang',
-                'pluginOptions' => [
-                    'todayHighlight' => true,
-                    'todayBtn' => true,
-                    'autoclose'=>true,
-                    'format' => 'yyyy-mm-dd'
-//                   'format' => 'dd-mm-yyyy'
-                ]
-//        'dateFormat' => 'yyyy-MM-dd',
-            ]);
-
-
             echo $form->field($visitmodel, 'kdStatusPulang')->widget(DepDrop::classname(), [
                 'data' => [$visitmodel->kdStatusPulang => $visitmodel->nmStatusPulang],
                 'pluginOptions'=>[
@@ -216,39 +257,36 @@ $('#pcarevisit-nmdiag3').val($('#pcarevisit-kddiag3 option:selected').text());
                 ]
             ]);
 
-
-
-            ?>
-
-
-            <?= $form->field($visitmodel, 'keluhan')->textArea(['maxlength' => true]) ?>
-            <?= $form->field($visitmodel, 'sistole')->textArea(['maxlength' => true]) ?>
-            <?= $form->field($visitmodel, 'diastole')->textArea(['maxlength' => true]) ?>
-            <?php
-
-            echo $form->field($visitmodel, 'beratBadan')->textArea(['maxlength' => true]);
-            echo $form->field($visitmodel, 'tinggiBadan')->textArea(['maxlength' => true]);
-            echo $form->field($visitmodel, 'respRate')->textArea(['maxlength' => true]);
-            echo $form->field($visitmodel, 'heartRate')->textArea(['maxlength' => true]);
-
             ?>
         </div>
+
         <h2>Visit Data</h2>
         <div class="well">
 
 
 
-
-
-            <?php
+            <div class="row">
+                <div class="col-md-6">
+                    <?php
 
             echo $form->field($visitmodel, 'kdDokter')->dropDownList(
                 $listData2,
                 ['prompt'=>'Select...']);
+            ?>
+                </div>
+                <div class="col-md-6">
+                    <?php
+                    echo $form->field($visitmodel, 'kdSadar')->dropDownList(
+                        $refKesadaran,
+                        ['prompt'=>'Select...']);
+
+                    ?>
+                </div>
+            </div>
+
+<?php
+
             //        echo '<hr/>';
-            echo $form->field($visitmodel, 'kdSadar')->dropDownList(
-                $refKesadaran,
-                ['prompt'=>'Select...']);
 
             $url = \yii\helpers\Url::to(['diagnosecode','consid' => $model->cons_id]);
             echo $form->field($visitmodel, 'kdDiag1')->widget(Select2::classname(), [
@@ -452,40 +490,34 @@ $('#pcarevisit-nmdiag3').val($('#pcarevisit-kddiag3 option:selected').text());
                     <?php
 
 
-                    echo $form->field($visitmodel, 'khusus_kdSubSpesialis')->label('Khusus SubSpesialis THALASEMIA & HEMOFILI')->dropDownList(
+                    echo $form->field($visitmodel, 'khusus_kdSubSpesialis')->label('Khusus SubSpesialis THA & HEM')->dropDownList(
                         $datasubspesialis,
                         ['prompt'=>'Select...']);
+                    echo $form->field($visitmodel, 'kdppk_khusus')->label("Rujukan khusus THA & HEM")->widget(DepDrop::classname(), [
+                        'data'=>[$visitmodel->kdppk_khusus  =>$visitmodel->nmppk_khusus],
+                        'pluginOptions'=>[
+                            'depends'=>['pcarevisit-khusus_kdkhusus','pcarevisit-khusus_kdsubspesialis', 'pcarevisit-tglestrujuk'],
+                            'placeholder'=>'Select...',
+                            'url'=>Url::to(['rujukankhusus2','consid' => $model->cons_id, 'nokartu' => $model->noKartu])
+                        ],
+                        'pluginEvents' => [
+                            'depdrop:afterChange'=>'function(event, id, value) { 
+     
+                            }',
+                        ]
+                    ]);
+
 
 
                     ?>
                 </div>
 
                 <?= $form->field($visitmodel, 'khusus_catatan')->textarea(['rows' => 6]) ?>
-                <?php
 
-
-
-                echo $form->field($visitmodel, 'kdppk_khusus')->label("Rujukan khusus THA & HEM")->widget(DepDrop::classname(), [
-                    'data'=>[$visitmodel->kdppk_khusus  =>$visitmodel->nmppk_khusus],
-                    'pluginOptions'=>[
-                        'depends'=>['pcarevisit-khusus_kdkhusus','pcarevisit-khusus_kdsubspesialis', 'pcarevisit-tglestrujuk'],
-                        'placeholder'=>'Select...',
-                        'url'=>Url::to(['rujukankhusus2','consid' => $model->cons_id, 'nokartu' => $model->noKartu])
-                    ],
-                    'pluginEvents' => [
-                        'depdrop:afterChange'=>'function(event, id, value) { 
-     
-                            }',
-                    ]
-                ]);
-
-
-
-                ?>
             </div>
 
         </div>
-
+        </div>
         Once sent cannot be undone
         <div class="form-group">
             <?= Html::submitButton(Yii::t('app', 'Update'), ['name' => 'update','class' => 'btn btn-success']) ?>
@@ -493,5 +525,5 @@ $('#pcarevisit-nmdiag3').val($('#pcarevisit-kddiag3 option:selected').text());
 
         <?php ActiveForm::end(); ?>
 
-    </div>
+
 </div>

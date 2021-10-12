@@ -355,29 +355,6 @@ $model->kdStatusPulang=3;
                 $registerresp = $visit->submitvisitdata($id); //actual register to pcare
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                 $jsonresp = json_decode($registerresp);
                 if((isset($jsonresp->metaData)) && ($jsonresp->metaData->message == 'CREATED')) {
                     if(strpos($jsonresp->response->message, "null") ) {
@@ -570,15 +547,7 @@ $model->kdStatusPulang=3;
 //        return [['id' => 'contoh', 'text' => $keyword, 'kdPoliRujuk' => 'contoh']];
     }
 
-    public function actionTest2()
-    {
-        $visit = PcareVisit::findOne('33');
-        $noKartu = '0001113569638';
-        $response = $visit->getRujukanKhusus($kdkhusus, $kdsubspesialis, $tglrujuk, $noKartu);
 
-        echo '<pre>';
-        print_r($response);
-    }
 public function actionRujukankhusus($id)
 {
     Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
@@ -613,85 +582,6 @@ public function actionRujukankhusus($id)
     }
     return ['output'=>$out, 'selected'=>''];
 }
-
-//    public function actionRujukanspesialis($id)
-//    {
-//        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-//        $out = ['results' => [['id' => '', 'name' => '']]];
-//        if (isset($_POST['depdrop_parents'])) {
-//            $parents = $_POST['depdrop_parents'];
-//            if ($parents != null) {
-//                $keyword = $parents[0];
-//                $sarana = empty($parents[1]) ? null : $parents[1];
-//                $tglrujuk = empty($parents[2]) ? null : $parents[2];
-//
-//                $out = ['results' => [['id' => $keyword, 'name' => $tglrujuk, 'sarana' => $sarana]]];
-//
-//                $visit = PcareVisit::findOne($id);
-//
-//                $response = $visit->getRujukanSpesialis($keyword, $sarana, $tglrujuk);
-//
-//                $jsonval = json_decode($response);
-//                if (isset($jsonval->response)) {
-//
-//                    foreach ($jsonval->response->list as $item) {
-//                        $temp = ['id' => $item->kdppk, 'name' => $item->nmppk . ' alamat : ' . $item->alamatPpk . ', ' . $item->nmkc, 'alamatPpk' => $item->alamatPpk, 'telpPpk' => $item->telpPpk,
-//                            'kelas' => $item->kelas,'nmkc' => $item->nmkc, 'distance' => $item->distance, 'jadwal' => $item->jadwal,
-//                            'jmlRujuk' => $item->jmlRujuk, 'kapasitas' => $item->kapasitas, 'persentase' => $item->persentase
-//
-//                            ];
-//                        array_push($out['results'], $temp);
-//                    }
-//                    array_shift($out['results']);
-//                }
-//
-//                return ['output'=>$out, 'selected'=>''];
-//            }
-//        }
-//        return ['output'=>$out, 'selected'=>''];
-//    }
-
-//public function actionSubspesialiskdsarana($id)
-//{
-//
-//    Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-//    $out = ['results' => [['id' => '', 'name' => '']]];
-//    if (isset($_POST['depdrop_parents'])) {
-//        $parents = $_POST['depdrop_parents'];
-//        if ($parents != null) {
-//            $keyword = $parents[0];
-//
-//            $visit = PcareVisit::findOne($id);
-//
-//            $response = $visit->getSarana();
-//
-//            $jsonval = json_decode($response);
-//            if (isset($jsonval->response)) {
-//
-//                foreach ($jsonval->response->list as $item) {
-//                    $temp = ['id' => $item->kdSarana, 'name' => $item->nmSarana];
-//                    array_push($out['results'], $temp);
-//                }
-//                array_shift($out['results']);
-//            } else {
-//                Yii::$app->session->addFlash('danger', 'get subspesialis kd sarana - no pcare web service response');
-//            }
-//
-//
-////                // the getSubCatList function will query the database based on the
-////                // cat_id and return an array like below:
-////                // [
-////                //    ['id'=>'<sub-cat-id-1>', 'name'=>'<sub-cat-name1>'],
-////                //    ['id'=>'<sub-cat_id_2>', 'name'=>'<sub-cat-name2>']
-////                // ]
-//            return ['output'=>$out, 'selected'=>''];
-//        }
-//    }
-//    return ['output'=>'', 'selected'=>''];
-//
-//
-//}
-
 
 
 

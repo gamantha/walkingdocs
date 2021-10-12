@@ -726,6 +726,7 @@ public function populateVisitdata($responsedata)
 {
     $visitmodel = new PcareVisit();
 //    $visitmodel->kdt
+    $visitmodel->noKunjungan = $responsedata->noKunjungan;
     $visitmodel->sistole = $responsedata->sistole;
     $visitmodel->diastole = $responsedata->diastole;
     $visitmodel->beratBadan = $responsedata->beratBadan;
@@ -801,7 +802,7 @@ public function actionUpdaterujukan($consid,$noKartu,$date, $kdPoli) {
         $refSpesialis = Yii::$app->pcareComponent->getReferensiSpesialis($model->cons_id);
         $refKhususdata = Yii::$app->pcareComponent->getReferensiKhusus($model->cons_id);
         if(isset($_POST['update'])) {
-            Yii::$app->session->addFlash('success', "POST UPDATE");
+//            Yii::$app->session->addFlash('success', "POST UPDATE");
             $khususpayload = "null";
             $spesialispayload = "null";
             $kdKhusus_subspesialis = "null";
@@ -842,6 +843,7 @@ public function actionUpdaterujukan($consid,$noKartu,$date, $kdPoli) {
                  "khusus" :' . $khususpayload .'}';
 
             $visitpayload = '{
+            "noKunjungan": "'.$pcarevisit->noKunjungan.'",
         "tglDaftar": "'.date("Y-d-m" , strtotime($model->tglDaftar)).'", 
         "noKartu": "'.$model->noKartu.'",
         "kdPoli": "'.$model->kdPoli.'",
@@ -863,8 +865,9 @@ public function actionUpdaterujukan($consid,$noKartu,$date, $kdPoli) {
         "rujukLanjut" : '. $rujukpayload . '}';
 
 
-            Yii::$app->session->addFlash('success', "UPDATE");
-//            $createvistresp = Yii::$app->pcareComponent->pcareCreatevisit($visitpayload, $model->cons_id);
+
+            $updatekunjunganresponse = Yii::$app->pcareComponent->pcareUpdatekunjungan($visitpayload, $model->cons_id);
+            Yii::$app->session->addFlash('success', "UPDATE : " . $updatekunjunganresponse);
         }
 
 
