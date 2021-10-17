@@ -789,6 +789,32 @@ class pcareComponent extends Component
         return $options;
     }
 
+    public function getRujukan($consid,$noKunjungan)
+    {
+        $bpjs_user = self::getUsercreds($consid);
+        try {
+
+
+            $client = new Client(['baseUrl' => self::BASE_API_URL . '/kunjungan/rujukan/'.$noKunjungan]);
+
+
+            $request = $client->createRequest()
+//                ->setContent($payload)->setMethod('POST')
+                ->setHeaders(['X-cons-id' => $bpjs_user['cons_id']])
+                ->addHeaders(['content-type' => 'application/json'])
+                ->addHeaders(['X-Timestamp' => $bpjs_user['time']])
+                ->addHeaders(['X-Signature' => $bpjs_user['encoded_sig']])
+                ->addHeaders(['X-Authorization' => $bpjs_user['encoded_auth_string']]);
+
+            $response = $request->send();
+            return $response->content;
+        } catch (\yii\base\Exception $exception) {
+
+            Yii::warning("ERROR GETTING RESPONSE FROM BPJS.");
+        }
+    }
+
+
     public function getRujukanKhusus1($consid,$kdkhusus, $tglrujuk, $noKartu)
     {
         $bpjs_user = self::getUsercreds($consid);

@@ -93,7 +93,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'label' => 'Cetak surat rujukan',
                 'format' => 'raw',
                 'value' => function($data) use ($date) {
-                    return Html::a(Html::encode("Cetak"),'printpdf?consid=' . $_GET['consid'] . '&noKartu=' . $data->peserta->noKartu . '&date=' . $date . '&kdPoli=' . $data->poli->kdPoli);
+                    return Html::a(Html::encode("Cetak"),'printrujukan?consid=' . $_GET['consid'] . '&noKartu=' . $data->peserta->noKartu . '&date=' . $date . '&kdPoli=' . $data->poli->kdPoli);
                 }
 
             ],

@@ -259,12 +259,6 @@ class RegistrationController extends Controller
 
                         $confirmflag = true;
 
-//
-//                        $pcarevisit->status = 'new';
-//                        $pcarevisit->load(Yii::$app->request->post());
-//                        $wdmodel->load(Yii::$app->request->post());
-//                        $bpjs_user = $model->getUsercreds($model->cons_id);
-//                        $payload = $this->fillPayload($model);
 
 
 
@@ -276,72 +270,7 @@ class RegistrationController extends Controller
                 }
 
 
-//                $responsenik = Yii::$app->pcareComponent->cekPesertaByNik($model->cons_id);
-//                $nikjsonval = json_decode($responsenik);
-//
-//                if (isset($nikjsonval->metaData->code) && ($nikjsonval->metaData->code == 200)) {
-//                    if ($nikjsonval->response->aktif)
-//                    {
-//                        $nikok = 1;
-//                        $model->kdProviderPeserta = $nikjsonval->response->kdProviderPst->kdProvider;
-//                        $model->status = 'ready';
-//                        Yii::$app->session->addFlash('success', "NIK - Peserta aktif  ");
-//                        $pcarevisit->status = 'new';
-//                        $pcarevisit->load(Yii::$app->request->post());
-//                        $wdmodel->load(Yii::$app->request->post());
-//                        $bpjs_user = $model->getUsercreds($model->cons_id);
-//                        $payload = $this->fillPayload($model);
-//
-//
-//
-//
-//                    } else {
-//                        Yii::$app->session->setFlash('danger', "NIK nomor peserta tidak aktif");
-//                    }
-//                } else {
-//                    Yii::$app->session->addFlash('danger', 'NIK error : ' . json_encode($nikjsonval));
-//                }
 
-
-
-//            if ($nokartuok || $nikok) {
-//
-//                try {
-//
-//                    $registerresp = Yii::$app->pcareComponent->pcareRegister($payload, $bpjs_user);
-//                } catch (\yii\base\Exception $exception) {
-//                    Yii::warning("ERROR GETTING RESPONSE FROM BPJS.");
-//                }
-//
-//                $jsonresp = json_decode($registerresp);
-//
-//                if (isset($jsonresp->metaData->message))
-//                {
-//                    if($jsonresp->metaData->message == 'CREATED') {
-//                        if(strpos($jsonresp->response->message, "null") ) {
-//                            Yii::$app->session->setFlash('danger', $registerresp);
-//                        } else {
-//                            $model->no_urut = $jsonresp->response->message;
-//                            $model->status = 'registered';
-//                            $model->save();
-//                            $pcarevisit->pendaftaranId = $model->id;
-//                            $wdmodel->registrationId = $model->id;
-//                            $wdmodel->status = 'registered';
-//                            $wdmodel->save();
-//                            $pcarevisit->save();
-//
-//                            Yii::$app->session->setFlash('success', 'no urut created ' . $jsonresp->response->message);
-//                            return $this->redirect(['pcare/visit/update', 'id' => $model->id]);
-//                        }
-//
-//                    } else {
-//                        Yii::$app->session->setFlash('danger', $registerresp);
-//
-//                    }
-//                } else {
-//                    Yii::$app->session->setFlash('danger', json_encode($jsonresp));
-//                }
-//            }
 
 
         } else {
@@ -734,7 +663,7 @@ public function populateVisitdata($responsedata)
     $visitmodel->respRate = $responsedata->respRate;
     $visitmodel->heartRate = $responsedata->heartRate;
     $visitmodel->kdStatusPulang = $responsedata->statusPulang->kdStatusPulang;
-    $visitmodel->tglPulang = $responsedata->tglPulang;
+    $visitmodel->tglPulang = date("Y-m-d" , strtotime($responsedata->tglPulang));
     $visitmodel->keluhan = $responsedata->keluhan;
     $visitmodel->kdDokter = $responsedata->dokter->kdDokter;
     $visitmodel->kdSadar = $responsedata->kesadaran->kdSadar;
@@ -771,6 +700,47 @@ public function populateVisitdata($responsedata)
 public function actionUpdaterujukan($consid,$noKartu,$date, $kdPoli) {
 
 }
+    public function actionPrintrujukan($consid,$noKartu,$date, $kdPoli) {
+        $response =Yii::$app->pcareComponent->pcareRiwayatkunjungan($noKartu, $consid);
+        $content = json_decode($response);
+
+
+        $visitdata = null;
+        $visitpayload = '';
+        $model = new PcareRegistration();
+        $wdmodel = new WdPassedValues();
+        $pcarevisit = new PcareVisit();
+        $refStatuspulang = [];
+        $kunjungans = $content->response->list;
+        foreach ($kunjungans as $kunjungan)
+        {
+            if (($kdPoli == $kunjungan->poli->kdPoli) && ($date == $kunjungan->tglKunjungan))
+            {
+                $visitdata = $kunjungan;
+            }
+        }
+        $model = $this->populateRegistrationdata($visitdata);
+        $model->cons_id = $consid;
+        $pcarevisit = $this->populateVisitdata( $visitdata);
+
+        $rujukan = Yii::$app->pcareComponent->getRujukan($consid,$pcarevisit->noKunjungan);
+        $rujukanObj = json_decode($rujukan);
+//echo '<pre>';
+//        print_r($pcarevisit);
+//        print_r($rujukanObj);
+//        echo '</pre>';
+
+        if (isset($rujukanObj->response->ppk)) {
+            return $this->render('printrujukan', [
+                'rujukanObj' => $rujukanObj,
+                'visitModel' => $pcarevisit,
+            ]);
+        } else {
+            return 'TIdak ada rujukan';
+        }
+
+
+    }
     public function actionUpdatekunjungan($consid,$noKartu,$date, $kdPoli) {
         $response =Yii::$app->pcareComponent->pcareRiwayatkunjungan($noKartu, $consid);
         $content = json_decode($response);
@@ -801,6 +771,9 @@ public function actionUpdaterujukan($consid,$noKartu,$date, $kdPoli) {
         $refKesadaran = Yii::$app->pcareComponent->getListKesadaran($consid);
         $refSpesialis = Yii::$app->pcareComponent->getReferensiSpesialis($model->cons_id);
         $refKhususdata = Yii::$app->pcareComponent->getReferensiKhusus($model->cons_id);
+        if(isset($_POST['cek'])) {
+            Yii::$app->session->addFlash('success', "CHECK NIK");
+        }
         if(isset($_POST['update'])) {
 //            Yii::$app->session->addFlash('success', "POST UPDATE");
             $khususpayload = "null";
@@ -1366,14 +1339,9 @@ $visit = $registration->pcareVisits[0];
         $rujukan = $visit->getRujukan($visit->noKunjungan);
 $rujukanObj = json_decode($rujukan);
 if ($rujukanObj->metaData->code == 200){
-//            print_r($rujukanObj->response);
             return $this->render('testhtml', [
-//            'dataProvider' => $provider
             'rujukanObj' => $rujukanObj,
-//        'clinicinfo' => $clinicinfo,
         'visitModel' => $visit,
-//        'dokter' => $dokter,
-//        'peserta' => $peserta
         ]);
 
 }
@@ -1700,6 +1668,10 @@ public function actionAntrean()
                         ];
                         array_push($out['results'], $temp);
                     }
+                    array_shift($out['results']);
+                } else {
+                    $temp = ['id' => '0', 'name' => 'ga ada'];
+                    array_push($out['results'], $temp);
                     array_shift($out['results']);
                 }
 

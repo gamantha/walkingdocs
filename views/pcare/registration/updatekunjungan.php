@@ -178,12 +178,9 @@ $('#pcarevisit-nmdiag3').val($('#pcarevisit-kddiag3 option:selected').text());
                     <?= $form->field($model, 'noKartu')->textInput(['maxlength' => true,'readonly' => true,]) ?>
                 </div>
                 <div class="col-md-6">
-                    <?php
-                    echo $form->field($model, 'nik')->textInput(['maxlength' => true])->label('KTP - digunakan untuk cek peserta apabila no Kartu kosong');
-                    $refPoli = [];
-                    $url = \yii\helpers\Url::to(['getpolicodes']);
-                    ?>
+
                 </div>
+
             </div>
 
 
@@ -217,13 +214,26 @@ $('#pcarevisit-nmdiag3').val($('#pcarevisit-kddiag3 option:selected').text());
                     <?= $form->field($visitmodel, 'heartRate')->textArea(['maxlength' => true]) ?>
                 </div>
             </div>
+            <?php
+            $listData = ['10' => 'RJTP', '20' => 'RITP', '50' => 'Promotif'];
+
+            echo $form->field($model, 'kdTkp')->hiddenInput()->label(false);
+            ?>
             <div class="row">
                 <div class="col-md-6">
                     <?php
-                    $listData = ['10' => 'RJTP', '20' => 'RITP', '50' => 'Promotif'];
-                    echo $form->field($model, 'kdTkp')->dropDownList(
-                        $listData,
-                        ['prompt'=>'Select...', 'readonly' => true]);
+                    echo $form->field($visitmodel, 'kdStatusPulang')->widget(DepDrop::classname(), [
+                        'data' => [$visitmodel->kdStatusPulang => $visitmodel->nmStatusPulang],
+                        'pluginOptions'=>[
+                            'depends'=>['pcareregistration-kdtkp'],
+                            'initialize' => true,
+                            'initDepends' => ['pcareregistration-kdtkp'],
+                            'placeholder'=>'Select...',
+                            'url'=>Url::to(['getstatuspulang','consid' => $consid])
+
+                        ]
+                    ]);
+
                     ?>
                 </div>
                 <div class="col-md-6">
@@ -244,20 +254,7 @@ $('#pcarevisit-nmdiag3').val($('#pcarevisit-kddiag3 option:selected').text());
                 </div>
             </div>
 
-            <?php
-            echo $form->field($visitmodel, 'kdStatusPulang')->widget(DepDrop::classname(), [
-                'data' => [$visitmodel->kdStatusPulang => $visitmodel->nmStatusPulang],
-                'pluginOptions'=>[
-                    'depends'=>['pcareregistration-kdtkp'],
-                    'initialize' => true,
-                    'initDepends' => ['pcareregistration-kdtkp'],
-                    'placeholder'=>'Select...',
-                    'url'=>Url::to(['getstatuspulang','consid' => $consid])
 
-                ]
-            ]);
-
-            ?>
         </div>
 
         <h2>Visit Data</h2>
@@ -376,7 +373,9 @@ $('#pcarevisit-nmdiag3').val($('#pcarevisit-kddiag3 option:selected').text());
                     "4" => "Comorbidity"
 
                 ];
-                echo '<label class="control-label">Tanggal Rencana Berkunjung / rujuk </label>';
+
+
+                echo '<label class="control-label">Tanggal Rencana Berkunjung / rujuk (dalam 7 hari kedepan) </label>';
                 echo DatePicker::widget([
                     'model' => $visitmodel,
                     'attribute' => 'tglEstRujuk',
@@ -385,7 +384,11 @@ $('#pcarevisit-nmdiag3').val($('#pcarevisit-kddiag3 option:selected').text());
                         'autoclose'=>true,
                         'todayHighlight' => true,
                         'todayBtn' => true,
-                        'format' => 'yyyy-mm-dd'
+                        'format' => 'yyyy-mm-dd',
+                        'startDate'=> date('d-m-Y H:i',time()),
+                        'endDate'=> Date('Y-m-d', strtotime('+7 days')),
+//                        'startDate'=> date('Y-m-d',strtotime($model->tglDaftar))
+//                        'endDate'=> date('d-m-Y H:i',strtotime('+7 day', time()))
                     ]
 //        'dateFormat' => 'yyyy-MM-dd',
                 ]);
@@ -518,7 +521,7 @@ $('#pcarevisit-nmdiag3').val($('#pcarevisit-kddiag3 option:selected').text());
 
         </div>
         </div>
-        Once sent cannot be undone
+
         <div class="form-group">
             <?= Html::submitButton(Yii::t('app', 'Update'), ['name' => 'update','class' => 'btn btn-success']) ?>
         </div>
