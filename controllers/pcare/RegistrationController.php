@@ -9,6 +9,7 @@ use app\models\pcare\ClinicInfo;
 use app\models\pcare\ClinicUser;
 use app\models\pcare\PcareVisit;
 use app\models\pcare\WdPassedValues;
+use app\models\pcare\WdVisit;
 use phpDocumentor\Reflection\Types\Object_;
 use Yii;
 use app\models\pcare\PcareRegistration;
@@ -222,6 +223,8 @@ class RegistrationController extends Controller
         $postflag = false;
         $clinicModel = new Consid();
         $refStatuspulang = [];
+        $wd_visit_model = new WdVisit();
+
 
 
         if(isset($_POST['confirm']) || isset($_POST['register'])) {
@@ -275,6 +278,10 @@ class RegistrationController extends Controller
 
         } else {
 
+
+
+
+
             if ($postflag = Yii::$app->pcareComponent->validateCreate($model)) {
 
                 if($clinicModel = Yii::$app->pcareComponent->validateClinicsender(json_decode($model->params)))
@@ -285,6 +292,14 @@ class RegistrationController extends Controller
                     $this->fillWdModel($pcarevisit,$wdmodel,$model,$params);
 //                    $prescribed = substr($params['prescribed'],2, (strlen($params['prescribed']) - 4));
 //                    $pcarevisit->terapi = str_replace('","', "\n",$prescribed);
+
+                    $wd_visit_model = WdVisit::find()->andWhere(['visitId'=>$wdmodel->wdVisitId])->One();
+                    if (isset($wd_visit_model)) {
+                        return 'visit ID ' .$wdmodel->wdVisitId.' sudah terdaftar di database';
+                    } else {
+//                        $wd_visit_model = new WdVisit();
+                    }
+
 
                     $initPoli =Yii::$app->pcareComponent->getListPoli($model->cons_id, 'true');
                     $listData2 = Yii::$app->pcareComponent->getListDoctor($model->cons_id);
@@ -315,15 +330,13 @@ class RegistrationController extends Controller
 
 
         if(isset($_POST['confirm'])) {
-            Yii::$app->session->addFlash('success', 'confirm!');
+//            Yii::$app->session->addFlash('success', 'confirm!');
         } else if(isset($_POST['register'])) {
-            Yii::$app->session->addFlash('success', 'REGISTER!');
+//            Yii::$app->session->addFlash('success', 'REGISTER!');
             $payload = Yii::$app->pcareComponent->fillPayload($model);
             Yii::$app->session->addFlash('success', $payload);
             $registerresp = Yii::$app->pcareComponent->pcareRegister($payload, $model->cons_id);
             Yii::$app->session->addFlash('success', $registerresp);
-
-
 
 
             $jsonresp = json_decode($registerresp);
@@ -335,15 +348,12 @@ class RegistrationController extends Controller
                         Yii::$app->session->addFlash('danger', $registerresp);
                     } else {
                             $model->no_urut = $jsonresp->response->message;
-//                            $model->status = 'registered';
-//                            $model->save();
-//                            $pcarevisit->pendaftaranId = $model->id;
-//                            $wdmodel->registrationId = $model->id;
-//                            $wdmodel->status = 'registered';
-//                            $wdmodel->save();
-//                            $pcarevisit->save();
-
+                            $wd_visit_model->clinicId = $wdmodel->clinicId;
+                            $wd_visit_model->visitId = $wdmodel->wdVisitId;
+                            $wd_visit_model->json = json_encode($jsonresp->response);
+                            $wd_visit_model->save();
                         Yii::$app->session->addFlash('success', 'no urut created ' . $jsonresp->response->message);
+
 
 
 $khususpayload = "null";
@@ -408,15 +418,20 @@ $rujukpayload = '{
                         if (isset($jsonvisitresp->metaData->message)) {
                             if ($jsonvisitresp->metaData->message == 'CREATED') {
                                 Yii::$app->session->addFlash('success', 'visit CREATED');
+                                return 'data terkirim ke bpjs, halaman ini bisa ditutup / atau ke update kunjungan';
                             } else {
 //                                Yii::$app->session->addFlash('danger', 'visit NOT CREATED');
                                 Yii::$app->session->addFlash('danger', $createvistresp);
                                 /** INI YANG PENTING - ini nanti auto deletenya dinyalain */
                                 $deleteresp = Yii::$app->pcareComponent->pcareDeleteRegistration($model->cons_id, $model->noKartu, date("d-m-Y" , strtotime($model->tglDaftar)), $model->no_urut, $model->kdPoli);
-//                                Yii::$app->session->addFlash('danger', 'Registration is AUTO-DELETED because visit data is invalid : ' . $deleteresp);
+                                $wd_visit_model = WdVisit::find()->andWhere(['visitId' => $wd_visit_model->visitId])->One();
+                                $wd_visit_model->delete(); //     Disini harus delete wd_visit juga
+
+
+                                Yii::$app->session->addFlash('danger', 'Registration is AUTO-DELETED because visit data is invalid : ' . $deleteresp);
                             }
                         }
-
+/** komen dari atas sampai ke sini */
 //                            return $this->redirect(['pcare/visit/update', 'id' => $model->id]);
                     }
 

@@ -421,9 +421,9 @@ $('#pcarevisit-nmdiag3').val($('#pcarevisit-kddiag3 option:selected').text());
 
 
 
-            echo $form->field($wdmodel, 'clinicId')->hiddenInput(['maxlength' => true,'readonly' => true,'rows' => '3'])->label(false);
+            echo $form->field($wdmodel, 'clinicId')->textInput(['maxlength' => true,'readonly' => true,'rows' => '3'])->label(false);
 
-            echo $form->field($wdmodel, 'wdVisitId')->hiddenInput(['maxlength' => true, 'readonly' => true, 'rows' => '3'])->label(false);
+            echo $form->field($wdmodel, 'wdVisitId')->textInput(['maxlength' => true, 'readonly' => true, 'rows' => '3'])->label(false);
             ?>
 
 
