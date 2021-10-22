@@ -140,6 +140,7 @@ class RegistrationController extends Controller
         $visitmodel->tinggiBadan = $params['tinggiBadan'];
         $visitmodel->respRate = $params['respRate'];
         $visitmodel->heartRate = $params['heartRate'];
+        $visitmodel->terapi = $params['prescribed'];
 
 
         $wdmodel->administered = $params['administered'];
@@ -287,8 +288,8 @@ class RegistrationController extends Controller
                 if($clinicModel = Yii::$app->pcareComponent->validateClinicsender(json_decode($model->params)))
                 {
                     $model->cons_id = $clinicModel->cons_id;
-                    Yii::$app->session->addFlash('success', 'clinic ID is TRUE');
-                    Yii::$app->session->addFlash('success', json_encode($params));
+//                    Yii::$app->session->addFlash('success', 'clinic ID is TRUE');
+//                    Yii::$app->session->addFlash('success', json_encode($params));
                     $this->fillWdModel($pcarevisit,$wdmodel,$model,$params);
 //                    $prescribed = substr($params['prescribed'],2, (strlen($params['prescribed']) - 4));
 //                    $pcarevisit->terapi = str_replace('","', "\n",$prescribed);
@@ -1401,8 +1402,8 @@ $array=[];
 {
 
         $payload = 'clinicId=59cedfba9ae80d05757f54e9.59cedfba9ae80d05757f54e7&kdPoli=&kdTkp=&tglDaftar=2021-10-07' .
-            '&visitId=12345' .
-            '&noKartu=0001113569638&kunjSakit=true' .
+            '&visitId=123456' .
+            '&noKartu=00011135696381&kunjSakit=true' .
             '&kdProviderPeserta=' .
             '&no_urut=' .
         '&keluhan=keluhan dari kode' .

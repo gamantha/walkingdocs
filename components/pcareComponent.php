@@ -494,7 +494,7 @@ class pcareComponent extends Component
         /** check consID in database */
         $considmodel = Consid::find()->andWhere(['wd_id' => $params->clinicId])->One();
         if (isset($considmodel->cons_id)) {
-            Yii::$app->session->addFlash('success', "ConsID is valid");
+//            Yii::$app->session->addFlash('success', "ConsID is valid");
             return $considmodel;
 
         } else {
