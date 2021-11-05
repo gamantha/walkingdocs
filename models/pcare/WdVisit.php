@@ -12,6 +12,7 @@ use Yii;
  * @property string|null $visitId
  * @property string|null $status
  * @property string|null $json
+ * @property string|null $payload
  */
 class WdVisit extends \yii\db\ActiveRecord
 {
@@ -29,7 +30,7 @@ class WdVisit extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['json'], 'string'],
+            [['json', 'payload'], 'string'],
             [['clinicId', 'visitId', 'status'], 'string', 'max' => 255],
         ];
     }
@@ -45,6 +46,7 @@ class WdVisit extends \yii\db\ActiveRecord
             'visitId' => Yii::t('app', 'Visit ID'),
             'status' => Yii::t('app', 'Status'),
             'json' => Yii::t('app', 'Json'),
+            'payload' => Yii::t('app', 'Payload'),
         ];
     }
 

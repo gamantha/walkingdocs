@@ -142,7 +142,7 @@ $('#pcarevisit-nmdiag3').val($('#pcarevisit-kddiag3 option:selected').text());
 <div class="pcare-registration-form">
 
     <?php $form = ActiveForm::begin(); ?>
-    <?= $form->field($model, 'cons_id')->textInput(['maxlength' => true, 'readonly' => true, 'id' => 'pcareregistration-cons_id']) ?>
+    <?= $form->field($model, 'cons_id')->hiddenInput(['maxlength' => true, 'readonly' => true, 'id' => 'pcareregistration-cons_id'])->label("") ?>
 
     <h2>Registration Data</h2>
     <div class="well">
@@ -177,11 +177,11 @@ $('#pcarevisit-nmdiag3').val($('#pcarevisit-kddiag3 option:selected').text());
             </div>
             <div class="col-md-6">
                 <?php
-                echo $form->field($model, 'nik')->textInput(['maxlength' => true])->label('KTP - digunakan untuk cek peserta apabila no Kartu kosong');
-                //                    $refPoli = [];
-                //                    $url = \yii\helpers\Url::to(['getpolicodes']);
-                ?>
-                <?= Html::submitButton(Yii::t('app', 'Cek'), ['name' => 'cek','class' => 'btn btn-success']) ?>
+//                echo $form->field($model, 'nik')->textInput(['maxlength' => true])->label('KTP - digunakan untuk cek peserta apabila no Kartu kosong');
+//                //                    $refPoli = [];
+//                //                    $url = \yii\helpers\Url::to(['getpolicodes']);
+//       echo Html::submitButton(Yii::t('app', 'Cek'), ['name' => 'cek','class' => 'btn btn-success']);
+?>
             </div>
 
         </div>
@@ -236,26 +236,26 @@ $('#pcarevisit-nmdiag3').val($('#pcarevisit-kddiag3 option:selected').text());
 
         <div class="row">
             <div class="col-md-6">
-                <?= $form->field($visitmodel, 'sistole')->textArea(['maxlength' => true]) ?>
+                <?= $form->field($visitmodel, 'sistole')->textInput(['maxlength' => true]) ?>
             </div>
             <div class="col-md-6">
-                <?= $form->field($visitmodel, 'diastole')->textArea(['maxlength' => true]) ?>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-6">
-                <?= $form->field($visitmodel, 'beratBadan')->textArea(['maxlength' => true]) ?>
-            </div>
-            <div class="col-md-6">
-                <?= $form->field($visitmodel, 'tinggiBadan')->textArea(['maxlength' => true]) ?>
+                <?= $form->field($visitmodel, 'diastole')->textInput(['maxlength' => true]) ?>
             </div>
         </div>
         <div class="row">
             <div class="col-md-6">
-                <?= $form->field($visitmodel, 'respRate')->textArea(['maxlength' => true]) ?>
+                <?= $form->field($visitmodel, 'beratBadan')->textInput(['maxlength' => true]) ?>
             </div>
             <div class="col-md-6">
-                <?= $form->field($visitmodel, 'heartRate')->textArea(['maxlength' => true]) ?>
+                <?= $form->field($visitmodel, 'tinggiBadan')->textInput(['maxlength' => true]) ?>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <?= $form->field($visitmodel, 'respRate')->textInput(['maxlength' => true]) ?>
+            </div>
+            <div class="col-md-6">
+                <?= $form->field($visitmodel, 'heartRate')->textInput(['maxlength' => true]) ?>
             </div>
         </div>
         <div class="row">

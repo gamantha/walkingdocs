@@ -120,7 +120,7 @@ class pcareComponent extends Component
         $bpjs_user = self::getUsercreds($consid);
         try {
 
-            Yii::$app->session->setFlash('warning', $payload);
+//            Yii::$app->session->setFlash('warning', $payload);
             $client = new Client(['baseUrl' => self::BASE_API_URL . 'kunjungan']);
             $request = $client->createRequest()
                 ->setContent($payload)->setMethod('PUT')
@@ -460,7 +460,7 @@ class pcareComponent extends Component
         if (empty(json_decode($model->params))) {
             Yii::$app->session->addFlash('warning', 'no params');
         } else {
-            Yii::$app->session->addFlash('success', 'Params : ' . json_encode((json_decode($model->params))));
+//            Yii::$app->session->addFlash('success', 'Params : ' . json_encode((json_decode($model->params))));
             return $paramsexistflag = true;
 
 //                $model->params = json_encode($params);
@@ -646,7 +646,7 @@ class pcareComponent extends Component
             }
             array_shift($out['results']);
         } else {
-            Yii::$app->session->addFlash('danger', 'get subspesialis kd - no pcare web service response');
+//            Yii::$app->session->addFlash('danger', 'get subspesialis kd - no pcare web service response');
         }
         return $out;
     }
