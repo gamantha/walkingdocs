@@ -228,13 +228,14 @@ $pdf->SetSubject($nokunjungan);
 $pdf->SetKeywords('TCPDF, PDF, example, test, guide');
 
 
-$kepada_yth = isset($visitModel->subSpesialis_nmSubSpesialis1) ? $visitModel->subSpesialis_nmSubSpesialis1 : "";
+//$kepada_yth = isset($visitModel->subSpesialis_nmSubSpesialis1) ? $visitModel->subSpesialis_nmSubSpesialis1 : "";
+$kepada_yth = isset($visitModel->subSpesialis_nmSpesialis) ? $visitModel->subSpesialis_nmSpesialis : "";
 $subtable = '<div border="1"><table border="0" cellspacing="0" cellpadding="4"><tr><td colspan="1">No Rujukan</td><td colspan="2">: '.$nokunjungan.'</td></tr>
 <tr><td colspan="1">FKTP</td><td colspan="2">: '.$namafktp.'</td></tr>
 <tr><td colspan="1">Kabupaten/Kota</td><td colspan="2">: '.$kabupatan_kota.'</td></tr></table></div>';
 $subtable2 = '<table border="0" cellspacing="2" cellpadding="4">
-<tr><td colspan="1">Kepada Yth. TS Dokter</td><td colspan="2">: '.$kepada_yth.'</td></tr>
-<tr><td colspan="1">Di </td><td colspan="2">: '.$namafktprujukan.'</td></tr>
+<tr><td colspan="2">Kepada Yth. TS Dokter</td><td colspan="2">: '.$kepada_yth.'</td></tr>
+<tr><td colspan="2">Di </td><td colspan="2">: '.$namafktprujukan.'</td></tr>
 </table>';
 $subtable3 = '<table border="0" cellspacing="0" cellpadding="4">
 <tr><td colspan="1">Nama</td><td colspan="2">: '.$pesertanama.'</td></tr>
