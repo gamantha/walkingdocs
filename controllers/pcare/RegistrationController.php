@@ -211,7 +211,9 @@ $isrujukan = true;
         $visitmodel->tinggiBadan = $params['tinggiBadan'];
         $visitmodel->respRate = $params['respRate'];
         $visitmodel->heartRate = $params['heartRate'];
-        $visitmodel->terapi = $params['prescribed'];
+                            $prescribed = substr($params['prescribed'],2, (strlen($params['prescribed']) - 4));
+        $visitmodel->terapi = str_replace('","', "\n",$prescribed);
+
 
 
         $wdmodel->administered = $params['administered'];
@@ -300,7 +302,6 @@ $isrujukan = true;
 
 
         if(isset($_POST['confirm']) || isset($_POST['register'])) {
-//            Yii::$app->session->addFlash('success', 'Confirm OR Register button pushed');
         $wdmodel->load(Yii::$app->request->post());
         $model->load(Yii::$app->request->post());
             $pcarevisit->load(Yii::$app->request->post());
@@ -389,9 +390,8 @@ $isrujukan = true;
 
 
         if(isset($_POST['confirm'])) {
-//            Yii::$app->session->addFlash('success', 'confirm!');
         } else if(isset($_POST['register'])) {
-//            Yii::$app->session->addFlash('success', 'REGISTER!');
+
             $payload = Yii::$app->pcareComponent->fillPayload($model);
 //            Yii::$app->session->addFlash('success', $payload);
             $registerresp = Yii::$app->pcareComponent->pcareRegister($payload, $model->cons_id);
@@ -465,8 +465,6 @@ $rujukpayload = '{
         "rujukLanjut" : '. $rujukpayload . '}';
 
 
-//                        Yii::$app->session->addFlash('success', 'visit payload below');
-//                        Yii::$app->session->addFlash('success', $visitpayload);
                     $createvistresp = '';
                     /** INI YANG PENTING */
                         $createvistresp = Yii::$app->pcareComponent->pcareCreatevisit($visitpayload, $model->cons_id);
@@ -508,6 +506,18 @@ $rujukpayload = '{
         } else if(isset($_POST['update'])) {
             Yii::$app->session->addFlash('success', 'UPDATE');
         }
+
+        if (isset($pcarevisit->kdStatusPulang)) {
+            $pcarevisit->kdStatusPulang = 3;
+        }
+        if (isset($model->kdPoli)) {
+            $model->kdPoli = "001 ";
+        }
+
+        if (isset($model->kunjSakit)) {
+            $model->kunjSakit = "true";
+        }
+
 
 
 //        if (!$confirmflag) {
@@ -1738,7 +1748,7 @@ public function actionAntrean()
                     }
                     array_shift($out['results']);
                 } else {
-                    $temp = ['id' => '0', 'name' => 'ga ada'];
+                    $temp = ['id' => '0', 'name' => 'tidak ada data'];
                     array_push($out['results'], $temp);
                     array_shift($out['results']);
                 }

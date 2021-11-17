@@ -22,7 +22,7 @@ use yii\widgets\ActiveForm;
                         $('#khusus').hide();
         $('#pcarevisit-kdstatuspulang').on('change', function() { 
   if (this.value == 4) {
-alert('4');
+
        $('#rujukan').show();
   } else {
        $('#rujukan').hide();
@@ -394,9 +394,9 @@ $('#pcarevisit-nmdiag3').val($('#pcarevisit-kddiag3 option:selected').text());
 
         ?>
 
-        <div class="well">
 
-            <label class="control-label" style="color:blue;font-size: 100%">Diagnosa Daftar Tilik</label>
+
+            <label class="control-label" style="color:black;font-size: 100%">Diagnosa Daftar Tilik</label>
             <?php
             echo $form->field($wdmodel, 'checklistNames')->textArea(['maxlength' => true,'readonly' => true,'rows' => '3'])
                 ->label(false)
@@ -408,13 +408,13 @@ $('#pcarevisit-nmdiag3').val($('#pcarevisit-kddiag3 option:selected').text());
 
             $diagnoses = json_decode($wdmodel->manualDiagnoses);
 
-            echo Html::label('Diagnosa Manual', 'description', ['class' => 'control-label','style'=>'color:blue;font-size: 100%; font-weight:200;']);
+            echo Html::label('Diagnosa Manual', 'description', ['class' => 'control-label','style'=>'color:black;font-size: 100%;']);
 
             $wdmodel->manualDiagnose_description = isset($diagnoses->description)? $diagnoses->description : "";
             $wdmodel->manualDiagnose_treatment = isset($diagnoses->treatment)? $diagnoses->treatment : "";
             echo Html::input('text', 'description', $wdmodel->manualDiagnose_description , ['class' =>'form-control', 'readonly' => true]);
             echo '<div class="help-block"></div>';
-            echo Html::label('Treatment', 'treatment', ['class' => 'control-label','style'=>'color:blue;font-size: 100%; font-weight:200;']);
+            echo Html::label('Treatment', 'treatment', ['class' => 'control-label','style'=>'color:black;font-size: 100%;']);
             echo Html::input('text', 'treatment', $wdmodel->manualDiagnose_treatment, ['class' =>'form-control', 'readonly' => true]);
 
 
@@ -427,7 +427,7 @@ $('#pcarevisit-nmdiag3').val($('#pcarevisit-kddiag3 option:selected').text());
             ?>
 
 
-        </div>
+
     </div>
 
 
