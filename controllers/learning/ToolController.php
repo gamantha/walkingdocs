@@ -183,6 +183,7 @@ class ToolController extends Controller
             $ctx->def('round');
             $ctx->def('floor');
             $ctx->def('ceil');
+            $ctx->def('log');
             //$inputs = ToolInput::find()->andWhere(['tool_id' => $id])->All();
             foreach($inputs as $input) {
                 $ctx->def($input->input_name, $post[$input->input_name]); // constant "foo" with value "5"
