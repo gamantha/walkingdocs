@@ -103,6 +103,7 @@ class ToolController extends ActiveController
         $ctx->def('round');
         $ctx->def('floor');
         $ctx->def('ceil');
+        $ctx->def('log');
         foreach ($outputs as $output)
         {
             $output_type = $output->output_type;

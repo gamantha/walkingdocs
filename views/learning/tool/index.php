@@ -33,7 +33,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
             [
                 'class' => 'yii\grid\ActionColumn',
-                'template' => '{view} {delete} {run}',
+                'template' => '{view} {disable} {run}',
                 'buttons' => [
 
                     'delete' => function ($url) {
@@ -56,6 +56,15 @@ $this->params['breadcrumbs'][] = $this->title;
                             $url,
                             [
                                 'title' => 'Run',
+                            ]
+                        );
+                    },
+                    'disable' => function ($url) {
+                        return Html::a(
+                            '<span class="glyphicon">Disable</span>',
+                            $url,
+                            [
+                                'title' => 'disable',
                             ]
                         );
                     },
