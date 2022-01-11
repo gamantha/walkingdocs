@@ -48,6 +48,25 @@ class ToolController extends Controller
         $searchModel = new ToolSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
+        $dataProvider->setSort([
+            // 'attributes' => [
+            //     'product_name' => [
+            //         'asc' => ['product_name' => SORT_ASC],
+            //         'desc' => ['product_name' => SORT_DESC],
+            //         'default' => SORT_ASC
+            //     ],
+            //     'date' => [
+            //         'asc' => ['date' => SORT_ASC],
+            //         'desc' => ['date' => SORT_DESC],
+            //         'default' => SORT_ASC,
+            //     ],
+            // ],
+            'defaultOrder' => [
+                'status' => SORT_DESC
+            ]
+        ]);
+
+
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
@@ -137,13 +156,11 @@ class ToolController extends Controller
      */
     public function actionDelete($id)
     {
-        //$this->findModel($id)->delete();
-        $model = $this->findModel($id);
-        $model->status = 'disabled';
-        $model->save();
+        $this->findModel($id)->delete();
 
         return $this->redirect(['index']);
     }
+
 
     /**
      * Finds the Tool model based on its primary key value.
