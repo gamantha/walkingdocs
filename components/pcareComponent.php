@@ -232,6 +232,32 @@ class pcareComponent extends Component
         }
     }
 
+    public function checkMembership($consId,$type,$id)
+    {
+        $bpjs_user = self::getUsercreds($consId);
+        try {
+
+            $client = new Client(['baseUrl' => self::BASE_API_URL . 'peserta/' . '/'.$type.'/' . $id]);
+            $request = $client->createRequest()
+//                ->setContent($payload)->setMethod('POST')
+                ->setHeaders(['X-cons-id' => $bpjs_user['cons_id']])
+                ->addHeaders(['content-type' => 'application/json'])
+                ->addHeaders(['X-Timestamp' => $bpjs_user['time']])
+                ->addHeaders(['X-Signature' => $bpjs_user['encoded_sig']])
+                ->addHeaders(['X-Authorization' => $bpjs_user['encoded_auth_string']]);
+
+            $response = $request->send();
+//                return '1';
+            return $response->content;
+        } catch (\yii\base\Exception $exception) {
+
+            Yii::warning("ERROR GETTING RESPONSE FROM BPJS.");
+            return $exception;
+        }
+    }
+
+
+
     public function cekPesertaByNokartu($consId,$noKartu)
     {
         $bpjs_user = self::getUsercreds($consId);
