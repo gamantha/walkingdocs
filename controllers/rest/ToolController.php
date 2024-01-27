@@ -37,7 +37,7 @@ class ToolController extends ActiveController
     public function actionGettools()
     {
         $toolModels = Tool::find()->andWhere(['status' => 'enabled'])->orderBy(['name' => SORT_ASC])->All();
-        //print_r($toolModel);
+        // print_r($toolModels);
         $ret = [];
         $retprep = [];
         foreach ($toolModels as $toolModel) {

@@ -977,7 +977,7 @@ while (filesize($appPath . '/assets/checklists/' . $files[$i]) < 4000000) {
             $data = json_decode($string);
             return (json_last_error() == JSON_ERROR_NONE) ? ($return_data ? $data : TRUE) : FALSE;
         }
-
+        
         $json_object = json_decode($json_content);
 
         usort($json_object, function($a, $b) { //Sort the array using a user defined function
