@@ -84,7 +84,7 @@ class ToolController extends ActiveController
     public function actionCalculate($id)
     {
         $toolModel = Tool::findOne($id);
-        //print_r($toolModel);
+        // return print_r($toolModel);
 
         $inputs = $toolModel->toolInputs;
         $outputs = $toolModel->toolOutputs;
@@ -114,14 +114,16 @@ class ToolController extends ActiveController
         $request = Yii::$app->request;
         $params = $request->bodyParams;
         $param = $request->getBodyParam('payloadData');
-
+// return print_r($param);
 
         //check if payload contains all input vars
         $ret = [];
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
 
             foreach ($inputs as $input) {
+                // return($input);
 if(array_key_exists($input->input_name, $param)) {
+
                     $ctx->def($input->input_name, $param[$input->input_name]); // constant "foo" with value "5"
                     //$inputVals[$input->input_name] = $post[$input->input_name];
                 } else {
