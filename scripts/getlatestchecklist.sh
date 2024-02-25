@@ -5,9 +5,9 @@ TOKEN="dmdy42z1uyefs3hgq74xfjrpb5xr7hbw"
 URL="https://app.walkingdocs.com/external/checklists"
 OUTFILE="checklists.json"
 
-path = "/var/www/html/walkingdocs/walkingdocs/assets/checklists/temp"
-curl -H "Authorization: $TOKEN" $URL > "/var/www/html/walkingdocs/walkingdocs/assets/checklists/temp"
-cd "/var/www/html/walkingdocs/walkingdocs/assets/checklists"
+path = "/var/www/html/walkingdocs/assets/checklists/temp"
+curl -H "Authorization: $TOKEN" $URL > "/var/www/html/walkingdocs/assets/checklists/temp"
+cd "/var/www/html/walkingdocs/assets/checklists"
 reno=$(ls -v *.json | tail -n 1)
 echo ${reno}
 
