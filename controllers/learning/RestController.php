@@ -1370,6 +1370,8 @@ echo '<pre>';
 
 //echo gettype($diff_result);
 //echo '<br/>';
+if(is_countable($diff_result->differential_diagnosis)){
+
             if (sizeof($diff_result->differential_diagnosis) > 0) {
                 $tempstring = '';
                 foreach($diff_result->differential_diagnosis as $diff_diag) {
@@ -1388,7 +1390,7 @@ echo '<pre>';
 
                 array_push($ret, $temparray);
             }
-
+        }
 
         }
     }
