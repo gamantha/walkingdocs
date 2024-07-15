@@ -1281,17 +1281,20 @@ while (filesize($appPath . '/assets/checklists/' . $files[$i]) < 4000000) {
             ){
 
             } else {
-                $tempstring = $img_result->name->text;
-//                $temparray['name'] = 'What is this?  ';
-                $temparray['preface'] = 'What is this?  ';
-                $temparray['type'] = 'image';
+                if ($img_result->image != null) {
+                    $tempstring = $img_result->name->text;
+                    //                $temparray['name'] = 'What is this?  ';
+                                    $temparray['preface'] = 'What is this?  ';
+                                    $temparray['type'] = 'image';
+                    
+                                    $temparray['question'] = $img_result->image;
+                    
+                                    $temparray['answer'] = $tempstring;
+                    
+                    //                echo '<hr/>';
+                                    array_push($ret, $temparray);
+                }
 
-                $temparray['question'] = $img_result->image;
-
-                $temparray['answer'] = $tempstring;
-
-//                echo '<hr/>';
-                array_push($ret, $temparray);
             }
 
         }
